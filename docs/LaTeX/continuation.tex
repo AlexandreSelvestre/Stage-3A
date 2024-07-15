@@ -1,0 +1,110 @@
+%%%%
+%base : TemplateForSubmission-TECCIENCIA
+%Simple template to submit papers in Teccienca
+%ROBERT SALAZAR
+%%%%%
+
+\documentclass[10pt]{article}
+
+\usepackage[french]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathrsfs}
+\usepackage{nccmath}
+\usepackage{stmaryrd}
+\usepackage{mathtools}
+%\usepackage{bbold}
+\usepackage{bm}  
+
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Tecciencia}
+\lhead{Template for submission to TECCIENCIA}
+\rfoot{Page \thepage}
+
+\usepackage{blindtext}
+
+\usepackage{MnSymbol}
+
+\usepackage[cal=boondox,scr=boondoxo]{mathalfa}
+
+\usepackage{float}
+\usepackage{subfig}
+\usepackage{fancybox,graphicx}
+\usepackage{subfig}
+\usepackage{caption}
+%\usepackage{subcaption}
+\usepackage{color}
+\usepackage{authblk}
+
+\usepackage[colorlinks]{hyperref}
+
+%\usepackage{accents}
+%\usepackage[titletoc,title]{appendix}
+%\usepackage[numbers,sort&compress]{natbib}
+%\usepackage{cite}
+
+
+%floor and ceiling functions
+\usepackage{mathtools}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+
+
+\usepackage[top=2in, bottom=1.5in, left=1in, right=1in]{geometry}
+
+\begin{document}
+%Attention dans la pénalisation lasso à tenir compte de \bm{\beta}_{\text{uni}}
+
+\noindent On constate que l'optimisation de la fonction de perte globale par rapport à $\beta_0$ et $[\mathbf{\beta}^J \; \; \mathbf{\beta}_{\text{uni}}]$ revient à
+résoudre
+\begin{equation}
+\underset{(\beta_0, \beta) \in \mathbb{R} \times \mathbb{R}^{JK + M}}{\text{argmin}} \left( C(\beta_0, (\mathbf{Q}^J)^{-1}\mathbf{\beta},\mathbf{Z}^J \mathbf{Q}^J, \mathbf{y}, \lambda) \right)
+\end{equation}
+\noindent Où $\mathbf{Q}^J$ et $\mathbf{Z}^J$ sont définis de la façon suivante: 
+\begin{align}
+\mathbf{Z}^J &= [\mathbf{Z}_{\text{tens}}^J \; \; \mathbf{Z}_{\text{uni}}]\\
+\text{with} \; \; \; \mathbf{Z}_{\text{uni}} &= {\mathbf{X}_a}_{:,(JK + 1): (JK + M)}\\
+\text{and} \; \; \; \mathbf{Z}_{\text{tens}}^J	&= [\mathbf{Z}_1^J \; \; \hdots \; \; \mathbf{Z}_R^J]\\
+\text{where} \; \forall r \in \llbracket 1, R\rrbracket\, , \hspace{0.5 cm} \mathbf{Z_r^J} &= \sum\limits_{k = 1}^K (\underline{X})_{:,:,k} \bm{\beta}_r^K\\
+\hspace{7 pt}
+\mathbf{Q}^J &= \text{Diag}([\mathbf{u}_{\text{tens}} \; \; \mathbf{u}_{\text{uni}}])\\
+\text{with} \; \; \; \mathbf{u}_{\text{uni}} &= (\lambda,\; \; \hdots \; \; , \lambda) \in \mathbb{R}^M\\
+\text{and} \; \; \; \mathbf{u}_{\text{tens}} &= (\lVert \mathbf{\beta}_1^K \rVert_1, \; \; \hdots \; \; ,\lVert \mathbf{\beta}_R^K \rVert_1)
+\end{align}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}

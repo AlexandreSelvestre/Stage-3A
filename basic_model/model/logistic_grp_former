@@ -1,0 +1,269 @@
+li_caret_sgl <- list()
+
+li_caret_sgl$library <- "SGL"
+
+li_caret_sgl$type <- "Classification"
+
+li_caret_sgl$parameters <- data.frame(parameter = c("alpha", "lambda"), class = c("numeric", "numeric"), label = c(
+    "valeur du alpha (1 = lasso pur, 0 = group lasso pur)",
+    "la valeur du paramètre lambda"
+))
+
+create_grid_sgl <- function(x, y, len = NULL, search = "grid") {
+    n_lambdas <- 1
+    n_alphas <- len %/% 5 + 1
+    if (search == "grid") {
+        seq_alphas <- seq(0, 1, length.out = n_alphas)
+        lambda <- seq(0, 1, length.out = len)
+    } else {
+        seq_alphas <- runif(n_alphas, min = 0, max = 1)
+        lambda <- runif(len, min = 0, max = 1)
+    }
+    data_frame_grid <- expand.grid(alpha = seq_alphas, lambda = lambda)
+    return(data_frame_grid)
+}
+
+li_caret_sgl$grid <- create_grid_sgl
+
+fit_sgl <- function(x, y, wts, param, lev, last, weights, classProbs, index, k_smote, do_smote) {
+    li_norm <- renormalize_in_model_fit(x) ######## THE GOOD LINE FOR NORMALIZATION
+    x <- li_norm$x
+
+    if (do_smote) {
+        li <- apply_smote(x, y, k_smote)
+        x <- li$x
+        y <- li$y
+    } else {
+        li <- apply_boot(x, y)
+        x <- li$x
+        y <- li$y
+    }
+    data <- list(x = as.matrix(x), y = ifelse(y == "CHC", 0, 1))
+    alpha <- param$alpha
+    lambda <- param$lambda
+    fited <- SGL::SGL(
+        data = data, index = index, type = "logit", alpha = alpha, standardize = FALSE, lambdas = lambda, nlam = 1
+    )
+    fited$classProbs <- classProbs
+    fited$lev <- lev
+    fited$x <- x
+    fited$li_norm <- li_norm
+    return(fited)
+}
+li_caret_sgl$fit <- fit_sgl
+
+li_caret_sgl$predict <- function(modelFit, newdata, preProc = NULL, submodels = NULL) {
+    newdata <- renormalize_in_model_pred(newdata, modelFit) ######## THE GOOD LINE FOR NORMALIZATION
+    beta_fited <- as.vector(modelFit$beta)
+    value <- apply(newdata, 1, function(ligne) {
+        ligne %*% beta_fited + modelFit$intercept
+    })
+    proba <- 1 / (1 + exp(-value))
+    predicted_labels <- ifelse(proba > 0.5,
+        ifelse(modelFit$lev[2] == "CCK", modelFit$lev[2], modelFit$lev[1]),
+        ifelse(modelFit$lev[1] == "CHC", modelFit$lev[1], modelFit$lev[2])
+    )
+
+    return(predicted_labels)
+}
+
+
+li_caret_sgl$prob <- function(modelFit, newdata, preProc = NULL, submodels = NULL) {
+    newdata <- renormalize_in_model_pred(newdata, modelFit) ######## THE GOOD LINE FOR NORMALIZATION
+    beta_fited <- as.vector(modelFit$beta)
+    value <- apply(newdata, 1, function(ligne) {
+        ligne %*% beta_fited + modelFit$intercept
+    })
+    proba_class_1 <- 1 / (1 + exp(-value))
+    proba_class_0 <- 1 - proba_class_1
+    proba_df <- data.frame("CHC" = proba_class_0, "CCK" = proba_class_1)
+
+    return(proba_df)
+}
+
+li_caret_sgl$loop <- NULL
+
+
+
+setMethod("train_method", "apply_model", function(object) {
+    # Créer la liste index utilisée pour les groupes (petits groupes)
+    vec_names <- colnames(object@train_cols[, object@col_x])
+    df_names <- data.frame(name_cov = vec_names)
+    if (object@include_products == FALSE) {
+        if (object@index_type == "fin") {
+            df_names$Group <- substr(df_names$name_cov, 0, nchar(df_names$name_cov) - 5)
+        } else {
+            df_names$Group <- substr(df_names$name_cov, nchar(df_names$name_cov) - 3, nchar(df_names$name_cov))
+        }
+    } else {
+        if (object@index_type == "fin") {
+            df_names$Group <- sapply(df_names$name_cov, function(x) {
+                name_product_terms(x, small_groups = TRUE)
+            })
+        } else {
+            df_names$Group <- sapply(df_names$name_cov, function(x) {
+                name_product_terms(x, small_groups = FALSE)
+            })
+        }
+    }
+    vec_group <- df_names$Group
+    vec_group <- as.factor(vec_group)
+    index <- as.integer(vec_group)
+
+
+
+    # Créer la tuneGrid
+    ### Utiliser un fit global pour les meilleurs lambdas
+    k_smote <- 5
+    x <- copy(object@train_cols[, object@col_x])
+    y <- copy(object@train_cols$classe_name)
+    li_norm_loc <- renormalize_in_model_fit(x) ######## THE GOOD LINE FOR NORMALIZATION
+    x <- li_norm_loc$x
+
+
+    # dat <- if (is.data.frame(x)) x else as.data.frame(x)
+    # dat$.y <- y
+    # # Calculer le pourcentage perc.over
+    # class_majoritaire <- names(which.max(table(y)))
+    # class_minoritaire <- names(which.min(table(y)))
+    # print("avant smote")
+    # print(sum(y == class_majoritaire))
+    # print(sum(y == class_minoritaire))
+    # perc.over <- (sum(y == class_majoritaire) / sum(y == class_minoritaire)) * 100
+    # perc.under <- 100 + 100 / floor(perc.over / 100) + 1
+    # dat <- SMOTE(.y ~ ., data = dat, k = k_smote, perc.over = perc.over, perc.under = perc.under)
+    # x <- dat[, !grepl(".y", colnames(dat), fixed = TRUE)]
+    # y <- dat$.y
+    # print("après smote")
+    # print(sum(y == class_majoritaire))
+    # print(sum(y == class_minoritaire))
+
+    if (object@do_smote) {
+        li <- apply_smote(x, y, k_smote)
+        x <- li$x
+        y <- li$y
+    } else {
+        li <- apply_boot(x, y)
+        x <- li$x
+        y <- li$y
+    }
+
+    ### Générer les alphas suboptimaux (vis-à-vis de la liste des lambda) de manière aléatoire ou non
+    if (object@tuneGrid_type == "random") {
+        if (object@tuneLength > 1) {
+            object@vec_alphas <- runif(object@alpha_values - 1, min = 0, max = 1)
+            object@vec_alphas <- append(object@vec_alphas, object@alpha_origin)
+        } else {
+            object@vec_alphas <- c(object@alpha_origin)
+        }
+    } else {
+        if (object@tuneLength > 1) {
+            object@vec_alphas <- seq(0, 1, length.out = object@alpha_values - 1)
+            object@vec_alphas <- append(object@vec_alphas, object@alpha_origin)
+        } else {
+            object@vec_alphas <- c(object@alpha_origin)
+        }
+    }
+
+    tuneGrid <- data.frame(matrix(nrow = 0, ncol = 2))
+    colnames(tuneGrid) <- c("alpha", "lambda")
+    for (alpha in object@vec_alphas) {
+        data_for_beta <- list(x = x, y = ifelse(y == "CHC", 0, 1)) # attention si PCA!!
+        train_for_lambdas <- SGL::SGL(
+            data = data_for_beta, index = index, type = "logit",
+            nlam = object@tuneLength, alpha = alpha, standardize = FALSE, min.frac = object@lambda_min
+        )
+        new_rows <- data.frame(matrix(nrow = object@tuneLength, ncol = 2))
+        colnames(new_rows) <- c("alpha", "lambda")
+        new_rows$lambda <- train_for_lambdas$lambdas
+        new_rows$alpha <- alpha
+        tuneGrid <- rbind(tuneGrid, new_rows)
+    }
+
+    print("tuneGrid created")
+    object@tuneGrid <- tuneGrid
+    ### Evaluer le modèle (pour l'instant on fait sans PCA)
+
+    object@model <- caret::train(
+        y = object@train_cols$classe_name, x = as.matrix(object@train_cols[, object@col_x]),
+        method = li_caret_sgl, trControl = object@cv, metric = "AUC", tuneGrid = tuneGrid, index = index,
+        k_smote = object@k_smote, do_smote = object@do_smote
+    )
+    return(object)
+})
+
+setMethod("get_results", "apply_model", function(object) {
+    if (object@do_PCA) {
+        test_explic_pca <- predict(object@model$preProcess, object@test_set[, object@col_x]) # SANS DOUTE USELESS si on degage le $finalModel !!!
+        train_explic_pca <- predict(object@model$preProcess, object@train_cols[, object@col_x])
+        object@predictions <- as.vector(predict(object@model$finalModel, newdata = as.matrix(test_explic_pca)))
+        object@predictions_proba <- predict(object@model$finalModel, newdata = as.matrix(test_explic_pca), type = "prob")
+        object@predictions_train_proba <- predict(object@model$finalModel, newdata = as.matrix(train_explic_pca), type = "prob")
+    } else {
+        object@predictions <- as.vector(predict(object@model, newdata = as.matrix(object@test_set[, object@col_x])))
+        object@predictions_proba <- predict(object@model, newdata = as.matrix(object@test_set[, object@col_x]), type = "prob")
+        object@predictions_train_proba <- predict(object@model, newdata = as.matrix(object@train_cols[, object@col_x]), type = "prob")
+    }
+    return(object)
+})
+
+setMethod("importance_method", "apply_model", function(object) {
+    best_beta <- object@model$finalModel$beta
+    variable_importance <- data.frame(Variable = colnames(object@train_cols[, object@col_x]), Overall = abs(best_beta))
+    variable_importance <- variable_importance[order(-variable_importance$Overall), ]
+    variable_importance <- subset(variable_importance, Overall > 0.0001)
+    name_df <- paste("variable_importance", object@id_term, sep = "_")
+    object@li_df_var_imp[[name_df]] <- variable_importance
+
+    image <- ggplot2::ggplot(variable_importance, aes(x = reorder(Variable, Overall), y = Overall)) +
+        geom_bar(stat = "identity") +
+        coord_flip() +
+        theme_light() +
+        xlab("Variable") +
+        ylab("Importance") +
+        ggtitle("Variable Importance") +
+        theme(axis.text.y = element_text(size = 2)) # Adjust the size as needed
+    ggsave(paste0("plots/logistic_grp/importance", "_", object@id_term, ".png"), image, width = 10, height = 15)
+
+    variable_importance$Group <- substr(variable_importance$Variable, nchar(variable_importance$Variable) - 3, nchar(variable_importance$Variable))
+    variable_importance_grouped <- aggregate(Overall ~ Group, data = variable_importance, FUN = mean)
+    name_df <- paste("variable_importance_grouped", object@id_term, sep = "_")
+    object@li_df_var_imp[[name_df]] <- variable_importance_grouped
+
+    image <- ggplot(variable_importance_grouped, aes(x = reorder(Group, Overall), y = Overall)) +
+        geom_bar(stat = "identity") +
+        coord_flip() +
+        theme_light() +
+        xlab("Variable") +
+        ylab("Importance") +
+        ggtitle("Variable Importance")
+    ggsave(paste0("plots/logistic_grp/big_groups_importance", "_", object@id_term, ".png"), image)
+
+    variable_importance$small_Group <- substr(variable_importance$Variable, 0, nchar(variable_importance$Variable) - 5)
+    variable_importance_small_grouped <- aggregate(Overall ~ small_Group, data = variable_importance, FUN = mean)
+    name_df <- paste("variable_importance_small_grouped", object@id_term, sep = "_")
+    object@li_df_var_imp[[name_df]] <- variable_importance_small_grouped
+
+    image <- ggplot(variable_importance_small_grouped, aes(x = reorder(small_Group, Overall), y = Overall)) +
+        geom_bar(stat = "identity") +
+        coord_flip() +
+        theme_light() +
+        xlab("Variable") +
+        ylab("Importance") +
+        ggtitle("Variable Importance")
+    ggsave(paste0("plots/logistic_grp/small_groups_importance", "_", object@id_term, ".png"), image)
+
+
+    df_cv <- object@model$resample
+    df_cv <- df_cv[, setdiff(names(df_cv), "Resample")]
+    df_long <- melt(df_cv)
+    object@li_box_plots[[object@id_term]] <- df_long
+
+    box_plots_stats <- ggplot(df_long, aes(x = variable, y = value)) +
+        geom_boxplot() +
+        stat_summary(fun = median, geom = "point", shape = 20, size = 3, color = "red") +
+        theme(axis.text.x = element_text(angle = 90, hjust = 1)) # Rotate x-axis labels for readability
+    ggsave(paste0("plots/logistic_grp/box_plots_stats", "_", object@id_term, ".png"), box_plots_stats)
+
+    return(object)
+})

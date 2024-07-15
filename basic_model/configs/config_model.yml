@@ -1,0 +1,29 @@
+default:
+  do_PCA: FALSE
+  kill_mixtes_col:
+  n_trees: 5000
+  show_logs: TRUE
+  calc_probs: TRUE
+
+  k: 5
+  p: 0.75 #Séparation entre train et test
+  rep: 1
+  k_smote: 3
+  sampling: "up" # "up", NULL ou  "smote"
+  search: "random" #grid ou random
+  do_parallel: TRUE
+
+
+  #name_model: "random_forest"  #To norm et à refaire en mode li_caret
+  #name_model: "logistic_grp"
+  name_model: "logistique_simple"
+  #name_model: "logistic_multiway"
+  #name_model: "logistic_select"
+  #name_model: "logistic_multibloc"
+
+radio:
+  minimal_information: TRUE
+
+simu:
+  minimal_information: FALSE
+

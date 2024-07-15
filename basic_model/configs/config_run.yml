@@ -1,0 +1,9 @@
+default:
+  do_extract: TRUE
+  simulated_data: FALSE
+  num_runs: 2
+
+my_config:
+  do_extract: TRUE #Pour pas réextraire à chaque fois
+  simulated_data: TRUE
+  num_runs: 1

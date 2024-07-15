@@ -1,0 +1,40 @@
+default:
+  regression: TRUE
+  eps: 0.00000001 #10^-8
+  ite_max: 1000
+  n_iter_per_reg: 50
+
+
+radio:
+  lambda_min: 0.0005
+  lambda_max: 0.01
+  R_min: 1
+  R_max: 2 
+  tuneLength: 20 
+
+  weights:
+    "CCK": 1
+    "CHC": 1
+
+simu:
+  lambda_min: 0.0005
+  lambda_max: 0.01
+  R_min: 1
+  R_max: 5 #meilleur à R = 4 avec ces lambdas
+  tuneLength: 10 
+
+  weights:
+    "Classe_0": 1
+    "Classe_1": 1
+
+
+
+
+
+
+
+
+# R = 2; 20 iterations. AUC moyenne test 0.767361111111111", moyenne AUC val 0.751666666666667".
+# R = 3; 20 iterations, AUC moyenne test 0.809722222222222, moyenne AUC val 0.731830808080808.
+# R = 4; 20 iterations, AUC moyenne test ________________, moyenne AUC val ________________.
+
