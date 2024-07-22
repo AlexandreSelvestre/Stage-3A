@@ -174,11 +174,15 @@ reorder_in_modes <- function(x, index_mode, index_variable, index_bloc, name_mod
     # Calculer les indices de départ des variables de chaque bloc
     vec_offset_var_bloc <- c(0)
     if (length(different_blocs > 0)) {
-        for (l in 1:(length(different_blocs) - 1)) {
-            previous_offset <- vec_offset_var_bloc[l]
-            n_variables <- length(li_different_variables[[l]])
-            offset <- previous_offset + n_variables
-            vec_offset_var_bloc <- c(vec_offset_var_bloc, offset)
+        if (length(different_blocs) > 1) {
+            for (l in 1:(length(different_blocs) - 1)) {
+                previous_offset <- vec_offset_var_bloc[l]
+                cat("JU", l, "\n")
+                print(li_different_variables)
+                n_variables <- length(li_different_variables[[l]])
+                offset <- previous_offset + n_variables
+                vec_offset_var_bloc <- c(vec_offset_var_bloc, offset)
+            }
         }
     }
 
