@@ -1,0 +1,26 @@
+data/
+basic_model/plots/
+docs/papiers/
+
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+.Renvron
+
+# Fichiers de package R spécifiques
+*.tar.gz
+*.Rcheck/
+*_*Tarball*
+*-Ex.R
+
+# Fichiers générés par RStudio
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+.Rproj
+.Rbuildignore
+.vsc.settings.json
+.Rprofile
+.renviron

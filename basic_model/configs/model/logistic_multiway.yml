@@ -1,0 +1,28 @@
+default:
+  regression: TRUE
+  eps: 0.00000001 #-10^8
+  ite_max: 1000
+  n_iter_per_reg: 50
+
+
+radio:
+  lambda_min: 0.001
+  lambda_max: 0.05
+  R_min: 1
+  R_max: 2
+  tuneLength: 20 #used for number of lambda inside the SGL function
+
+  weights:
+    "CCK": 1
+    "CHC": 1
+
+simu:
+  lambda_min: 0.001
+  lambda_max: 0.05
+  R_min: 1
+  R_max: 5
+  tuneLength: 10 #used for number of lambda inside the SGL function
+  
+  weights:
+    "Classe_0": 1
+    "Classe_1": 1

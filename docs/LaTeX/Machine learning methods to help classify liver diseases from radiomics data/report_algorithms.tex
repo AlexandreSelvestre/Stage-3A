@@ -1,0 +1,410 @@
+\documentclass[10pt]{article}
+\newcommand\hmmax{0}
+\newcommand\bmmax{0}
+\usepackage[T1]{fontenc} 
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathrsfs}
+\usepackage{anyfontsize}
+\usepackage{mdframed}
+\usepackage{tikz}
+\usepackage{verbatim}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{L2S}
+\lhead{Report on work done during first two months of internship }
+\rfoot{Page \thepage}
+
+\usepackage{blindtext}
+
+\usepackage{MnSymbol}
+
+\usepackage[cal=boondox,scr=boondoxo]{mathalfa}
+
+\usepackage{float}
+\usepackage{subfig}
+\usepackage{fancybox,graphicx}
+\usepackage{subfig}
+\usepackage{caption}
+
+%\usepackage{subcaption}
+\usepackage{color}
+\usepackage{authblk}
+\usepackage{amsmath}  
+\usepackage{stmaryrd}  
+\usepackage{bm}  
+\usepackage{bbm}
+
+%\usepackage[colorlinks]{hyperref}
+\usepackage{hyperref} % pour les liens hypertextes
+\usepackage{cleveref}
+% Configuration de hyperref pour des liens en noir
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=black,
+    filecolor=black,
+    urlcolor=black
+}
+
+\input{doiCmd} %doi command
+
+\usepackage{accents}
+\usepackage[titletoc,title]{appendix}
+%\usepackage[numbers,sort&compress]{natbib}
+\usepackage{cite}
+
+
+%floor and ceiling functions
+\usepackage{mathtools}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+
+
+\usepackage[top=2in, bottom=1.5in, left=1in, right=1in]{geometry}
+\newcommand{\soft}{\mathcal{S}}
+\newcommand{\hard}{\mathcal{H}}
+\newcommand*\underdot[1]{ \underaccent{\bullet}{\mathcal{#1}} } %requiere: \usepackage{accents} 
+\newcommand*\UnderDot[1]{ \underaccent{\bullet}{#1} } %requiere: \usepackage{accents} 
+
+\usepackage{stackengine}
+\newcommand\barbelow[1]{\stackunder[2.5pt]{$#1$}{\rule{1.2ex}{.15ex}}}
+
+\newcommand{\pvec}[1]{\vec{#1}\mkern2mu\vphantom{#1}} %to prime a vector
+
+\newcommand*\UnderTilde[1]{ \underaccent{\sim}{#1} }
+  
+\renewcommand{\figurename}{Fig.}
+
+
+%definitions
+\def\components{
+\left(
+\begin{matrix}
+    z\cos\gamma_n \vspace{0.3cm} \\
+    z\sin\gamma_n\vspace{0.3cm} \\
+    -(x-x_n)\cos\gamma_n+(y-y_n)\sin\gamma_n
+\end{matrix}
+\right)
+}
+
+\def\componentsII{
+\left(
+\begin{matrix}
+    z\cos\gamma_n \vspace{0.3cm} \\
+    z\sin\gamma_n\vspace{0.3cm} \\
+    \mathscr{R}_n\cos(\gamma_n+\beta_n)-x\cos\gamma_n+y\sin\gamma_n
+\end{matrix}
+\right)
+}
+
+\def\change{
+\scriptsize
+\begin{matrix}
+    
+    y \rightarrow \Lambda_{n}(\boldsymbol{r})
+    \vspace{0.05cm} \\
+    r \rightarrow \lambda_{n}(\boldsymbol{r})
+\end{matrix}
+\normalsize
+}
+
+
+
+\title{Machine learning methods to help classify liver tumors from radiomics data} 
+ 
+\author[1]{Alexandre SELVESTREL}
+
+
+\affil[1]{Laboratoire des syst\`emes, Orsay France}
+\affil[2]{Centrale-Sup\'elec, Gif-sur-Yvette France}
+%\affil[3]{Grupo de F\'isica Te\'orica y desrrollo de Software, Universidad Distrital Francisco Jos\'e de Caldas, Bogot\'a, Colombia}
+%\affil[4]{University of Vienna, UniWien, Computational physics group}
+
+\begin{document}
+
+    \date{}
+    \maketitle
+
+\begin{abstract}
+\noindent In this report, we investigate whether tensor-based machine learning algorithms outperform more traditional machine learning on tensor-structured data. Specifically, we benchmark these methods on a radiomic and clinical dataset of liver tumors. The radiomic variables for each tumor are categorized into three main groups: first-order, shape, and texture, and are observed at four time points corresponding to different phases after contrast medium injection: arterial, portal, venous, and late. This organization gives the radiomic data a tensorial structure, and we aim to determine if models that leverage this structure lead to better predictions.\\
+\indent More precisely, we aim to distinguish patients whose tumor type is "CCK" from those whose tumor type is "CHC".  This is a complex task, since only microscopy of cancerous tissue can characterize without hesitation the tumor type. Indeed, experts do not always agree with each other when they analyze X-rays alone. We begin by proposing a logistic regression penalized by lasso as a baseline. We then compare its results with those of algorithms exploiting the tensorial structure of the data: group lasso \cite{grp_lasso}, multiway logistic regression \cite{multi_rank_1,multi_rank_r} and finally multiway and multiblock logistic regression.
+\\\\Keywords: Machine learning, Multibloc, Multiway, Liver tumor .  
+\end{abstract}
+
+
+\section{Introduction}
+
+We speak of tensorial data as soon as the explanatory variables are structured along several dimensions. In our case, we have two dimensions for our explanatory variables: the quantity of interest and the time at which it is measured (arterial, portal, venous or late). So, instead of having a matrix of explanatory variables, we have a tensor of explanatory variables $\underline{\mathbf{X}} = (x_{ijk})_{i \in \llbracket 1, n \rrbracket, j \in \llbracket 1, J \rrbracket, k \in \llbracket 1, K \rrbracket}$, where $i$ is the individual, $j$ is the quantity of interest and $k$ is the observation time. To avoid confusion with the notion of dimension of a vector space, and in line with the conventions promoted in \textit{Kolda and Bader} (2009) \cite{conventions}, the three dimensions of the tensor $\underline{\mathbf{X}}$ will be referred to as "mode" in the following.\\
+\indent In order to train models that are not specific to tensor data (like a penalized logistic regression), we unfold the tensor $\underline{\mathbf{X}}$ and transform it into a matrix by placing each slice at a fixed $k$ next to the other. This gives the following matrix: $\mathbf{X}_{(1)} = [\mathbf{X}_{:\,:1}, \ldots, \mathbf{X}_{:\,:K}]$. However, in doing so, the model is no longer informed that $\underline{\mathbf{X}}$ is made up of the same quantities observed at different times. One of the reason for which this is important is that there is a non negligeable correlation between variables describing the same quantity of interest at different times. We'll still use the group lasso to restore this information to the model by grouping together variables belonging to the same time, but this is not enough to recover the full tensor aspect of the initial data. Furthermore, as pointed out by \textit{Le Brusquet et al.} (2014) \cite{multi_rank_1}, unfolding the matrix greatly increases the number of predictors compared to tensor methods, which can increase computation times. However, given that in our dataset, $K$ is small ($K = 4$), this increase in computation time is not observed with our data.\\
+
+Introduire ici les CHC et CCK et l'interet de l'etude. Les mixtes notamment.
+
+\section{Notations}
+
+In this section, we specify the notations used in this paper \\[5 pt]
+\noindent $\bullet \; \;$ The concatenation of two matrices $\mathbf{A}$ and $\mathbf{B}$ by juxtaposing their columns side by side is denoted $[\mathbf{A} \; \; \mathbf{B}]$.\\
+$\bullet \; \;$ To avoid overuse of the symbol $\phantom{a}^T$, we also define a notation to designate the juxtaposition of two matrices one below the other. Thus, the matrix defined by block with $\mathbf{A}$ above $\mathbf{B}$ is denoted $\left[\mathbf{A}; \, \mathbf{B}\right]$. It can also be written $[\mathbf{A}^T \; \; \mathbf{B}^T]^T$ but this multiplies the $\phantom{a}^T$ symbols, which impairs legibility. \\
+$\bullet \; \;$ Since vectors are column matrices, using the same notation, we write the concatenation of two vectors $\mathbf{u}$ and $\mathbf{v}$ as follows: $[\mathbf{u}; \, \mathbf{v}]$.  \\
+$\bullet \; \;$ The vector (column) whose elements are $(u_i)_{i \in \llbracket 1, I\rrbracket}$ is also denoted $(u_1, u_2, \; \; \hdots \;\; u_I)$. \\
+$\bullet \; \;$ If $\mathbf{X}$ is a matrix of explanatory variables, $\mathbf{x}_i$ is the vector (column) composed of the i-th row of $\mathbf{X}$.\\
+$\bullet \; \;$ The vector of length $I$ filled with $1$ is denoted by $\mathbbm{1}_I$.\\
+$\bullet \; \;$ We denote $\text{Diag}(\mathbf{u})$ the diagonal matrix whose diagonal is the vector $\mathbf{u}$. \\
+$\bullet \; \;$ For other notations, we use the conventions employed by \textit{Kolda and Bader} (2009) \cite{conventions}. In particular, when we transform a tensor $\underline{\mathbf{X}}$ into a matrix (by unfolding it) using the first mode to form the rows, we do so as follows: $[\mathbf{X}_{:\,:1} \; \; \ldots \; \;\mathbf{X}_{:\,:K}]$ and we denote $\mathbf{X}_{(1)}$ the matrix thus obtained.
+
+\section{State of the art}
+\blindtext
+
+\section{Detailed presentation of the data}
+Détailler le jeu de données et expliquer qu'on a enlevé la phase veineuse. Indiquer aussi qu'on a des données cliniques en plus... Justifier le refus de l'inputation de données (qui risquerait de biaiser les résultats vu le nombre de données manquantes sur certains individus). Expliquer la séparation en blocs.
+
+
+\section{Methodology}
+\noindent In this section, we present in detail the different models that we benchmarked on our dataset. We describe briefly the non tensorial methods so we can focus more on the tensorial ones.
+\subsection{Non tensorial methods}
+For these methods, we start by unfolding the tensorial data $\underline{\mathbf{X}}$ into the matrix $\mathbf{X}_{(1)} = [\mathbf{X}_{:\,:1}\; \; \ldots \; \;\mathbf{X}_{:\,:K}]$. We then complete this matrix  by concatenating (along the columns) the matrix of non tensorial data $\mathbf{X}_{\text{tab}}$ (where "tab" stands for "tabular"). By doing so we obtain $\mathbf{X}_{\text{tot}} = [\mathbf{X}_{(1)} \; \; \mathbf{X}_{\text{tab}}]$.\\
+\indent We first train a penalized logistic regression lasso on $\mathbf{X}_{\text{tot}}$. Then, still based on the matrix $\mathbf{X}_{\text{tot}}$, we train a group lasso \cite{grp_lasso}. The idea of this second model is to group together all the explanatory variables corresponding to a same slice of $\underline{\mathbf{X}}$. We do this first for slices at given $j$ and then for slices at given $k$.  The goal is to give the model a vague description of the tensorial structure of the data. Finally, because we also identified blocs of variables in our tensorial data, we try a last group lasso by grouping the variables along these blocs.
+
+\subsection{Multiway logistic regression with lasso}
+\indent We now turn to tensor approaches. We start by studying a multiway logistic regression penalized by lasso. This model is described for rank 1 in \textit{Le Brusquet et al.} (2014) \cite{multi_rank_1} and in \textit{Girka et al.} (2021) \cite{multi_rank_r} for its extension to rank $R \in \mathbb{N}^{*}$. In this report, we directly describe the generalization to rank $R \in \mathbb{N}^{*}$, rank $1$ being a special case of this model.\\[5 pt]
+
+\noindent The fundamental idea of the model is to decompose the parameter $\bm{\beta}_{\text{tens}} \in \mathbb{R}^{JK}$ associated with the tensor explanatory variables of the logistic regression as:
+\begin{equation}
+\bm{\beta}_{\text{tens}} = \sum\limits_{r = 1}^R\bm{\beta}_r^K \otimes \bm{\beta}_r^J
+\end{equation}
+with for all $r \in \llbracket 1 ,R \rrbracket$, $\bm{\beta}_r^J \in \mathbb{R}^J$ and $\bm{\beta}_r^K \in \mathbb{R}^K$. To take account of the $M$ clinical variables, which are not tensorial, we associate them with a coefficient $\bm{\beta}_{\text{tab}} \in \mathbb{R}^M$. In this way, the parameter $\bm{\beta}$ of the logistic regression is written: $\left[\bm{\beta_{\text{tens}}}; \, \bm{\beta_{\text{tab}}} \right]$.\\
+As usual with logistic regressions, we consider that each realization of the explained variable $y_i$ ($i \in \llbracket 1, n \rrbracket$) follows an independent Bernoulli law conditionally on $\mathbf{x_i}$. This law is defined by:
+\begin{equation}
+\label{eqref:vraisemblance}
+\mathbb{P}( y_i = 1\, | \, \mathbf{x}_i) = \frac{1}{1 + \exp(- \mathbf{x}_i^T \bm{\beta} - \beta_0)}
+\end{equation}
+where  $\beta_0 \in \mathbb{R}$ is the intercept\\ %and $\mathbf{x}_i \in \mathbb{R}^{JK}$ is given by $\mathbf{x}_i = {(\mathbf{x}_{\text{tot}}})_{i:}$ \\
+
+\noindent We set  $\bm{\beta}^J = \left[\bm{\beta}_1^J ; \;\; \hdots \; \; ;\,\bm{\beta}_R^J \right]$ and  $\bm{\beta}^K = \left[\bm{\beta}_1^K; \; \; \hdots \; \; ;\,\bm{\beta}_R^K \right]$.
+\vspace{5 pt}
+\noindent In order to simplify the calculations, while ensuring that the penalty continues to promote sparse models, we adapt the definition of the lasso penalty. The new penalty defines the following optimization problem: %\in \mathbb{R}\times \mathbb{R}^{RJ} \times  \mathbb{R}^{RK} \times \mathbb{R}^M
+\begin{equation}
+ \beta_0, \bm{\beta}^J, \bm{\beta}^K, \bm{\beta}_{\text{tab}} \; = \hspace{-8pt} \underset{\beta_0 ,\, \bm{\beta}^J, \, \bm{\beta}^K, \, \bm{\beta}_{\text{tab}}}{\text{argmin}} \left( - \sum\limits_{i = 1}^{N} \log(\mathbb{P}(y_i = 1 \, | \mathbf{x}_i)) + \sum\limits_{r = 1}^R 
+    \lVert \bm{\beta}_r^K \otimes \bm{\beta}_r^J \rVert_1 + \lVert \bm{\beta}_{\text{tab}} \rVert_1 \right)
+\end{equation}
+
+\noindent Optimization is performed by alternating directions between $\left[ \beta_0 ;\, \bm{\beta}^J  ; \,  \bm{\beta}_{\text{uni}}   \right]$ and  $\left[ \beta_0; \, \bm{\beta}^K  ;\, \bm{\beta}_{\text{uni}}  \right]$. The stopping criterion is defined by the relative difference between the value of the objective function after optimization in the first direction and the value of the same function after optimization in the second direction.  We note that optimizing the loss function in each of these directions is tantamount to performing a simple logistic regression with a lasso penalty. Indeed, if we denote $C$ the loss function of classical logistic regression penalized by lasso (for any $K_0 \in \mathbb{N}^{*}$): 
+
+\begin{equation}
+%% Gerer l'allign
+C: \begin{cases} 
+    \begin{array}{ccl}
+    \mathbb{R} \times \mathbb{R}^{K_0} \times \mathbb{R}^{N \times K_0} \times \mathbb{R}^{N} \times \mathbb{R} & \longrightarrow & \mathbb{R} \\
+    (\beta_0, \bm{\beta}, \mathbf{X}, \mathbf{y}, \lambda ) & \longmapsto & -\displaystyle{\sum\limits_{i = 1}^N} [ y_i(\beta_0 + \mathbf{x}_i^T \bm{\beta}) - \log(1 + \exp(\beta_0 + \mathbf{x}_i^T \bm{\beta})) ] + \lambda \lVert \bm{\beta} \rVert_1
+     \end{array}
+\end{cases}
+\end{equation}
+
+\noindent optimizing the overall loss function with respect to $\left[ \beta_0;\, \bm{\beta}^J ;\, \bm{\beta}_{\text{uni}}  \right]$ amounts to solve
+\begin{equation}
+\underset{(\beta_0, \bm{\beta}) \in \mathbb{R} \times \mathbb{R}^{JR + M}}{\text{argmin}}  C(\beta_0, (\mathbf{Q}^J)^{-1}\bm{\beta},\mathbf{Z}^J \mathbf{Q}^J, \mathbf{y}, \lambda) 
+\end{equation}
+\noindent Where $\mathbf{Q}^J$ and $\mathbf{Z}^J$ are defined as follows: 
+\begin{align}
+    \mathbf{Z}^J &= [\mathbf{Z}_1^J \; \; \hdots \; \; \mathbf{Z}_R^J \; \;  \mathbf{X}_{\text{tab}}]\\
+    \text{where} \; \forall r \in \llbracket 1, R\rrbracket\, , \hspace{0.5 cm} \mathbf{Z_r^J} &= \sum\limits_{k = 1}^K \mathbf{X}_{::k} (\beta_r^K)_k \hspace{0.5 cm} (\mathbf{Z}_r^J \in \mathbb{R}^{N \times J})\\
+    \hspace{7 pt}
+    \mathbf{Q}^J &= \text{Diag}([\lVert \bm{\beta}_1^K \rVert_1^{-1} \mathbbm{1}_J; \; \; \hdots \; \; ;\, \lVert \bm{\beta}_R^K \rVert_1^{-1} \mathbbm{1}_J ;\,  \mathbbm{1}_M])
+\end{align}
+\hspace{10 pt}
+ \noindent \textit{Girka et al.} (2021) \cite{multi_rank_r} demonstrate this result by noting that for $i \in \llbracket 1, n\rrbracket$,
+
+ \begin{align}
+      {{\mathbf{x}_{(1)}}_i}^{\hspace{-5 pt} T} \left( \sum\limits_{r = 1}^R \bm{\beta}_r^K \otimes \bm{\beta}_r^J \right) &= \sum\limits_{r = 1}^R \left[({{\mathbf{x}_{(1)}}_i}^{\hspace{-5 pt} T}   \left( \bm{\beta}_r^K  \otimes \mathbf{I}_J\right)\right] \bm{\beta}_r^J\\
+      &= \sum\limits_{r = 1}^R (\mathbf{z}_r^J)_i^T \bm{\beta}_r^J
+\end{align}
+
+\noindent and that
+
+\begin{align}
+    &\sum\limits_{r = 1}^R \lVert \bm{\beta}_r^K \otimes \bm{\beta}_r^J \rVert_1 = \lVert \mathbf{R}_{\text{tens}}^J \bm{\beta}^J\rVert_1\\
+    \text{with} \hspace{0.5 cm} &\mathbf{R}_{\text{tens}}^J = \text{Diag}([\lVert \bm{\beta}_1^K \rVert_1 \mathbbm{1}_J; \; \; \hdots \; \; ; \,  \lVert \bm{\beta}_R^K \rVert_1 \mathbbm{1}_J ])
+\end{align}
+
+\noindent Thus,
+\begin{align}
+    &(\mathbf{x}_{\text{tot}})_i^T \bm{\beta}= (\mathbf{z}_i^J)^T [\bm{\beta}^J; \bm{\beta}_{\text{tab}}]  \\
+    \text{and} \hspace{0.5 cm} & \sum\limits_{i = 1}^N 
+    \lVert \bm{\beta}_r^K \otimes \bm{\beta}_r^J \rVert_1 + \lVert \bm{\beta}_{\text{tab}} \rVert_1= \lVert (\mathbf{Q}^J)^{-1} \bm{\beta} \rVert_1
+\end{align}
+This justifies the previous results\\[5 pt]
+\noindent For optimization with respect to $\left[ \beta_0; \, \bm{\beta}^K; \, \bm{\beta}_{\text{tab}}  \right]$ , the method is analogous. The only difference concerns the definition of $\mathbf{Z}^K$. It is:
+\begin{align}
+& \mathbf{Z}^K = [\mathbf{Z}_1^K \; \; \hdots \; \; \mathbf{Z}_R^K \; \; \mathbf{X}_{\text{tab}}]\\
+\text{with} \forall r \in \llbracket 1, R \rrbracket \hspace{0.5 cm} & \mathbf{Z}_r^K = \sum\limits_{j = 1}^J (\beta_r^J)_j \mathbf{X}_{:j:}
+\end{align}
+
+\noindent This is justified by:
+
+\begin{align}
+    {{\mathbf{x}_{(1)}}_i}^{\hspace{-5 pt} T}  \left( \sum\limits_{r = 1}^R \bm{\beta}_r^K \otimes \bm{\beta}_r^J \right) &= \sum\limits_{r = 1}^R \left[ ({{\mathbf{x}_{(1)}}_i}^{\hspace{-5 pt} T}  \left( I_K \otimes \bm{\beta}_r^J \right) \right] \bm{\beta}_r^K\\
+    & = \sum\limits_{r = 1}^R (\mathbf{z}_r^K)_i^T \bm{\beta}_r^K
+\end{align}
+
+\subsection{Multiway and multibloc logistic regression with lasso}
+
+We now present the lasso-penalized multiway and multiblock logistic regression. This model draws heavily on the multiway logistic regression we have just presented, while also taking into account a block structure of tensor data. More precisely, each of these blocs will have its own independent coefficient $\bm{\beta}_l \,$, which was not the case in the previous model. As tabular quantities are not measured at different times, they are not placed in any particular block. They will be included in the model in the same way as in the multiway case. Mathematically, we define the model as follows:\\
+\indent Let $L \in \mathbb{N}^{*}$ denote the number of blocks of variables. For any $l \in \llbracket 1, L \rrbracket$, let $d_l$ be the number of tensorial quantities of interest in block $l$. Thus we have :
+$$\sum\limits_{l = 1}^L d_l = J$$
+\indent We reorganize $\underline{\mathbf{X}}$ by grouping together slices $\mathbf{X}_{:j:}$ associated with quantities from the same block. More precisely, for all $l \in \llbracket 1, L \rrbracket$, we call  $\underline{\mathbf{X}}^{l}$  the tensor constituted by the slices $\mathbf{X}_{:j:}$ associated with the $l$-th bloc. We then concatenate these tensors along their second mode to obtain the new tensor of explanatory variables: $\underline{\mathbf{X}}'$.\\[5 pt]
+\indent The new $\bm{\beta}$ structure is defined by blocks. It is:
+\begin{equation}
+\bm{\beta} = \left[ \sum\limits_{r = 1}^R \bm{\beta}_{(1,r)}^K \otimes \bm{\beta}_{(1,r)}^J;   \; \; \hdots  \; \; ;\, \sum\limits_{r = 1}^R \bm{\beta}_{(L,r)}^K \otimes \bm{\beta}_{(L,r)}^J\; ;\,\bm{\beta}_{\text{tab}}   \right]
+\end{equation}
+With for all $(l,r) \in \llbracket 1,L \rrbracket \times \llbracket 1, R\rrbracket$, $\bm{\beta}_{(l,r)}^J \in \mathbb{R}^{d_l}$ and $\bm{\beta}_{(l,r)}^K \in \mathbb{R}^{K}$  \\
+
+We call $\bm{\beta}^J$ and $\bm{\beta}^K$ the vectors
+\begin{align}
+    \bm{\beta}^J &= \left[ \bm{\beta}_{(1,1)}^J\, ; \hspace{7 pt} \hdots \hspace{7 pt} \, ; \, \bm{\beta}_{(1,R)}^J \,;    \hspace{7 pt} \hdots \hspace{7 pt}  \hdots \hspace{7 pt} \, ; \,  \bm{\beta}_{(L,1)}^J   \hspace{7 pt} \hdots \hspace{7 pt}  \, ;\,\bm{\beta}_{(L,R)}^J   \right]\\
+    \bm{\beta}^K &= \left[ \bm{\beta}_{(1,1)}^K\, ; \hspace{7 pt} \hdots \hspace{7 pt} \, ; \, \bm{\beta}_{(1,R)}^K \,;    \hspace{7 pt} \hdots \hspace{7 pt}  \hdots \hspace{7 pt} \, ; \,  \bm{\beta}_{(L,1)}^K   \hspace{7 pt} \hdots \hspace{7 pt}  \, ;\,\bm{\beta}_{(L,R)}^K   \right]
+\end{align}
+% Indiquer qui est l et r après et changer les beta montrés (cf cahier)
+
+\noindent In a similar way to what is done in the multiway model, we adapt the lasso penalty, so that the new optimization problem becomes:
+\begin{equation}
+    \beta_0 ,\, \bm{\beta}^J, \, \bm{\beta}^K, \, \bm{\beta}_{\text{tab}} = \hspace{- 8 pt} \underset{\beta_0 ,\, \bm{\beta}^J, \, \bm{\beta}^K, \, \bm{\beta}_{\text{tab}}}{\text{argmin}} \left(  - \sum\limits_{i = 1}^{N} \log(\mathbb{P}(y_i = 1 \, | \mathbf{x}_i)) + \sum\limits_{l = 1}^L \sum\limits_{r = 1}^R 
+    \lVert \bm{\beta}_{(l,r)}^K \otimes \bm{\beta}_{(l,r)}^J \rVert_1 + \lVert \bm{\beta}_{\text{tab}} \rVert_1 \right)
+\end{equation}
+
+\noindent Once again, this problem is solved by alternating optimization directions $\left[ \beta_0 ;\, \bm{\beta}^J ;\,  \bm{\beta}_{\text{tab}} \right]$ and\\
+$\left[ \beta_0 ;\, \bm{\beta}^K ;\,  \bm{\beta}_{\text{tab}} \right]$. Each of these two problems can be reduced to a lasso-penalized classical logistic\\[3 pt]
+ regression.\\
+Indeed, optimizing according to $\left[ \beta_0 ;\, \bm{\beta}^J ;\,  \bm{\beta}_{\text{tab}} \right]$ is equivalent to searching
+\begin{equation}
+\underset{(\beta_0, \bm{\beta}) \in \mathbb{R} \times \mathbb{R}^{RJ + M}}{\text{argmin}}  C(\beta_0, (\mathbf{Q}^J)^{-1}\bm{\beta},\mathbf{Z}^J \mathbf{Q}^J, \mathbf{y}, \lambda) 
+\end{equation}
+Where $\mathbf{Q}^J$ and $\mathbf{Z}^J$ are defined as follows:
+
+\begin{align}
+\mathbf{Z}^J = [ \mathbf{Z}_{(1,1)}^J \; \; \hdots \; \; &\mathbf{Z}_{(1,R)}^J  \; \; \hdots  \; \; \hdots \; \; \mathbf{Z}_{(L,1)}^J \; \; \hdots \; \; \mathbf{Z}_{(L,R)}^J \; \; \mathbf{X}_{\text{tab}}] \label{eqref: Z_j}\\
+\text{where} \; \forall r \in \llbracket 1, R\rrbracket\, , \hspace{0.5 cm} \mathbf{Z}_{(l,r)}^J &= \sum\limits_{k = 1}^K \mathbf{X}^l_{::k} \left(\beta_{(l,r)}^K\right)_k \hspace{0.5 cm} \left(\mathbf{Z}_{(l,r)}^J \in \mathbb{R}^{n \times d_l}\right) \label{eqref: Z_r}\\
+\hspace{7 pt}
+\mathbf{Q}^J = \text{Diag}([\lVert \bm{\beta}_{(1,1)}^K \rVert_1^{-1} \mathbbm{1}_{d_1}; \; \; \hdots \; \;; \,& \lVert \bm{\beta}_{(1,R)}^K \rVert_1^{-1} \mathbbm{1}_{d_1};  \; \; \hdots \; \;  \hdots \; \; ;\, \lVert \bm{\beta}_{(L,1)}^K \rVert_1^{-1} \mathbbm{1}_{d_L};  \; \;  \hdots \; \; ;\, \lVert \bm{\beta}_{(L,R)}^K \rVert_1^{-1} \mathbbm{1}_{d_L}; \, \mathbbm{1}_M]) \label{eqref:Q^J}
+\end{align}
+
+The demonstration of this result is similar to that of the multiway case. Indeed, we note that
+\begin{align}
+    \hspace{-40 pt}(\mathbf{x}_{(1)}')_i^T \left[ \sum\limits_{r = 1}^R \bm{\beta}_{(1,r)}^K \otimes \bm{\beta}_{(1,r)}^J;   \; \; \hdots  \; \; ;\, \sum\limits_{r = 1}^R \bm{\beta}_{(L,r)}^K \otimes \bm{\beta}_{(L,r)}^J \right] &= \sum\limits_{l = 1}^L \sum\limits_{r = 1}^R \left(\mathbf{x}_{(1)}^l\right)_i^T \left(\bm{\beta}_{(l,r)}^K \otimes \bm{\beta}_{(l,r)}^J \right)\\
+    &= \sum\limits_{l = 1}^L \sum\limits_{r = 1}^R \left[ \left(\mathbf{x}_{(1)}^l\right)_i^T \left( \bm{\beta}_{(l,r)}^K \otimes I_{d_l} \right) \right]\bm{\beta}_{(l,r)}^J\\ 
+    &= \sum\limits_{l = 1}^L \sum\limits_{r = 1}^R \left(\mathbf{z}_{(l,r)}^J\right)_i^T \bm{\beta}_{(l,r)}^J
+\end{align}
+
+An that
+
+\begin{align}
+    \sum\limits_{l = 1}^L \sum\limits_{r = 1}^R \lVert \bm{\beta}_{(l,r)}^K \otimes \bm{\beta}_{(l,r)}^J \rVert_1 &= \lVert \mathbf{R}_{\text{tens}}^J \bm{\beta}^J\rVert_1\\
+    \text{with} \hspace{0.5 cm} \mathbf{R}_{\text{tens}}^J = \text{Diag}    ([\lVert \bm{\beta}_{(1,1)}^K \rVert_1 \mathbbm{1}_{d_1}; \; \; \hdots \; \;; \,& \lVert \bm{\beta}_{(1,R)}^K \rVert_1 \mathbbm{1}_{d_1};  \; \; \hdots \; \;  \hdots \; \; ;\, \lVert \bm{\beta}_{(L,1)}^K \rVert_1 \mathbbm{1}_{d_L};  \; \;  \hdots \; \; ;\, \lVert \bm{\beta}_{(L,R)}^K \rVert_1 \mathbbm{1}_{d_L}; \, \mathbbm{1}_M])
+\end{align}
+
+\noindent We deduce that
+
+\begin{align}
+    &[{\mathbf{x}_{\text{(1)}}'}_i; \, \mathbf{x}_{\text{tab}\raisebox{-4pt}{$\scriptstyle i$}}]\, \bm{\beta}= (\mathbf{z}_i^J)^T [\bm{\beta}^J; \, \bm{\beta}_{\text{tab}}]  \\
+    \text{and} \hspace{0.5 cm} & \sum\limits_{l = 1}^L \sum\limits_{r = 1}^R \lVert \bm{\beta}_{(l,r)}^K \otimes \bm{\beta}_{(l,r)}^J \rVert_1 + \lVert \bm{\beta}_{\text{uni}} \rVert_1= \lVert (\mathbf{Q}^J)^{-1} \bm{\beta} \rVert_1
+\end{align}
+
+\noindent Wich justifies the previous results.\\[5 pt]
+\noindent For optimization with respect to $\left[ \beta_0 ;\, \bm{\beta}^K ;\,  \bm{\beta}_{\text{tab}} \right]$, the method is analogous. The only difference concerns the form of $\mathbf{Z}^K$. It is written as:
+\begin{align}
+    \mathbf{Z}^K	=[ \mathbf{Z}_{(1,1)}^K \; \; \hdots \; \; &\mathbf{Z}_{(1,R)}^K  \; \; \hdots  \; \; \hdots \; \; \mathbf{Z}_{(L,1)}^K \; \; \hdots \; \; \mathbf{Z}_{(L,R)}^K \; \; \mathbf{X}_{\text{tab}}] \label{eqref: Z^K}\\
+    \text{where} \; \forall r \in \llbracket 1, R\rrbracket\, , \hspace{0.5 cm} \mathbf{Z}_{(l,r)}^K &= \sum\limits_{j = 1}^{d_l} \mathbf{X}_{:j:}^l \left(\beta_{(l,r)}^J\right)_j \hspace{0.5 cm} \left(\mathbf{Z}_{(l,r)}^K \in \mathbb{R}^{N \times K}\right) \label{eqref: Z_tens^K}
+\end{align}
+
+\noindent The justification of that last result is analogous to the one used in the multiway case.\\[2 pt]
+
+\noindent \textbf{Notes}: 
+\begin{itemize}
+\item In the multiway and multibloc logistic regression with lasso, it is possible to allow for the choice of a specific rank for each block. We have not yet studied this model extension, but deriving its equations is straightforward, based on the equations provided in this report.
+\item We decided to optimize the loss function completely in one direction before turning to the other one instead of alternating one step in each direction because the first procedure was more stable and could be implemented efficiently using the glmnet package in R \cite{glmnet}. 
+\end{itemize}
+
+\vspace{7 pt}
+
+{\fontsize{12}{8}\selectfont \noindent \textbf{Pseudo-code:}}\\[1 pt] 
+In order to clarify the algorithm that we use, we give here the pseudo-code of our implementation. In order to be more readable, we keep the notations that were used during the presentation of the model.\\[5 pt]
+\newpage
+\begin{mdframed}[leftmargin=0cm, rightmargin=4cm]
+\noindent \textbf{Inputs}\\
+\phantom{a}\hspace{5 pt} $\bullet$ $\epsilon >0$, $\lambda >0$, $R \in \mathbb{N}^{*}$\\[2 pt]
+\phantom{a}\hspace{5 pt} $\bullet$ $\bm{\beta}^{K(0)} \in \mathbb{R}^{LRK}$\\[4 pt]
+\textbf{Treatment}\\
+\phantom{a}\hspace{5 pt} $\bullet$ $q \leftarrow 0$\\[2 pt]
+\phantom{a}\hspace{5 pt}  \textbf{Repeat}\\[2 pt]
+\begin{tikzpicture}[overlay, remember picture]
+    \draw[thick] (0.9, 0.18) -- (0.9, -3.75);  % Modifier les coordonnées pour ajuster la position et la
+\end{tikzpicture}
+\phantom{a}\hspace{22 pt} $\bullet$ Construct $\mathbf{Z}^J$ according to \cref{eqref: Z_j,eqref: Z_r}\\[2 pt]
+\phantom{a}\hspace{25 pt} $\bullet$ Construct $\mathbf{Q}^J$ according to \cref{eqref:Q^J}\\[2 pt]
+\phantom{a}\hspace{25 pt}  $\bullet$ $(\beta_0^{(q)}, \bm{\beta}^{J {(q)}}) \longleftarrow \hspace{-10 pt} \underset{(\beta_0, \bm{\beta}) \in \mathbb{R} \times \mathbb{R}^{RJ + M}}{\text{argmin}} \left( C(\beta_0, (\mathbf{Q}^J)^{-1}\bm{\beta},\mathbf{Z}^J \mathbf{Q}^J, \mathbf{y}, \lambda) \right)$\\[2 pt]
+\phantom{a}\hspace{25 pt} $\bullet$ Construct $\mathbf{Z}^K$ according to \cref{eqref: Z^K,eqref: Z_tens^K}\\[3 pt]
+\phantom{a}\hspace{25 pt} $\bullet$ Construct $\mathbf{Q}^K$ by adapting \cref{eqref:Q^J}\\[2 pt]
+\phantom{a}\hspace{25 pt}  $\bullet$ $(\beta_0^{(q)}, \bm{\beta}^{K {(q)}}) \longleftarrow \hspace{-10 pt} \underset{(\beta_0, \bm{\beta}) \in \mathbb{R} \times \mathbb{R}^{LRK + M}}{\text{argmin}} \left( C(\beta_0, (\mathbf{Q}^K)^{-1}\bm{\beta},\mathbf{Z}^K \mathbf{Q}^K, \mathbf{y}, \lambda) \right)$\\[2 pt]
+\phantom{a}\hspace{25 pt}  $\bullet$ $q \leftarrow q + 1$\\[4 pt]
+\phantom{a}\hspace{8 pt}  \textbf{until} $|C^K - C^J| < \epsilon |C^J| $\\[4 pt]
+\textbf{Return} $(\beta_0^{(q)},\bm{\beta}^{K(q)}, \bm{\beta}^{J(q)})$
+\end{mdframed}
+
+
+
+
+
+\vspace{10 pt}
+
+
+
+
+
+
+
+
+
+
+
+
+
+\vspace{2 cm}
+ 
+\section{results}
+
+
+
+
+\section*{Conclusions}
+\blindtext
+
+
+
+
+\bibliographystyle{ieeetr} %alpha, apalike, ieeetr
+\bibliography{bibliography.bib}
+
+%\begin{thebibliography}{99} % Bibliography - this is %intentionally simple in this template
+
+%\bibitem{andreotti1997studying} B. Andreotti, \emph{Studying Burgers' models to investigate the physical meaning of the alignments statistically observed in turbulence}, Phys. Fluids \textbf{9} : 3, March (1997)
+
+%\bibitem{cohl1999compact} Cohl, Howard S., and Joel E. Tohline, \emph{A compact cylindrical Green's function expansion for the solution of potential problems}, The astrophysical journal \textbf{527} : 86 - 101 (1999) %DOI: https://doi.org/10.1086/308062
+
+%\bibitem{abramowitz1965handbook} Abramowitz, Milton, and Irene A. Stegun. \emph{Handbook of Mathematical Functions With Formulas, Graphs, and Mathematical Tables.} (1964).
+
+
+%\end{thebibliography}
+
+%croos section karlie
+%GOOD: http://www.eumetrain.org/satmanu/CMs/TrCyAt/print.htm 
+%https://physics.stackexchange.com/questions/275799/why-is-the-eye-of-a-cyclone-a-forced-vortex
+%http://www.chanthaburi.buu.ac.th/~wirote/met/tropical/textbook_2nd_edition/navmenu.php_tab_9_page_7.1.0.htm
+%http://www.atmos.umd.edu/~dalin/andrew/part2.html
+%https://nptel.ac.in/courses/119102007/2
+%http://www.911omissionreport.com/steering_hurricanes.html
+%https://www.youtube.com/watch?v=_brY_9ME8iE brooks
+\end{document}
