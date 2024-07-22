@@ -94,7 +94,10 @@ setClass(
     y_train = "ANY",
     y_test = "ANY",
     name_y = "character",
-    class_maj_min = "character"
+    class_maj_min = "character",
+    analyse_data = "ANY",
+    beta_final = "numeric",
+    tune_R = "numeric"
   ),
   prototype(
     k = 5,
@@ -183,6 +186,10 @@ setMethod("split_met", "apply_model", function(object, training_index, folds) {
   return(object)
 })
 
+setGeneric("analyse_data", function(object) {
+  standardGeneric("analyse_data")
+})
+
 setGeneric("train_method", function(object) {
   standardGeneric("train_method")
 })
@@ -269,10 +276,6 @@ setMethod("analyse_results", "apply_model", function(object) {
     object <- importance_method(object)
   }
 
-  # print("heho")
-  # print(dim(object@data_used)[1])
-  # print("hehe")
-  # print(length(object@test_set$classe_name))
   print(paste(paste("Le nombre de données est", dim(object@data_used)[1], "dont", length(object@test_set[[object@name_y]]), "dans le testing dataset"), "et le jeu de donné de la grid search: "))
   print(best_params)
   if (object@do_PCA) {

@@ -161,13 +161,32 @@ renormalize_in_model_pred_index_mode <- function(newdata, df_mu, df_sigma) {
 }
 
 reorder_in_modes <- function(x, index_mode, index_variable, index_bloc, name_mode, name_variable, name_bloc, is_binary) {
-    # Dans certains modèles qui suivent, on suppose que les numéros de variables sont croissant dans l'ordre des blocs (les variables de numéro maximal sont associées aux blocs de numéoro maximal). On évitera donc le cas contraire (même si cette fonction particulière s'en sortirait bien... )
-    # L'application de cette fonction assure que les indices de sortie sont tous bien jolis et contigus... Ca sauve certains modèles un peu mal construits. Et on arrange tout sur le modèle du data used des radiomiques (par mode mais pas par bloc). En fait le nouvel arrangement de x se fout des blocs (de l'importance de l'ordre des variables si on veut faire du multibloc ensuite: ce dernier modèle ayant absolument besoin de cet ordonnancement.)
-    different_variables <- order(unique(index_variable[index_variable > -0.5]))
+    # Seule nécessité avant cetet fonction: variables tabulaires à la fin
+    # L'application de cette fonction assure que les indices de sortie sont tous bien jolis et contigus... Ca sauve certains modèles un peu mal construits. Et on arrange tout sur le modèle du data used des radiomiques (par mode mais pas par bloc).
+    # different_variables <- order(unique(index_variable[index_variable > -0.5]))
     different_blocs <- order(unique(index_bloc[index_bloc > -0.5]))
+    li_different_variables <- lapply(1:length(different_blocs), function(l) {
+        return(order(unique(index_variable[index_bloc == different_blocs[l]])))
+    })
     x <- as.data.frame(x)
     li_modes <- list()
     count_tab <- 1
+    # Calculer les indices de départ des variables de chaque bloc
+    vec_offset_var_bloc <- c(0)
+    if (length(different_blocs > 0)) {
+        if (length(different_blocs) > 1) {
+            for (l in 1:(length(different_blocs) - 1)) {
+                previous_offset <- vec_offset_var_bloc[l]
+                cat("JU", l, "\n")
+                print(li_different_variables)
+                n_variables <- length(li_different_variables[[l]])
+                offset <- previous_offset + n_variables
+                vec_offset_var_bloc <- c(vec_offset_var_bloc, offset)
+            }
+        }
+    }
+
+
     new_index_mode <- rep(-1, length(index_mode))
     new_index_variable <- rep(-1, length(index_variable))
     new_index_bloc <- rep(-1, length(index_bloc))
@@ -176,17 +195,18 @@ reorder_in_modes <- function(x, index_mode, index_variable, index_bloc, name_mod
     new_name_variable <- rep("", length(index_variable))
     new_name_bloc <- rep("", length(index_bloc))
     K <- length(unique(index_mode[index_mode > -0.5]))
-    J <- length(unique(index_variable[index_variable > -0.5]))
+    J <- sum(sapply(1:length(different_blocs), function(l) {
+        return(length(li_different_variables[[l]]))
+    }))
     for (i in 1:length(index_mode)) {
         if (!as.character(index_mode[i]) %in% names(li_modes)) {
             li_modes[[as.character(index_mode[i])]] <- as.data.frame(matrix(0, ncol = length(index_mode[index_mode == index_mode[i]]), nrow = nrow(x)))
         }
-        num_var <- which(different_variables == index_variable[i])
+        num_bloc <- which(different_blocs == index_bloc[i])
+        num_var <- which(li_different_variables[[num_bloc]] == index_variable[i])
         if (index_mode[i] > -0.5) {
-            li_modes[[as.character(index_mode[i])]][, num_var] <- x[, i]
-            colnames(li_modes[[as.character(index_mode[i])]])[num_var] <- colnames(x)[i]
-            # cat(index_mode[i], colnames(x)[i], "\n")
-            # print(colnames(li_modes[[as.character(index_mode[i])]])[count_tab])
+            li_modes[[as.character(index_mode[i])]][, num_var + vec_offset_var_bloc[num_bloc]] <- x[, i]
+            colnames(li_modes[[as.character(index_mode[i])]])[num_var + vec_offset_var_bloc[num_bloc]] <- colnames(x)[i]
         } else {
             li_modes[[as.character(index_mode[i])]][, count_tab] <- x[, i]
             colnames(li_modes[[as.character(index_mode[i])]])[count_tab] <- colnames(x)[i]
@@ -199,14 +219,23 @@ reorder_in_modes <- function(x, index_mode, index_variable, index_bloc, name_mod
         new_x <- cbind(new_x, df)
     }
     # print(colnames(new_x))
-    new_x <- cbind(new_x, li_modes[["-1"]])
+    if (length(li_modes[["-1"]]) > 0) {
+        new_x <- cbind(new_x, li_modes[["-1"]])
+    }
     for (k in 1:K) {
+        num_bloc <- 1
         for (j in (1:J)) {
+            if (num_bloc < length(different_blocs)) {
+                if (j > vec_offset_var_bloc[num_bloc + 1]) {
+                    num_bloc <- num_bloc + 1
+                }
+            }
             new_index_mode[(k - 1) * J + j] <- k
             new_index_variable[(k - 1) * J + j] <- j
             where_mode <- which(index_mode == order(unique(index_mode[index_mode > -0.5]))[k])
-            where_variable <- which(index_variable == different_variables[j])
-            previous_index <- intersect(where_mode, where_variable)
+            where_bloc <- which(index_bloc == different_blocs[num_bloc])
+            where_variable <- which(index_variable == li_different_variables[[num_bloc]][j - vec_offset_var_bloc[num_bloc]])
+            previous_index <- intersect(intersect(where_mode, where_variable), where_bloc)
             if (length(previous_index) > 1) {
                 print(previous_index)
                 stop("Indexes non identifiables")
@@ -214,11 +243,12 @@ reorder_in_modes <- function(x, index_mode, index_variable, index_bloc, name_mod
             new_index_bloc[(k - 1) * J + j] <- which(different_blocs == index_bloc[previous_index])
             new_is_binary[(k - 1) * J + j] <- is_binary[previous_index]
             new_name_mode[(k - 1) * J + j] <- name_mode[previous_index]
-            new_name_variable[(k - 1) * J + j] <- name_variable[previous_index]
+            new_name_variable[(k - 1) * J + j] <- paste0(name_variable[previous_index], "_l=", num_bloc)
             new_name_bloc[(k - 1) * J + j] <- name_bloc[previous_index]
             # cat(previous_index, j, index_variable[previous_index], "\n")
         }
     }
+    write_xlsx(new_x, "..//data//test.xlsx")
     return(list(x = new_x, index_mode = new_index_mode, index_variable = new_index_variable, index_bloc = new_index_bloc, is_binary = new_is_binary, name_mode = new_name_mode, name_variable = new_name_variable, name_bloc = new_name_bloc))
 }
 
@@ -306,14 +336,22 @@ plot_global <- function(imp_average, path_plot, ending_name, inference) {
 
     ggsave(paste0(path_plot, "/global_small_groups", "_", ending_name, ".png"), image, width = 10, height = 20) # variable par variable
 }
-# library(readxl)
-# library(writexl)
-# data_used <- as.data.frame(read.csv("..\\data\\data_used.csv"))
-# index_mode <- readRDS("..\\data\\RDS\\index_mode.rds")
-# index_variable <- readRDS("..\\data\\RDS\\index_variable.rds")
-# index_bloc <- readRDS("..\\data\\RDS\\index_bloc.rds")
-# is_binary <- readRDS("..\\data\\RDS\\is_binary.rds")
-# li <- reorder_in_modes(data_used[, 3:ncol(data_used)], index_mode, index_variable, index_bloc, is_binary)
+library(readxl)
+library(writexl)
+if (Sys.info()["sysname"] == "Linux") {
+    path <- "..//data//"
+    path_RDS <- "..//data//RDS//"
+}
+
+# data_used <- as.data.frame(read.csv(paste0(path, "data_used.csv")))
+# index_mode <- readRDS(paste0(path_RDS, "index_mode.rds"))
+# index_variable <- readRDS(paste0(path_RDS, "index_variable.rds"))
+# index_bloc <- readRDS(paste0(path_RDS, "index_bloc.rds"))
+# is_binary <- readRDS(paste0(path_RDS, "is_binary.rds"))
+# name_mode <- readRDS(paste0(path_RDS, "name_mode.rds"))
+# name_variable <- readRDS(paste0(path_RDS, "name_variable.rds"))
+# name_bloc <- readRDS(paste0(path_RDS, "name_bloc.rds"))
+# li <- reorder_in_modes(data_used[, 2:ncol(data_used)], index_mode, index_variable, index_bloc, name_mode, name_variable, name_bloc, is_binary)
 # df <- li$x
 # new_index_bloc <- li$index_bloc
 # new_is_binary <- li$is_binary
@@ -324,4 +362,4 @@ plot_global <- function(imp_average, path_plot, ending_name, inference) {
 # print(new_index_bloc)
 # print("les variables")
 # print(new_index_variable)
-# write_xlsx(df, "..\\data\\no.xlsx")
+# write_xlsx(df, paste0(path, "no.xlsx"))

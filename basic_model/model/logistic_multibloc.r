@@ -20,14 +20,13 @@ create_grid_multiway <- function(x, y, len = NULL, search = "grid") {
     return(data_frame_grid)
 }
 
-better_create_grid_multiway <- function(x, y, len = NULL, search = "grid", lambda_min = 0.001, lambda_max = 0.05, R_min = 1, R_max = 5) {
+better_create_grid_multiway <- function(x, y, len = NULL, search = "grid", lambda_min = 0.001, lambda_max = 0.05, R_min = 1, R_max = 5, tune_R = 2) {
     if (search == "grid") {
         lambda <- seq(lambda_min, lambda_max, length.out = len)[1:len]
-        R <- R_min:R_max
     } else {
         lambda <- runif(len, min = lambda_min, max = lambda_max)
-        R <- R_min:R_max
     }
+    R <- round(seq(R_min, R_max, length.out = tune_R))
     data_frame_grid <- expand.grid(lambda = lambda, R = R)
     return(data_frame_grid)
 }
@@ -529,7 +528,6 @@ setMethod("train_method", "apply_model", function(object) {
     li <- reorder_in_modes(object@data_used[, object@col_x], index_mode = object@index_mode, index_variable = object@index_variable, index_bloc = object@index_bloc, is_binary = object@is_binary, name_mode = object@name_mode, name_variable = object@name_variable, name_bloc = object@name_bloc)
     object@data_used[, object@col_x] <- li$x ### suite...
     colnames(object@data_used)[colnames(object@data_used) %in% object@col_x] <- colnames(li$x)
-    write_xlsx(object@data_used, "..\\data\\no.xlsx")
 
     object@col_x <- setdiff(names(object@data_used), c(object@info_cols$exclude_cols, object@name_y))
 
@@ -544,7 +542,7 @@ setMethod("train_method", "apply_model", function(object) {
 
     grid <- better_create_grid_multiway(
         x = object@train_cols[, object@col_x], y = object@y_train, len = object@tuneLength,
-        search = object@search, lambda_min = object@lambda_min, lambda_max = object@lambda_max, R_min = object@R_min, R_max = object@R_max
+        search = object@search, lambda_min = object@lambda_min, lambda_max = object@lambda_max, R_min = object@R_min, R_max = object@R_max, tune_R = object@tune_R
     )
 
     # dossier <- "logs"
@@ -594,6 +592,7 @@ setMethod("get_results", "apply_model", function(object) {
 })
 
 setMethod("importance_method", "apply_model", function(object) {
+    object@beta_final <- object@model$finalModel$beta_unfolded
     # print(object@model$finalModel$li_beta_K)
     li_best_beta_J <- object@model$finalModel$li_beta_J
     li_best_beta_K <- object@model$finalModel$li_beta_K
@@ -609,7 +608,8 @@ setMethod("importance_method", "apply_model", function(object) {
         Variables_names_long <- append(Variables_names_long, paste0(Variables_names_seul, "_R=", r))
         Variables_temps <- append(Variables_temps, paste0(Variables_temps_seul, "_R=", r))
     }
-
+    # print(Variables_names_seul)
+    # print(Variables_names_long)
     li_variables_names <- list()
     for (l in 1:L) {
         li_variables_names[[l]] <- c()
@@ -651,6 +651,8 @@ setMethod("importance_method", "apply_model", function(object) {
     for (l in 1:L) {
         grand_vec_var <- append(grand_vec_var, li_best_beta_J[[l]])
         grand_var_var <- append(grand_var_var, paste0(li_variables_names[[l]], "_l = ", l))
+        # print(li_best_beta_J[[l]])
+        # print(paste0(li_variables_names[[l]], "_l = ", l))
     }
 
     variable_importance <- data.frame(Variable = grand_var_var, Overall = abs(grand_vec_var))
@@ -707,62 +709,4 @@ setMethod("get_df_imp", "apply_model", function(object) {
 })
 
 
-# [1] "La valeur de l'AUC de train est de 1"
-# [1] "actuelle moyenne AUC test 0.759722222222222 ite: 40"
-# [1] "actuelle moyenne AUC val 0.741508838383838 ite: 40"
-# [1] "actuelle moyenne Accuracy test 0.683333333333333 ite: 40"
-# [1] "actuelle somme des confusion matrix ite: 40 :"
-# [1] "actuelle moyenne du macro F1 test 0.679419833698084 ite: 40"
-# [1] "actuelle moyenne du F1 CCK test 0.477447691197691 ite: 40"
-# [1] "actuelle moyenne du F1 CHC test 0.881391976198478 ite: 40"
-#           Reference
-# Prediction CCK CHC
-#        CCK  78  87
-#        CHC  82 633
-# Saving 7 x 7 in image
-# Saving 7 x 7 in image
-# Saving 7 x 7 in image
-# [1] "Voilà la matrice de confusion sommée"
-#           Reference
-# Prediction CCK CHC
-#        CCK  78  87
-#        CHC  82 633
-# [1] "voilà la matrice de confusion en pourcentage: ... % de CCK ont été bien classés vs ... % mal classés"
-#     CCK                  CHC
-# CCK
-# CHC
-# [1] "La balanced accuracy sur l'échantillon total vaut: 0.679020979020979"
-# le f1 score CCK sur l'échantillon entier vaut: 0.48
-# le f1 score CHC sur l'échantillon entier vaut: 0.882229965157
-# [1] "Le f1 macro sur l'échantillon total vaut: 0.681114982578397"
-
-
-# Then
-
-# [1] "actuelle moyenne AUC test 0.757638888888889 ite: 40"
-# [1] "actuelle moyenne AUC val 0.753844696969697 ite: 40"
-# [1] "actuelle moyenne Accuracy test 0.670486111111111 ite: 40"
-# [1] "actuelle somme des confusion matrix ite: 40 :"
-# [1] "actuelle moyenne du macro F1 test 0.665365782317214 ite: 40"
-# [1] "actuelle moyenne du F1 CCK test 0.455696248196248 ite: 40"
-# [1] "actuelle moyenne du F1 CHC test 0.87503531643818 ite: 40"
-#           Reference
-# Prediction CCK CHC
-#        CCK  75  92
-#        CHC  85 628
-# Saving 7 x 7 in image
-# Saving 7 x 7 in image
-# Saving 7 x 7 in image
-# [1] "Voilà la matrice de confusion sommée"
-#           Reference
-# Prediction CCK CHC
-#        CCK  75  92
-#        CHC  85 628
-# [1] "voilà la matrice de confusion en pourcentage: ... % de CCK ont été bien classés vs ... % mal classés"
-#     CCK                  CHC
-# CCK "44.9101796407186 %" "11.9214586255259 %"
-# CHC "55.0898203592814 %" "88.0785413744741 %"
-# [1] "La balanced accuracy sur l'échantillon total vaut: 0.664943605075963"
-# le f1 score CCK sur l'échantillon entier vaut: 0.45871559633
-# le f1 score CHC sur l'échantillon entier vaut: 0.876482903001
-# [1] "Le f1 macro sur l'échantillon total vaut: 0.667599249665487"
+# lambda opti pour n = 1000: 0.00135

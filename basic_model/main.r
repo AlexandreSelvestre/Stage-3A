@@ -1,10 +1,15 @@
-execute <- function(config, config_run, id_term, seed_cv) {
-    if (config_run$do_extract) {
-        extract_all(config)
+execute <- function(config, config_run, id_term, seed_cv, sysname) {
+    if (config_run$do_extract & as.numeric(id_term) > 1) {
+        extract_all(config, sysname)
     }
     config$id_term <- id_term
-    data_used <- as.data.frame(read.csv("..\\data\\data_used.csv", check.names = FALSE))
-    print(paste(c("dimensions data used", dim(data_used)))) 
+    if (sysname == "Linux") {
+        path <- "..//data//data_used.csv"
+    } else {
+        path <- "..\\data\\data_used.csv"
+    }
+    data_used <- as.data.frame(read.csv(path, check.names = FALSE))
+    print(paste(c("dimensions data used", dim(data_used))))
     info_cols <- readRDS(file = "../data/RDS/info_cols.rds")
     config$data_used <- data_used
     config$info_cols <- info_cols
@@ -14,6 +19,9 @@ execute <- function(config, config_run, id_term, seed_cv) {
     inference <- do.call("new", args = c("apply_model", arguments))
 
     inference <- init(inference)
+    if (config$analyse_data$do & as.numeric(id_term) == 1) {
+        analyse_data(inference)
+    }
 
     # Gérer la seed et la séparation train/ test + la séparation en folds
     seed_model <- .Random.seed
@@ -40,6 +48,10 @@ execute <- function(config, config_run, id_term, seed_cv) {
     print("End of prediction phase")
 
     inference <- analyse_results(inference)
+    if (config_run$do_picto) {
+        source("./analyse_data/reform_plots.r")
+        inference <- reform_beta(inference)
+    }
     return(list(inference = inference, seed_cv = seed_cv))
 }
 

@@ -114,7 +114,7 @@ li_caret_simple$loop <- NULL
 
 
 setMethod("train_method", "apply_model", function(object) {
-    tuneGrid <- expand.grid(lambda = exp(seq(log(object@lambda_min), log(object@lambda_max), length = object@tuneLength)))
+    tuneGrid <- expand.grid(lambda = seq(object@lambda_min, object@lambda_max, length = object@tuneLength))
     if (object@do_PCA) {
         object@model <- caret::train(
             y = object@train_cols$classe_name, x = as.matrix(object@train_cols[, object@col_x]),
@@ -135,6 +135,7 @@ setMethod("train_method", "apply_model", function(object) {
                 }
             })
         }
+        print(dim(object@train_cols[, object@col_x]))
         object@model <- caret::train(
             y = object@y_train, x = object@train_cols[, object@col_x],
             method = li_caret_simple, trControl = object@cv, metric = "AUC",
@@ -179,6 +180,7 @@ setMethod("get_results", "apply_model", function(object) {
 
 setMethod("importance_method", "apply_model", function(object) {
     if (object@do_PCA == FALSE) {
+        object@beta_final <- object@model$finalModel$beta
         vec_importance <- abs(object@model$finalModel$beta) ##### SUITE
         variable_importance <- data.frame(Variable = object@col_x, Overall = vec_importance)
         object@li_df_var_imp <- variable_importance

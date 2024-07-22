@@ -488,6 +488,7 @@ setMethod("get_results", "apply_model", function(object) {
 })
 
 setMethod("importance_method", "apply_model", function(object) {
+    object@beta_final <- object@model$finalModel$beta_unfolded
     best_beta_J <- object@model$finalModel$beta_J
     best_beta_K <- object@model$finalModel$beta_K
     best_beta_autre <- object@model$finalModel$beta_autre
@@ -568,4 +569,5 @@ setMethod("importance_method", "apply_model", function(object) {
 
 setMethod("get_df_imp", "apply_model", function(object) {
     return(data.frame(Variable = names(object@data_used[, object@col_x]), Overall = abs(object@model$finalModel$beta_unfolded)))
+
 })

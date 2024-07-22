@@ -137,3 +137,26 @@ import_folder <- function(path) {
     files <- append(files, list.files(path = path, pattern = "\\.R$", full.names = TRUE))
     lapply(files, source)
 }
+
+glue_mats <- function(li_beta_matrix) {
+    # Coller côte à côte des matrices de nombres de lignes variables en remplissant de zéros là où c'est nécessaire
+    # Étape 1: Trouver le nombre maximal de lignes
+    max_rows <- max(sapply(li_beta_matrix, nrow))
+
+    # Étape 2: Ajuster chaque matrice pour qu'elle ait le nombre maximal de lignes
+    adjusted_matrices <- lapply(li_beta_matrix, function(matrix) {
+        if (nrow(matrix) < max_rows) {
+            # Calculer le nombre de lignes à ajouter
+            rows_to_add <- max_rows - nrow(matrix)
+            # Créer une matrice de zéros avec le bon nombre de lignes et de colonnes
+            zero_rows <- matrix(0, nrow = rows_to_add, ncol = ncol(matrix))
+            # Ajouter les lignes de zéros à la matrice originale
+            matrix <- rbind(matrix, zero_rows)
+        }
+        return(matrix)
+    })
+
+    # Étape 3: Combiner toutes les matrices ajustées côte à côte
+    beta_matrix_combined <- do.call(cbind, adjusted_matrices)
+    return(beta_matrix_combined)
+}

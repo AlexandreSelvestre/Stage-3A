@@ -190,6 +190,7 @@ setMethod("get_results", "apply_model", function(object) {
 setMethod("importance_method", "apply_model", function(object) {
     print("start imp")
     best_beta <- object@model$finalModel$beta
+    object@beta_final <- best_beta
     variable_importance <- data.frame(Variable = colnames(object@train_cols[, object@col_x]), Overall = abs(best_beta))
     object@li_df_var_imp <- variable_importance
     # variable_importance <- variable_importance[order(-variable_importance$Overall), ]
