@@ -177,8 +177,8 @@ reorder_in_modes <- function(x, index_mode, index_variable, index_bloc, name_mod
         if (length(different_blocs) > 1) {
             for (l in 1:(length(different_blocs) - 1)) {
                 previous_offset <- vec_offset_var_bloc[l]
-                cat("JU", l, "\n")
-                print(li_different_variables)
+                # cat("JU", l, "\n")
+                # print(li_different_variables)
                 n_variables <- length(li_different_variables[[l]])
                 offset <- previous_offset + n_variables
                 vec_offset_var_bloc <- c(vec_offset_var_bloc, offset)
@@ -342,6 +342,23 @@ if (Sys.info()["sysname"] == "Linux") {
     path <- "..//data//"
     path_RDS <- "..//data//RDS//"
 }
+
+convert_y <- function(y, classe_1) {
+    classe_min <- names(which.min(table(y)))
+    if (is.null(classe_1)) {
+        y_numeric <- ifelse(y == classe_min, 1, 0) # CCK donne 1 CHC donne 0
+    } else {
+        y_numeric <- ifelse(y == classe_1, 1, 0)
+    }
+    return(y_numeric)
+}
+
+
+
+
+
+
+
 
 # data_used <- as.data.frame(read.csv(paste0(path, "data_used.csv")))
 # index_mode <- readRDS(paste0(path_RDS, "index_mode.rds"))

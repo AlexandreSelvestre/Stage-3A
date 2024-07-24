@@ -20,15 +20,18 @@ default:
 
   #name_model: "random_forest"  #To norm et à refaire en mode li_caret
   #name_model: "logistic_grp"
-  #name_model: "logistique_simple"
+  name_model: "logistique_simple"
   #name_model: "logistic_multiway"
   #name_model: "logistic_select"
-  name_model: "logistic_multibloc"
+  #name_model: "logistic_multibloc"
 
 
 radio:
   minimal_information: TRUE
+  classe_1: "CCK"
+
 
 simu:
   minimal_information: TRUE
+  classe_1: "Classe_1"
 

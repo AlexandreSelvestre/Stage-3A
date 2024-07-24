@@ -1,37 +1,63 @@
-li_caret_multiway <- list()
+li_caret_multibloc <- list()
 
-li_caret_multiway$library <- "glmnet"
+li_caret_multibloc$library <- "glmnet"
 
-li_caret_multiway$type <- "Classification"
+li_caret_multibloc$type <- "Classification"
 
-li_caret_multiway$parameters <- data.frame(parameter = c("lambda", "R"), class = c("numeric", "integer"), label = c(
-    "la valeur du paramètre lambda", "le rang R"
-))
-
-create_grid_multiway <- function(x, y, len = NULL, search = "grid") {
-    if (search == "grid") {
-        lambda <- log(seq(exp(0), exp(0.05), length.out = len + 1)[2:(len + 1)])
-        R <- c(1, 2, 3, 4)
-    } else {
-        lambda <- log(runif(len, min = exp(0.001), max = exp(0.05)))
-        R <- c(1, 2, 3, 4)
-    }
-    data_frame_grid <- expand.grid(lambda = lambda, R = R)
-    return(data_frame_grid)
+create_param_for_caret_bloc <- function(L) {
+    vec_param <- sapply(1:L, function(l) {
+        return(paste0("R_", l))
+    })
+    vec_param <- c("lambda", vec_param)
+    vec_label <- sapply(1:L, function(l) {
+        return(paste0("le rang R du bloc ", l))
+    })
+    vec_label <- c("la valeur du paramètre lambda", vec_label)
+    return(data.frame(parameter = vec_param, class = rep("numeric", L + 1), label = vec_label))
 }
 
-better_create_grid_multiway <- function(x, y, len = NULL, search = "grid", lambda_min = 0.001, lambda_max = 0.05, R_min = 1, R_max = 5, tune_R = 2) {
+def_false_grid <- function(L) {
+    create_grid_multibloc <- function(x, y, len = NULL, search = "grid") {
+        if (search == "grid") {
+            lambda <- log(seq(exp(0), exp(0.05), length.out = len + 1)[2:(len + 1)])
+            li_R_data_frame <- lapply(1:L, function(l) {
+                c(1, 2, 3, 4)
+            })
+            setNames(li_R_data_frame, paste0("R_", 1:L))
+        } else {
+            lambda <- log(runif(len, min = exp(0.001), max = exp(0.05)))
+            li_R_data_frame <- lapply(1:L, function(l) {
+                c(1, 2, 3, 4)
+            })
+            li_R_data_frame <- setNames(li_R_data_frame, paste0("R_", 1:L))
+        }
+        li_tot <- c(list(lambda = lambda), li_R_data_frame)
+        data_frame_grid <- expand.grid(li_tot)
+        return(data_frame_grid)
+    }
+}
+
+
+better_create_grid_multibloc <- function(x, y, len = NULL, search = "grid", L, lambda_min = 0.001, lambda_max = 0.05, R_min = 1, R_max = 5, tune_R = 2, li_R = NULL, same_R) {
     if (search == "grid") {
         lambda <- seq(lambda_min, lambda_max, length.out = len)[1:len]
     } else {
         lambda <- runif(len, min = lambda_min, max = lambda_max)
     }
-    R <- round(seq(R_min, R_max, length.out = tune_R))
+    if (is.null(li_R)) {
+        if (same_R) {
+
+
+        } else {
+            li_R_data_frame <- lapply(1:L, round(seq(R_min, R_max, length.out = tune_R)))
+        }
+    }
+    # setnames ici
     data_frame_grid <- expand.grid(lambda = lambda, R = R)
     return(data_frame_grid)
 }
 
-li_caret_multiway$grid <- create_grid_multiway
+
 
 
 
@@ -63,7 +89,7 @@ find_modes <- function(x, index) {
 
 
 
-fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, index, index_bloc, eps, ite_max, n_iter_per_reg, k_smote, do_smote, index_variable, is_binary) {
+fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, index, index_bloc, eps, ite_max, n_iter_per_reg, k_smote, do_smote, index_variable, is_binary, classe_1 = NULL) {
     # ici, index est bien sûr index_mode
     li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, is_binary)
     x <- li_norm$new_x
@@ -87,7 +113,11 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
     weights[y == classe_maj] <- weights_dict[[classe_maj]]
     weights[y == classe_min] <- weights_dict[[classe_min]]
 
-    y_numeric <- ifelse(y == classe_min, 1, 0) # CCK donne 1 CHC donne 0
+    y_numeric <- convert_y(y, classe_1)
+    if (is.null(classe_1)) {
+        classe_1 <- classe_min
+    }
+    classe_0 <- setdiff(levels(y), classe_1)
     R <- param$R
 
     ## Commencer par définir Z_J en sommant sur les modes. Attention au problème lignes colonnes inversées. Pas encore de variables cliniques
@@ -145,14 +175,27 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
             stop("Z est nan")
         }
         Z <- as.matrix(Z)
+
+
         logistic_classic <- glmnet:::glmnet.fit(
             x = t(Q %*% Z), y = y_numeric, family = binomial(), alpha = 1,
-            weights = weights / dim(Z)[2], lambda = param$lambda, intercept = TRUE, maxit = 1e7,
+            weights = weights / dim(Z)[2], lambda = param$lambda, intercept = TRUE, maxit = 1e9,
             thresh = 1e-8
         )
         faux_beta <- as.numeric(logistic_classic$beta)
-        beta <- Q %*% faux_beta
         intercept <- logistic_classic$a0
+        # print(logistic_classic$converged)
+
+
+
+        # logistic_classic <- penalized::penalized(response = y_numeric, penalized = t(Q %*% Z), lambda1 = param$lambda, lambda2 = 0, model = "logistic", epsilon = 10^(-8), maxiter = 1000, standardize = FALSE, trace = FALSE)
+        # faux_beta <- logistic_classic@penalized
+        # intercept <- logistic_classic@unpenalized
+        # print(logistic_classic@converged)
+
+
+
+        beta <- Q %*% faux_beta
         return(list(beta = beta, intercept = intercept, Z = Z, Q = Q, Q_inv = Q_inv))
     }
 
@@ -386,8 +429,22 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         crit_log_J <- li_grande_boucle$crit_log_J
         crit_log_K <- li_grande_boucle$crit_log_K
         # print(crit_log_J)
-        if (rapport < eps) {
-            continue <- FALSE
+        # print(crit_log_K)
+        # if (crit_log_J == -Inf) {
+        #     print(li_beta_J)
+        #     print(li_beta_K)
+        #     print("J inf")
+        # }
+        # if (crit_log_K == -Inf) {
+        #     print(li_beta_J)
+        #     print(li_beta_K)
+        #     print("K inf")
+        # }
+        # print(crit_log_J)
+        if (crit_log_J != -Inf & crit_log_K != -Inf) {
+            if (rapport < eps) {
+                continue <- FALSE
+            }
         }
         if (iteration >= ite_max) {
             continue <- FALSE
@@ -403,7 +460,8 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         iteration <- iteration + 1
         memoire_crit_J <- crit_log_J
         memoire_crit_K <- crit_log_K
-        delta_t <- Sys.time() - debut_time
+        delta_t <- as.numeric(Sys.time() - debut_time, units = "secs")
+        # print(delta_t)
         if (delta_t > 30) {
             continue <- FALSE
             print("Warning, trop long")
@@ -414,14 +472,14 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
     }
     futur_fit <- list(
         li_beta_J = li_beta_J, li_beta_K = li_beta_K, beta_autre = beta_autre, intercept = intercept_K, R = R, li_x_multi_bloc = li_x_multi_bloc,
-        li_dim = li_dim, lev = lev, index = index, index_bloc = index_bloc, li_norm = li_norm, classe_maj = classe_maj, classe_min = classe_min
+        li_dim = li_dim, lev = lev, index = index, index_bloc = index_bloc, li_norm = li_norm, classe_maj = classe_maj, classe_min = classe_min, classe_1 = classe_1, classe_0 = classe_0
     )
 
     futur_fit$beta_unfolded <- get_beta_full(futur_fit)
     return(futur_fit)
 }
 
-li_caret_multiway$fit <- fit_multiway
+li_caret_multibloc$fit <- fit_multiway
 
 
 get_beta_bloc <- function(beta_J, beta_K, R, J, K) {
@@ -477,6 +535,8 @@ predict_multiway <- function(modelFit, newdata, preProc = NULL, submodels = NULL
     df_sigma <- modelFit$li_norm$df_sigma
     classe_min <- modelFit$classe_min
     classe_maj <- modelFit$classe_maj
+    classe_1 <- modelFit$classe_1
+    classe_0 <- modelFit$classe_0
     newdata <- renormalize_in_model_pred_index_mode(newdata, df_mu, df_sigma)
     beta <- get_beta_full(modelFit)
     intercept <- modelFit$intercept
@@ -485,19 +545,22 @@ predict_multiway <- function(modelFit, newdata, preProc = NULL, submodels = NULL
         ligne %*% beta + intercept
     })
     proba <- 1 / (1 + exp(-value))
-    predicted_labels <- ifelse(proba > 0.5, classe_min, classe_maj)
+    predicted_labels <- ifelse(proba > 0.5, classe_1, classe_0)
     # print(predicted_labels)
+    # print(beta)
     return(predicted_labels)
 }
 
-li_caret_multiway$predict <- predict_multiway
+li_caret_multibloc$predict <- predict_multiway
 
 
-li_caret_multiway$prob <- function(modelFit, newdata, preProc = NULL, submodels = NULL) {
+li_caret_multibloc$prob <- function(modelFit, newdata, preProc = NULL, submodels = NULL) {
     df_mu <- modelFit$li_norm$df_mu
     df_sigma <- modelFit$li_norm$df_sigma
     classe_min <- modelFit$classe_min
     classe_maj <- modelFit$classe_maj
+    classe_1 <- modelFit$classe_1
+    classe_0 <- modelFit$classe_0
     newdata <- renormalize_in_model_pred_index_mode(newdata, df_mu, df_sigma)
     beta <- get_beta_full(modelFit)
     modelFit$beta_unfolded <- beta
@@ -507,12 +570,12 @@ li_caret_multiway$prob <- function(modelFit, newdata, preProc = NULL, submodels 
     })
     proba_class_1 <- 1 / (1 + exp(-value))
     proba_class_0 <- 1 - proba_class_1
-    str_min <- as.character(classe_min)
-    str_maj <- as.character(classe_maj)
-    return(setNames(data.frame(proba_class_0, proba_class_1), c(str_maj, str_min)))
+    str_1 <- as.character(classe_1)
+    str_0 <- as.character(classe_0)
+    return(setNames(data.frame(proba_class_0, proba_class_1), c(str_0, str_1)))
 }
 
-li_caret_multiway$loop <- NULL
+li_caret_multibloc$loop <- NULL
 
 
 setMethod("train_method", "apply_model", function(object) {
@@ -540,9 +603,16 @@ setMethod("train_method", "apply_model", function(object) {
     object@name_bloc <- li$name_bloc
     object@is_binary <- li$is_binary
 
-    grid <- better_create_grid_multiway(
+    # Créer la liste de paramètres de rang
+    L <- length(unique(object@index_bloc[object@index_bloc > -0.5]))
+    li_caret_multibloc$parameters <- create_param_for_caret_bloc(L)
+    # Générer la fausse fonction qui crée la tune grid
+    create_grid_multibloc <- def_false_grid(L)
+    li_caret_multibloc$grid <- create_grid_multibloc
+
+    grid <- better_create_grid_multibloc(
         x = object@train_cols[, object@col_x], y = object@y_train, len = object@tuneLength,
-        search = object@search, lambda_min = object@lambda_min, lambda_max = object@lambda_max, R_min = object@R_min, R_max = object@R_max, tune_R = object@tune_R
+        search = object@search, lambda_min = object@lambda_min, lambda_max = object@lambda_max, R_min = object@R_min, R_max = object@R_max, tune_R = object@tune_R, li_R = object@li_R
     )
 
     # dossier <- "logs"
@@ -574,9 +644,9 @@ setMethod("train_method", "apply_model", function(object) {
 
     object@model <- caret::train(
         y = object@y_train, x = object@train_cols[, object@col_x], index = object@index_mode,
-        method = li_caret_multiway, trControl = object@cv, metric = "AUC",
+        method = li_caret_multibloc, trControl = object@cv, metric = "AUC",
         tuneLength = object@tuneLength, weights_dict = object@weights, tuneGrid = grid, eps = object@eps, ite_max = object@ite_max, n_iter_per_reg = object@n_iter_per_reg,
-        index_bloc = object@index_bloc, k_smote = object@k_smote, do_smote = object@do_smote, index_variable = object@index_variable, is_binary = object@is_binary
+        index_bloc = object@index_bloc, k_smote = object@k_smote, do_smote = object@do_smote, index_variable = object@index_variable, is_binary = object@is_binary, classe_1 = object@classe_1
     )
     if (object@do_parallel) {
         stopCluster(cl)
@@ -588,11 +658,11 @@ setMethod("get_results", "apply_model", function(object) {
     object@predictions <- as.vector(predict(object@model, newdata = as.matrix(object@test_set[, object@col_x])))
     object@predictions_proba <- predict(object@model, newdata = as.matrix(object@test_set[, object@col_x]), type = "prob")
     object@predictions_train_proba <- predict(object@model, newdata = as.matrix(object@train_cols[, object@col_x]), type = "prob")
+    object@beta_final <- object@model$finalModel$beta_unfolded
     return(object)
 })
 
 setMethod("importance_method", "apply_model", function(object) {
-    object@beta_final <- object@model$finalModel$beta_unfolded
     # print(object@model$finalModel$li_beta_K)
     li_best_beta_J <- object@model$finalModel$li_beta_J
     li_best_beta_K <- object@model$finalModel$li_beta_K

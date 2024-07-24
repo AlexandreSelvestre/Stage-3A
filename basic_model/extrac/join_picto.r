@@ -92,6 +92,7 @@ extract_all <- function(config_extrac, sysname) {
         write.csv(data_used, "..//data//data_used.csv", row.names = FALSE)
         write_xlsx(data_used, "..//data//data_used.xlsx")
         write_xlsx(as.data.frame(beta_matrix), "..//data//beta_picto//big_picto.xlsx")
+        create_heatmap("..//data//beta_picto//big_picto.xlsx", "..//data//beta_picto//big_picto_heatmap.png")
     } else {
         write.csv(data_used, "..\\data\\data_used.csv", row.names = FALSE)
         write_xlsx(data_used, "..\\data\\data_used.xlsx")

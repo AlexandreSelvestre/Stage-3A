@@ -2,6 +2,7 @@ default:
   include_products: FALSE
   num_picto:
     - 3
+    - 1
   n_sample: 2000
   resample: FALSE #ignoré pour l'instant
   ecart_class: 1.0

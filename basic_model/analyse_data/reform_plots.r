@@ -10,6 +10,7 @@ setMethod("reform_beta", "apply_model", function(object) {
         d_l <- length(unique(var_bloc_l))
         return(d_l)
     })
+    # print(object@beta_final)
     J <- sum(li_d)
     li_mat <- lapply(1:L, function(l) {
         vec_beta_loc <- object@beta_final[object@index_bloc == l]
@@ -17,6 +18,22 @@ setMethod("reform_beta", "apply_model", function(object) {
         return(mat_beta_loc)
     })
     mat_tot <- do.call(cbind, li_mat)
-    write_xlsx(as.data.frame(mat_tot), paste0("../data/beta_picto/big_picto_reconstructed", object@name_model, ".xlsx"))
+    path_xlsx <- paste0("../data/beta_picto/big_picto_reconstructed_", object@name_model, ".xlsx")
+    path_heat <- paste0("../data/beta_picto/heatmap_", object@name_model, ".png")
+    write_xlsx(as.data.frame(mat_tot), path_xlsx)
+    create_heatmap(path_xlsx, path_heat)
+    compare_mat_beta(object, path_xlsx, path_heat)
     return(object)
+})
+
+setGeneric("compare_mat_beta", function(object, ...) {
+    standardGeneric("compare_mat_beta")
+})
+
+setMethod("compare_mat_beta", "apply_model", function(object, path_xlsx, path_heat) {
+    mat_reconstructed <- as.matrix(read_excel(path_xlsx))
+    mat_origin <- as.matrix(read_excel("..//data//beta_picto//big_picto.xlsx"))
+    mat_diff <- mat_reconstructed - mat_origin
+    erreur <- mean(abs(mat_diff))
+    print(paste("L'erreur moyenne de reconstruction du pictogramme est de", erreur))
 })

@@ -97,7 +97,10 @@ setClass(
     class_maj_min = "character",
     analyse_data = "ANY",
     beta_final = "numeric",
-    tune_R = "numeric"
+    tune_R = "numeric",
+    classe_1 = "character",
+    li_R = "ANY",
+    same_R = "logical"
   ),
   prototype(
     k = 5,
@@ -261,7 +264,7 @@ setMethod("analyse_results", "apply_model", function(object) {
   best_params <- object@model$bestTune
 
   importance_list <- list(
-    random_forest = TRUE, logistique_simple = TRUE, logistic_grp = TRUE, logistic_multiway = TRUE, logistic_multibloc = TRUE,
+    random_forest = TRUE, logistique_simple = TRUE, logistic_grp = TRUE, logistic_multiway = TRUE, logistic_multibloc = FALSE,
     logistic_select = TRUE
   )
   do_importance <- importance_list[[object@name_model]]
@@ -294,6 +297,7 @@ setMethod("analyse_results", "apply_model", function(object) {
   vec_roc_res[3] <- value_auc
 
   print(paste("La valeur de l'AUC de validation sur chaque fold est de", object@model$resample$AUC))
+  # print(object@model$resample[, c("Resample", "R", "lambda", "AUC")])
   print(paste("Ce qui donne une moyenne d'AUC de", mean(object@model$resample$AUC)))
   vec_roc_res[2] <- mean(object@model$resample$AUC, na.rm = TRUE)
 
