@@ -166,3 +166,131 @@ get_variable_vec_liver <- function(x) {
     index_variable[index_clin] <- -1
     return(list(index_variable = index_variable, index_name = index_name))
 }
+
+find_modes <- function(x, index) {
+    names_x <- colnames(x)
+    names_x_multimodal <- names_x[index != -1]
+    J <- 0
+    continue <- TRUE
+    count <- 1
+    while (continue) {
+        value <- index[count]
+        if (value == 1) {
+            J <- J + 1
+            count <- count + 1
+        }
+        if (value > 1) {
+            continue <- FALSE
+        }
+        if (value == -1) {
+            stop("Valeur -1 anormale durant la recherche de modes!")
+        }
+    }
+    modes <- unique(index)
+    modes <- modes[modes > -0.5]
+    K <- length(modes)
+
+    return(list(J = J, K = K))
+}
+
+def_false_grid_multibloc <- function(L) {
+    create_grid_multibloc <- function(x, y, len = NULL, search = "grid") {
+        if (search == "grid") {
+            lambda <- log(seq(exp(0), exp(0.05), length.out = len + 1)[2:(len + 1)])
+            li_R_data_frame <- lapply(1:L, function(l) {
+                c(1, 2, 3, 4)
+            })
+            setNames(li_R_data_frame, paste0("R_", 1:L))
+        } else {
+            lambda <- log(runif(len, min = exp(0.001), max = exp(0.05)))
+            li_R_data_frame <- lapply(1:L, function(l) {
+                c(1, 2, 3, 4)
+            })
+            li_R_data_frame <- setNames(li_R_data_frame, paste0("R_", 1:L))
+        }
+        li_tot <- c(li_R_data_frame, list(lambda = lambda))
+        data_frame_grid <- expand.grid(li_tot)
+        return(data_frame_grid)
+    }
+}
+
+
+better_create_grid_multibloc <- function(x, y, len = NULL, search = "grid", L, lambda_min = 0.001, lambda_max = 0.05, R_min = 1, R_max = 5, tune_R = 2, li_R = NULL, same_R) {
+    ### Attention, si li_R est renseigné et same_R est TRUE alors il faut avoir autant de rangs proposés par bloc (ils seront sur 1 même ligne)
+    ## tune_R est ignoré si on fournit li_R
+    print(li_R$block_2)
+    if (search == "grid") {
+        lambda <- seq(lambda_min, lambda_max, length.out = len)[1:len]
+    } else {
+        lambda <- runif(len, min = lambda_min, max = lambda_max)
+    }
+    if (is.null(li_R)) {
+        li_R_data_frame <- lapply(1:L, round(seq(R_min, R_max, length.out = tune_R)))
+    } else {
+        li_R_data_frame <- li_R
+    }
+    if (same_R) {
+        R_data_frame <- as.data.frame(li_R_data_frame)
+    } else {
+        R_data_frame <- expand.grid(li_R_data_frame)
+        print(R_data_frame)
+    }
+    li_grid <- lapply(seq_along(lambda), function(i) {
+        df <- data.frame(R_data_frame, lambda = lambda[i])
+        return(df)
+    })
+    data_frame_grid <- do.call(rbind, li_grid)
+    vec_names <- sapply(1:L, function(l) {
+        return(paste0("R_", l))
+    })
+    vecnames <- c(vec_names, "lambda")
+    data_frame_grid <- setNames(data_frame_grid, vecnames)
+    return(as.data.frame(data_frame_grid))
+}
+
+get_beta_bloc <- function(beta_J, beta_K, R, J, K) {
+    beta <- rep(0, J * K)
+    for (r in 1:R) {
+        beta_r <- rep(0, J * K)
+        for (j in 1:J) {
+            for (k in 1:K) {
+                beta_r[(k - 1) * J + j] <- beta_J[(r - 1) * J + j] * beta_K[(r - 1) * K + k]
+            }
+        }
+        beta[1:(J * K)] <- beta[1:(J * K)] + beta_r
+    }
+    return(beta)
+}
+
+
+get_beta_full <- function(modelFit) {
+    li_x_multi_bloc <- modelFit$li_x_multi_bloc
+    li_dim <- modelFit$li_dim
+    index <- modelFit$index
+    index_bloc <- modelFit$index_bloc
+    li_beta_J <- modelFit$li_beta_J
+    li_beta_K <- modelFit$li_beta_K
+    beta_autre <- modelFit$beta_autre
+    L <- length(li_x_multi_bloc)
+    vec_R <- modelFit$vec_R
+    size_beta_modes <- sum(unlist(lapply(li_dim, function(x) {
+        return(x[1] * x[2])
+    }))) # taille de beta sans beta_autre
+    beta_modes <- rep(NA, size_beta_modes)
+    for (l in 1:L) {
+        R <- vec_R[l]
+        beta_K <- li_beta_K[[l]]
+        beta_J <- li_beta_J[[l]]
+        J <- li_dim[[l]][1]
+        K <- li_dim[[l]][2]
+        beta_bloc <- get_beta_bloc(beta_J, beta_K, R, J, K)
+        beta_modes[index_bloc[index_bloc != -1] == l] <- beta_bloc
+        # Attention ordre temps
+    }
+    beta_final <- c(beta_modes, beta_autre)
+    if (any(is.na(beta_final))) {
+        print(beta_final)
+        stop("Beta final est NA")
+    }
+    return(beta_final)
+}

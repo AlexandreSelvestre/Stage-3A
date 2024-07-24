@@ -200,3 +200,16 @@ if (config$minimal_information) {
 # [1] "Ce qui donne une moyenne d'AUC de 0.953991111111111"
 # [1] "La valeur de l'AUC de train est de 1"
 # "L'erreur moyenne de reconstruction du pictogramme est de 0.252991194870852"
+
+
+# Tendance vers les faibles rangs... pourquoi??
+
+# Eclaircir WTF: [1] "dimensions data used" "2000"                 "5149"
+# nombre de la classe majoritaire dans train 750
+# nombre de la classe minoritaire dans train 750
+# nombre de la classe majoritaire dans test 250
+# nombre de la classe minoritaire dans test 250
+# rapport nb_minoritaire/nb_majoritaire en training 1
+# rapport nb_minoritaire/nb_majoritaire  en testing 1
+# Error in { : task 1 failed - "missing value where TRUE/FALSE needed"
+# > attention quand c'est compris, config run passe à TRUE

@@ -21,7 +21,7 @@ create_grid_sgl <- function(x, y, len = NULL, search = "grid") {
 li_caret_sgl$grid <- create_grid_sgl
 
 fit_sgl <- function(x, y, wts, param, lev, last, weights, classProbs, index, k_smote, do_smote, index_variable, is_binary) {
-    li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, is_binary)
+    li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, index_bloc, is_binary)
     x <- li_norm$new_x
     classe_min <- names(which.min(table(y)))
     classe_maj <- setdiff(levels(y), classe_min)

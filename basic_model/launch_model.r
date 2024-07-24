@@ -264,7 +264,7 @@ setMethod("analyse_results", "apply_model", function(object) {
   best_params <- object@model$bestTune
 
   importance_list <- list(
-    random_forest = TRUE, logistique_simple = TRUE, logistic_grp = TRUE, logistic_multiway = TRUE, logistic_multibloc = FALSE,
+    random_forest = TRUE, logistique_simple = TRUE, logistic_grp = TRUE, logistic_multiway = FALSE, logistic_multibloc = FALSE,
     logistic_select = TRUE
   )
   do_importance <- importance_list[[object@name_model]]

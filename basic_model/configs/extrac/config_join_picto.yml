@@ -1,12 +1,12 @@
 default:
   include_products: FALSE
   num_picto:
-    - 3
+    - 6
     - 1
   n_sample: 2000
   resample: FALSE #ignoré pour l'instant
-  ecart_class: 1.0
-  dist_intra_class: 5.0
+  ecart_class: 2.0
+  dist_intra_class: 0.1
   prop_class_1: 0.5
 
 

@@ -8,90 +8,51 @@ create_param_for_caret_bloc <- function(L) {
     vec_param <- sapply(1:L, function(l) {
         return(paste0("R_", l))
     })
-    vec_param <- c("lambda", vec_param)
+    vec_param <- c(vec_param, "lambda")
     vec_label <- sapply(1:L, function(l) {
         return(paste0("le rang R du bloc ", l))
     })
-    vec_label <- c("la valeur du paramètre lambda", vec_label)
+    vec_label <- c(vec_label, "la valeur du paramètre lambda")
     return(data.frame(parameter = vec_param, class = rep("numeric", L + 1), label = vec_label))
 }
 
-def_false_grid <- function(L) {
-    create_grid_multibloc <- function(x, y, len = NULL, search = "grid") {
-        if (search == "grid") {
-            lambda <- log(seq(exp(0), exp(0.05), length.out = len + 1)[2:(len + 1)])
-            li_R_data_frame <- lapply(1:L, function(l) {
-                c(1, 2, 3, 4)
-            })
-            setNames(li_R_data_frame, paste0("R_", 1:L))
-        } else {
-            lambda <- log(runif(len, min = exp(0.001), max = exp(0.05)))
-            li_R_data_frame <- lapply(1:L, function(l) {
-                c(1, 2, 3, 4)
-            })
-            li_R_data_frame <- setNames(li_R_data_frame, paste0("R_", 1:L))
-        }
-        li_tot <- c(list(lambda = lambda), li_R_data_frame)
-        data_frame_grid <- expand.grid(li_tot)
-        return(data_frame_grid)
-    }
-}
-
+# False grid dans utils_model_specific
 
 better_create_grid_multibloc <- function(x, y, len = NULL, search = "grid", L, lambda_min = 0.001, lambda_max = 0.05, R_min = 1, R_max = 5, tune_R = 2, li_R = NULL, same_R) {
+    ### Attention, si li_R est renseigné et same_R est TRUE alors il faut avoir autant de rangs proposés par bloc (ils seront sur 1 même ligne)
+    ## tune_R est ignoré si on fournit li_R
     if (search == "grid") {
         lambda <- seq(lambda_min, lambda_max, length.out = len)[1:len]
     } else {
         lambda <- runif(len, min = lambda_min, max = lambda_max)
     }
     if (is.null(li_R)) {
-        if (same_R) {
-
-
-        } else {
-            li_R_data_frame <- lapply(1:L, round(seq(R_min, R_max, length.out = tune_R)))
-        }
+        li_R_data_frame <- lapply(1:L, round(seq(R_min, R_max, length.out = tune_R)))
+    } else {
+        li_R_data_frame <- li_R
     }
-    # setnames ici
-    data_frame_grid <- expand.grid(lambda = lambda, R = R)
-    return(data_frame_grid)
-}
-
-
-
-
-
-find_modes <- function(x, index) {
-    names_x <- colnames(x)
-    names_x_multimodal <- names_x[index != -1]
-    J <- 0
-    continue <- TRUE
-    count <- 1
-    while (continue) {
-        value <- index[count]
-        if (value == 1) {
-            J <- J + 1
-            count <- count + 1
-        }
-        if (value > 1) {
-            continue <- FALSE
-        }
-        if (value == -1) {
-            stop("Valeur -1 anormale durant la recherche de modes!")
-        }
+    if (same_R) {
+        R_data_frame <- as.data.frame(li_R_data_frame)
+    } else {
+        R_data_frame <- expand.grid(li_R_data_frame)
     }
-    modes <- unique(index)
-    modes <- modes[modes > -0.5]
-    K <- length(modes)
-
-    return(list(J = J, K = K))
+    li_grid <- lapply(seq_along(lambda), function(i) {
+        df <- data.frame(R_data_frame, lambda = lambda[i])
+        return(df)
+    })
+    data_frame_grid <- do.call(rbind, li_grid)
+    vec_names <- sapply(1:L, function(l) {
+        return(paste0("R_", l))
+    })
+    vecnames <- c(vec_names, "lambda")
+    data_frame_grid <- setNames(data_frame_grid, vecnames)
+    return(as.data.frame(data_frame_grid))
 }
-
 
 
 fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, index, index_bloc, eps, ite_max, n_iter_per_reg, k_smote, do_smote, index_variable, is_binary, classe_1 = NULL) {
     # ici, index est bien sûr index_mode
-    li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, is_binary)
+    li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, index_bloc,is_binary)
     x <- li_norm$new_x
     classe_min <- names(which.min(table(y)))
     classe_maj <- setdiff(levels(y), classe_min)
@@ -118,9 +79,8 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         classe_1 <- classe_min
     }
     classe_0 <- setdiff(levels(y), classe_1)
-    R <- param$R
 
-    ## Commencer par définir Z_J en sommant sur les modes. Attention au problème lignes colonnes inversées. Pas encore de variables cliniques
+    ## Commencer par définir Z_J en sommant sur les modes. Attention au problème lignes colonnes inversées.
     mat_x_modes <- as.matrix(x)[, index_bloc > -0.5]
     mat_x_restant <- as.matrix(x)[, index_bloc == -1]
     n_restant <- ncol(mat_x_restant)
@@ -131,7 +91,12 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
     } else {
         L <- length(unique(index_bloc)) - 1
     }
-    # print(L)
+
+    vec_R <- sapply(seq_len(L), function(l) {
+        R <- param[[paste0("R_", l)]]
+        return(R)
+    })
+
     li_x_multi_bloc <- list()
     col_num <- 0
     for (l in 1:L) {
@@ -148,9 +113,6 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
     for (l in 1:L) {
         x_bloc <- li_x_multi_bloc[[l]]
         index_bloc_local <- index[index_bloc == l]
-        # print(index_bloc_local)
-        # print(length(index_bloc_local))
-        # print(dim(x_bloc))
         dim_modes <- unlist(find_modes(x_bloc, index_bloc_local))
         li_dim[[l]] <- dim_modes
     }
@@ -203,15 +165,15 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
 
     ####### Grande boucle de l'algorithme à itérer autant que nécessaire ##########
     grande_boucle <- function(li_beta_K) {
-        # print("gdbc")
         #   Définir Z_J_init (sans les variables cliniques)
         create_Z_J_init <- function(l) {
             mat_x_bloc <- li_x_multi_bloc[[l]]
             beta_K <- li_beta_K[[l]]
             K <- li_dim[[l]][2]
             J <- li_dim[[l]][1]
+            R <- vec_R[l]
             li_Z_J_init_bloc <- list() # init car sans clinique
-            for (r in 1:R) {
+            for (r in seq_len(R)) {
                 Z_J_init_bloc <- matrix(0, nrow = dim(mat_x_bloc)[1], ncol = J)
                 for (k in 1:K) {
                     bloc_k <- mat_x_bloc[, ((k - 1) * J + 1):(k * J)]
@@ -225,10 +187,9 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
                     Z_J_init_bloc <- cbind(Z_J_init_bloc, li_Z_J_init_bloc[[r]])
                 }
             }
+            ##### !!On renverse les matrices pour correspondre au formalisme du papier!!
             Z_J_init_bloc <- t(Z_J_init_bloc)
             if (any(is.na(Z_J_init_bloc))) {
-                # print(Z_J_init_bloc)
-                # print(li_beta_K)
                 stop(" Z_J_init contient des NA")
             }
             return(Z_J_init_bloc)
@@ -241,7 +202,6 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
                 Z_J_init <- rbind(Z_J_init, create_Z_J_init(l))
             }
         }
-        # print(Z_J_init)
 
 
         ## Définir Q_J de transformation pour la régularisation (attention aux colonnes inversées)
@@ -250,6 +210,7 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
             K <- li_dim[[l]][2]
             J <- li_dim[[l]][1]
             vec_diag_bloc <- c()
+            R <- vec_R[l]
             for (r in 1:R) {
                 norme_1_r <- norm(as.matrix(beta_K[((r - 1) * K + 1):(r * K)]), type = "1")
                 diag_elem_r <- rep(norme_1_r, J)
@@ -271,6 +232,7 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         li_beta_J <- list()
         precedent <- 0
         for (l in 1:L) {
+            R <- vec_R[l]
             li_beta_J[[l]] <- beta_J_full[(precedent + 1):(precedent + li_dim[[l]][1] * R)]
             precedent <- precedent + li_dim[[l]][1] * R
         }
@@ -295,19 +257,16 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
             # print(beta_J)
             J <- li_dim[[l]][1]
             K <- li_dim[[l]][2]
+            R <- vec_R[l]
             li_Z_K_init_bloc <- list() # init car sans clinique
             for (r in 1:R) {
                 Z_K_init_bloc_r <- matrix(0, nrow = dim(mat_x_bloc)[1], ncol = K)
                 for (j in 1:J) {
                     col_to_extract <- seq(j, by = J, length.out = K)
                     bloc_j <- mat_x_bloc[, col_to_extract]
-                    # print(beta_J[(r - 1) * J + j])
                     Z_K_init_bloc_r <- Z_K_init_bloc_r + beta_J[(r - 1) * J + j] * bloc_j
                     li_Z_K_init_bloc[[r]] <- Z_K_init_bloc_r
                 }
-                # if (r == 2) {
-                #     print(Z_K_init_bloc_r)
-                # }
             }
             Z_K_init_bloc <- li_Z_K_init_bloc[[1]]
             if (R >= 2) {
@@ -316,10 +275,7 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
                 }
             }
             Z_K_init_bloc <- t(Z_K_init_bloc)
-            # print("done")
-            # print(Z_K_init_bloc)
             if (all(abs(Z_K_init_bloc) < 1e-10)) {
-                # print(beta_J)
                 print("Z_K est nul : tout sera écrasé à 0")
             }
             return(Z_K_init_bloc)
@@ -339,6 +295,7 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
             J <- li_dim[[l]][1]
             K <- li_dim[[l]][2]
             vec_diag_bloc <- c()
+            R <- vec_R[l]
             for (r in 1:R) {
                 norme_1_r <- norm(as.matrix(beta_J[((r - 1) * J + 1):(r * J)]), type = "1")
                 diag_elem_r <- rep(norme_1_r, K)
@@ -358,14 +315,13 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
 
         ### Appliquer à nouveau la petite boucle
 
-        # print(beta_K_complet_previous)
-        # print(dim(Z_K_init))
         li_petite_boucle <- petite_boucle(Z_init = Z_K_init, vec_Q = vec_diag)
         Z_K <- li_petite_boucle$Z
         beta_K_full <- li_petite_boucle$beta[1:(length(li_petite_boucle$beta) - n_restant)]
         li_beta_K <- list()
         precedent <- 0
         for (l in 1:L) {
+            R <- vec_R[l]
             li_beta_K[[l]] <- beta_K_full[(precedent + 1):(precedent + li_dim[[l]][2] * R)]
             precedent <- precedent + li_dim[[l]][2] * R
         }
@@ -374,6 +330,7 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         for (l in 1:L) {
             beta_K <- li_beta_K[[l]]
             K <- li_dim[[l]][2]
+            R <- vec_R[l]
             for (r in 1:R) {
                 norm_beta_K_r <- norm(as.matrix(beta_K[((r - 1) * K + 1):(r * K)]), type = "2")
                 if (norm_beta_K_r > 0) {
@@ -393,8 +350,6 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         beta_K_complet <- li_petite_boucle$beta
 
         # Calculer les deux critères
-        # print(beta_J_complet)
-        # print(beta_K_complet)
         crit_log_J <- crit_logistic(t(Q_J_full %*% Z_J), y_numeric, Q_J_inv %*% beta_J_complet, intercept_J, param$lambda)
         crit_log_K <- crit_logistic(t(Q_K_full %*% Z_K), y_numeric, Q_K_inv %*% beta_K_complet, intercept_K, param$lambda)
         rapport <- abs(crit_log_J - crit_log_K) / abs(crit_log_J)
@@ -409,6 +364,7 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
     ###### Attention beta_J et beta_K n'existent plus, ce sont des listes!! (plus simple à manipuler avec les dimensions variables)
     li_beta_K <- list()
     for (l in 1:L) {
+        R <- vec_R[l]
         li_beta_K[[l]] <- rnorm(li_dim[[l]][2] * R, mean = 0, sd = 1)
     }
     iteration <- 1
@@ -416,31 +372,19 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
     memoire_crit_K <- 1
     debut_time <- Sys.time()
     while (continue) {
-        # print(iteration)
         li_grande_boucle <- grande_boucle(li_beta_K)
         li_beta_J <- li_grande_boucle$li_beta_J
         li_beta_K <- li_grande_boucle$li_beta_K
         beta_autre <- li_grande_boucle$beta_autre
         intercept_J <- li_grande_boucle$intercept_J
         intercept_K <- li_grande_boucle$intercept_K
-        # print(li_beta_K[[0]])
 
         rapport <- li_grande_boucle$rapport
         crit_log_J <- li_grande_boucle$crit_log_J
         crit_log_K <- li_grande_boucle$crit_log_K
         # print(crit_log_J)
         # print(crit_log_K)
-        # if (crit_log_J == -Inf) {
-        #     print(li_beta_J)
-        #     print(li_beta_K)
-        #     print("J inf")
-        # }
-        # if (crit_log_K == -Inf) {
-        #     print(li_beta_J)
-        #     print(li_beta_K)
-        #     print("K inf")
-        # }
-        # print(crit_log_J)
+
         if (crit_log_J != -Inf & crit_log_K != -Inf) {
             if (rapport < eps) {
                 continue <- FALSE
@@ -461,7 +405,6 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         memoire_crit_J <- crit_log_J
         memoire_crit_K <- crit_log_K
         delta_t <- as.numeric(Sys.time() - debut_time, units = "secs")
-        # print(delta_t)
         if (delta_t > 30) {
             continue <- FALSE
             print("Warning, trop long")
@@ -471,7 +414,7 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         }
     }
     futur_fit <- list(
-        li_beta_J = li_beta_J, li_beta_K = li_beta_K, beta_autre = beta_autre, intercept = intercept_K, R = R, li_x_multi_bloc = li_x_multi_bloc,
+        li_beta_J = li_beta_J, li_beta_K = li_beta_K, beta_autre = beta_autre, intercept = intercept_K, vec_R = vec_R, li_x_multi_bloc = li_x_multi_bloc,
         li_dim = li_dim, lev = lev, index = index, index_bloc = index_bloc, li_norm = li_norm, classe_maj = classe_maj, classe_min = classe_min, classe_1 = classe_1, classe_0 = classe_0
     )
 
@@ -482,59 +425,9 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
 li_caret_multibloc$fit <- fit_multiway
 
 
-get_beta_bloc <- function(beta_J, beta_K, R, J, K) {
-    beta <- rep(0, J * K)
-    for (r in 1:R) {
-        beta_r <- rep(0, J * K)
-        for (j in 1:J) {
-            for (k in 1:K) {
-                beta_r[(k - 1) * J + j] <- beta_J[(r - 1) * J + j] * beta_K[(r - 1) * K + k]
-            }
-        }
-        beta[1:(J * K)] <- beta[1:(J * K)] + beta_r
-    }
-    return(beta)
-}
-
-
-get_beta_full <- function(modelFit) {
-    li_x_multi_bloc <- modelFit$li_x_multi_bloc
-    li_dim <- modelFit$li_dim
-    index <- modelFit$index
-    index_bloc <- modelFit$index_bloc
-    li_beta_J <- modelFit$li_beta_J
-    li_beta_K <- modelFit$li_beta_K
-    beta_autre <- modelFit$beta_autre
-    L <- length(li_x_multi_bloc)
-    R <- modelFit$R
-    size_beta_modes <- sum(unlist(lapply(li_dim, function(x) {
-        return(x[1] * x[2])
-    }))) # taille de beta sans beta_autre
-    beta_modes <- rep(NA, size_beta_modes)
-    for (l in 1:L) {
-        beta_K <- li_beta_K[[l]]
-        beta_J <- li_beta_J[[l]]
-        J <- li_dim[[l]][1]
-        K <- li_dim[[l]][2]
-        beta_bloc <- get_beta_bloc(beta_J, beta_K, R, J, K)
-        beta_modes[index_bloc[index_bloc != -1] == l] <- beta_bloc
-        # Attention ordre temps
-    }
-    beta_final <- c(beta_modes, beta_autre)
-    if (any(is.na(beta_final))) {
-        print(beta_final)
-        stop("Beta final est NA")
-    }
-    return(beta_final)
-}
-
-
-
 predict_multiway <- function(modelFit, newdata, preProc = NULL, submodels = NULL) {
     df_mu <- modelFit$li_norm$df_mu
     df_sigma <- modelFit$li_norm$df_sigma
-    classe_min <- modelFit$classe_min
-    classe_maj <- modelFit$classe_maj
     classe_1 <- modelFit$classe_1
     classe_0 <- modelFit$classe_0
     newdata <- renormalize_in_model_pred_index_mode(newdata, df_mu, df_sigma)
@@ -546,8 +439,6 @@ predict_multiway <- function(modelFit, newdata, preProc = NULL, submodels = NULL
     })
     proba <- 1 / (1 + exp(-value))
     predicted_labels <- ifelse(proba > 0.5, classe_1, classe_0)
-    # print(predicted_labels)
-    # print(beta)
     return(predicted_labels)
 }
 
@@ -557,8 +448,6 @@ li_caret_multibloc$predict <- predict_multiway
 li_caret_multibloc$prob <- function(modelFit, newdata, preProc = NULL, submodels = NULL) {
     df_mu <- modelFit$li_norm$df_mu
     df_sigma <- modelFit$li_norm$df_sigma
-    classe_min <- modelFit$classe_min
-    classe_maj <- modelFit$classe_maj
     classe_1 <- modelFit$classe_1
     classe_0 <- modelFit$classe_0
     newdata <- renormalize_in_model_pred_index_mode(newdata, df_mu, df_sigma)
@@ -579,7 +468,6 @@ li_caret_multibloc$loop <- NULL
 
 
 setMethod("train_method", "apply_model", function(object) {
-    # x, y, wts, param, lev, last, weights, classProbs, index, R, eps, ite_max, beta_K_0
     li <- reorder_in_modes(object@train_cols[, object@col_x], index_mode = object@index_mode, index_variable = object@index_variable, index_bloc = object@index_bloc, is_binary = object@is_binary, name_mode = object@name_mode, name_variable = object@name_variable, name_bloc = object@name_bloc)
     object@train_cols[, object@col_x] <- li$x
     colnames(object@train_cols)[colnames(object@train_cols) %in% object@col_x] <- colnames(li$x)
@@ -607,14 +495,14 @@ setMethod("train_method", "apply_model", function(object) {
     L <- length(unique(object@index_bloc[object@index_bloc > -0.5]))
     li_caret_multibloc$parameters <- create_param_for_caret_bloc(L)
     # Générer la fausse fonction qui crée la tune grid
-    create_grid_multibloc <- def_false_grid(L)
+    create_grid_multibloc <- def_false_grid_multibloc(L)
     li_caret_multibloc$grid <- create_grid_multibloc
+
 
     grid <- better_create_grid_multibloc(
         x = object@train_cols[, object@col_x], y = object@y_train, len = object@tuneLength,
-        search = object@search, lambda_min = object@lambda_min, lambda_max = object@lambda_max, R_min = object@R_min, R_max = object@R_max, tune_R = object@tune_R, li_R = object@li_R
+        search = object@search, L = L, lambda_min = object@lambda_min, lambda_max = object@lambda_max, R_min = object@R_min, R_max = object@R_max, tune_R = object@tune_R, li_R = object@li_R, same_R = object@same_R
     )
-
     # dossier <- "logs"
     # fichiers <- list.files(dossier, full.names = TRUE)
     # file.remove(fichiers)
@@ -633,14 +521,6 @@ setMethod("train_method", "apply_model", function(object) {
         clusterExport(cl, varlist = c("get_beta_full", "get_beta_bloc", "find_modes"))
     }
 
-
-    # if (object@do_parallel) {
-    #     numCores <- detectCores()
-    #     cl <- makePSOCKcluster(numCores - 1)
-    #     registerDoParallel(cl)
-    #     clusterEvalQ(cl, source("utils.r"))
-    #     clusterExport(cl, varlist = c("get_beta_full", "get_beta_bloc", "find_modes"))
-    # }
 
     object@model <- caret::train(
         y = object@y_train, x = object@train_cols[, object@col_x], index = object@index_mode,
@@ -663,115 +543,116 @@ setMethod("get_results", "apply_model", function(object) {
 })
 
 setMethod("importance_method", "apply_model", function(object) {
-    # print(object@model$finalModel$li_beta_K)
-    li_best_beta_J <- object@model$finalModel$li_beta_J
-    li_best_beta_K <- object@model$finalModel$li_beta_K
-    best_beta_autre <- object@model$finalModel$beta_autre
-    L <- length(li_best_beta_J)
-    Variables_temps_seul <- unique(object@name_mode[object@index_mode > -0.5])
-    Variables_names_seul <- unique(object@name_variable[object@index_variable > -0.5])
-    n_var_radio_differentes <- length(Variables_names_seul)
-    Variables_names_long <- c()
-    Variables_temps <- c()
-    R <- object@model$bestTune$R
-    for (r in 1:R) {
-        Variables_names_long <- append(Variables_names_long, paste0(Variables_names_seul, "_R=", r))
-        Variables_temps <- append(Variables_temps, paste0(Variables_temps_seul, "_R=", r))
-    }
-    # print(Variables_names_seul)
-    # print(Variables_names_long)
-    li_variables_names <- list()
-    for (l in 1:L) {
-        li_variables_names[[l]] <- c()
-    }
-    li_variables_names <- vector("list", L)
-    count <- 0
-    for (name in Variables_names_long) {
-        count <- count %% n_var_radio_differentes + 1
-        num_bloc <- object@index_bloc[count]
-        # print(length(li_variables_names))
-        # print(count)
-        li_variables_names[[num_bloc]] <- append(li_variables_names[[num_bloc]], name)
-        count <- count + 1
-    }
-    grand_vec_temps <- c()
-    grand_var_temps <- c()
-    for (l in 1:L) {
-        grand_vec_temps <- append(grand_vec_temps, li_best_beta_K[[l]])
-        grand_var_temps <- append(grand_var_temps, paste0(Variables_temps, "_l=", l))
-    }
+    ###### VIEUX ET NON UTILISE: un seul rang########
+    # #print(object@model$finalModel$li_beta_K)
+    # li_best_beta_J <- object@model$finalModel$li_beta_J
+    # li_best_beta_K <- object@model$finalModel$li_beta_K
+    # best_beta_autre <- object@model$finalModel$beta_autre
+    #     L <- length(li_best_beta_J)
+    #     Variables_temps_seul <- unique(object@name_mode[object@index_mode > -0.5])
+    #     Variables_names_seul <- unique(object@name_variable[object@index_variable > -0.5])
+    #     n_var_radio_differentes <- length(Variables_names_seul)
+    #     Variables_names_long <- c()
+    #     Variables_temps <- c()
+    #     R <- object@model$bestTune$R
+    #     for (r in 1:R) {
+    #         Variables_names_long <- append(Variables_names_long, paste0(Variables_names_seul, "_R=", r))
+    #         Variables_temps <- append(Variables_temps, paste0(Variables_temps_seul, "_R=", r))
+    #     }
+    #     # print(Variables_names_seul)
+    #     # print(Variables_names_long)
+    #     li_variables_names <- list()
+    #     for (l in 1:L) {
+    #         li_variables_names[[l]] <- c()
+    #     }
+    #     li_variables_names <- vector("list", L)
+    #     count <- 0
+    #     for (name in Variables_names_long) {
+    #         count <- count %% n_var_radio_differentes + 1
+    #         num_bloc <- object@index_bloc[count]
+    #         # print(length(li_variables_names))
+    #         # print(count)
+    #         li_variables_names[[num_bloc]] <- append(li_variables_names[[num_bloc]], name)
+    #         count <- count + 1
+    #     }
+    #     grand_vec_temps <- c()
+    #     grand_var_temps <- c()
+    #     for (l in 1:L) {
+    #         grand_vec_temps <- append(grand_vec_temps, li_best_beta_K[[l]])
+    #         grand_var_temps <- append(grand_var_temps, paste0(Variables_temps, "_l=", l))
+    #     }
 
-    time_importance <- data.frame(Variable = grand_var_temps, Overall = abs(grand_vec_temps))
-    name_df <- paste0("time_importance_", object@id_term)
-    object@li_df_var_imp[[name_df]] <- time_importance
-    time_importance <- time_importance[order(-time_importance$Overall), ]
-    time_importance <- subset(time_importance, Overall > 0.0001)
+    #     time_importance <- data.frame(Variable = grand_var_temps, Overall = abs(grand_vec_temps))
+    #     name_df <- paste0("time_importance_", object@id_term)
+    #     object@li_df_var_imp[[name_df]] <- time_importance
+    #     time_importance <- time_importance[order(-time_importance$Overall), ]
+    #     time_importance <- subset(time_importance, Overall > 0.0001)
 
-    image <- ggplot2::ggplot(time_importance, aes(x = reorder(Variable, Overall), y = Overall)) +
-        geom_bar(stat = "identity") +
-        coord_flip() +
-        theme_light() +
-        xlab("Variable") +
-        ylab("Importance") +
-        ggtitle("Variable Importance")
-    ggsave(paste0("plots/logistic_multibloc/importance_time", "_", object@id_term, ".png"), image)
+    #     image <- ggplot2::ggplot(time_importance, aes(x = reorder(Variable, Overall), y = Overall)) +
+    #         geom_bar(stat = "identity") +
+    #         coord_flip() +
+    #         theme_light() +
+    #         xlab("Variable") +
+    #         ylab("Importance") +
+    #         ggtitle("Variable Importance")
+    #     ggsave(paste0("plots/logistic_multibloc/importance_time", "_", object@id_term, ".png"), image)
 
-    grand_vec_var <- c()
-    grand_var_var <- c()
-    for (l in 1:L) {
-        grand_vec_var <- append(grand_vec_var, li_best_beta_J[[l]])
-        grand_var_var <- append(grand_var_var, paste0(li_variables_names[[l]], "_l = ", l))
-        # print(li_best_beta_J[[l]])
-        # print(paste0(li_variables_names[[l]], "_l = ", l))
-    }
+    #     grand_vec_var <- c()
+    #     grand_var_var <- c()
+    #     for (l in 1:L) {
+    #         grand_vec_var <- append(grand_vec_var, li_best_beta_J[[l]])
+    #         grand_var_var <- append(grand_var_var, paste0(li_variables_names[[l]], "_l = ", l))
+    #         # print(li_best_beta_J[[l]])
+    #         # print(paste0(li_variables_names[[l]], "_l = ", l))
+    #     }
 
-    variable_importance <- data.frame(Variable = grand_var_var, Overall = abs(grand_vec_var))
-    name_df <- paste0("variable_importance_", object@id_term)
-    object@li_df_var_imp[[name_df]] <- variable_importance
-    variable_importance <- variable_importance[order(-variable_importance$Overall), ]
-    variable_importance <- subset(variable_importance, Overall > 0.0001)
+    #     variable_importance <- data.frame(Variable = grand_var_var, Overall = abs(grand_vec_var))
+    #     name_df <- paste0("variable_importance_", object@id_term)
+    #     object@li_df_var_imp[[name_df]] <- variable_importance
+    #     variable_importance <- variable_importance[order(-variable_importance$Overall), ]
+    #     variable_importance <- subset(variable_importance, Overall > 0.0001)
 
-    image <- ggplot2::ggplot(variable_importance, aes(x = reorder(Variable, Overall), y = Overall)) +
-        geom_bar(stat = "identity") +
-        coord_flip() +
-        theme_light() +
-        xlab("Variable") +
-        ylab("Importance") +
-        ggtitle("Variable Importance")
-    ggsave(paste0("plots/logistic_multibloc/importance_var_multi", "_", object@id_term, ".png"), image)
+    #     image <- ggplot2::ggplot(variable_importance, aes(x = reorder(Variable, Overall), y = Overall)) +
+    #         geom_bar(stat = "identity") +
+    #         coord_flip() +
+    #         theme_light() +
+    #         xlab("Variable") +
+    #         ylab("Importance") +
+    #         ggtitle("Variable Importance")
+    #     ggsave(paste0("plots/logistic_multibloc/importance_var_multi", "_", object@id_term, ".png"), image)
 
 
 
-    if (length(best_beta_autre) > 0) {
-        other_names <- colnames(object@train_cols[, object@col_x])[object@index_mode == -1]
-        other_importance <- data.frame(Variable = other_names, Overall = abs(best_beta_autre))
-        name_df <- paste0("other_importance_", object@id_term)
-        object@li_df_var_imp[[name_df]] <- other_importance
-        other_importance <- other_importance[order(-other_importance$Overall), ]
-        other_importance <- subset(other_importance, Overall > 0.0001)
+    #     if (length(best_beta_autre) > 0) {
+    #         other_names <- colnames(object@train_cols[, object@col_x])[object@index_mode == -1]
+    #         other_importance <- data.frame(Variable = other_names, Overall = abs(best_beta_autre))
+    #         name_df <- paste0("other_importance_", object@id_term)
+    #         object@li_df_var_imp[[name_df]] <- other_importance
+    #         other_importance <- other_importance[order(-other_importance$Overall), ]
+    #         other_importance <- subset(other_importance, Overall > 0.0001)
 
-        image <- ggplot2::ggplot(other_importance, aes(x = reorder(Variable, Overall), y = Overall)) +
-            geom_bar(stat = "identity") +
-            coord_flip() +
-            theme_light() +
-            xlab("Variable") +
-            ylab("Importance") +
-            ggtitle("Variable Importance")
-        ggsave(paste0("plots/logistic_multibloc/importance_other", "_", object@id_term, ".png"), image)
-    }
+    #         image <- ggplot2::ggplot(other_importance, aes(x = reorder(Variable, Overall), y = Overall)) +
+    #             geom_bar(stat = "identity") +
+    #             coord_flip() +
+    #             theme_light() +
+    #             xlab("Variable") +
+    #             ylab("Importance") +
+    #             ggtitle("Variable Importance")
+    #         ggsave(paste0("plots/logistic_multibloc/importance_other", "_", object@id_term, ".png"), image)
+    #     }
 
-    df_cv <- object@model$resample
-    df_cv <- df_cv[, setdiff(names(df_cv), "Resample")]
-    df_long <- melt(df_cv)
-    object@li_box_plots[[object@id_term]] <- df_long
+    #     df_cv <- object@model$resample
+    #     df_cv <- df_cv[, setdiff(names(df_cv), "Resample")]
+    #     df_long <- melt(df_cv)
+    #     object@li_box_plots[[object@id_term]] <- df_long
 
-    box_plots_stats <- ggplot(df_long, aes(x = variable, y = value)) +
-        geom_boxplot() +
-        stat_summary(fun = median, geom = "point", shape = 20, size = 3, color = "red") +
-        theme(axis.text.x = element_text(angle = 90, hjust = 1)) # Rotate x-axis labels for readability
-    ggsave(paste0("plots/logistic_multibloc/box_plots_stats", "_", object@id_term, ".png"), box_plots_stats)
+    #     box_plots_stats <- ggplot(df_long, aes(x = variable, y = value)) +
+    #         geom_boxplot() +
+    #         stat_summary(fun = median, geom = "point", shape = 20, size = 3, color = "red") +
+    #         theme(axis.text.x = element_text(angle = 90, hjust = 1)) # Rotate x-axis labels for readability
+    #     ggsave(paste0("plots/logistic_multibloc/box_plots_stats", "_", object@id_term, ".png"), box_plots_stats)
 
-    return(object)
+    #     return(object)
 })
 
 setMethod("get_df_imp", "apply_model", function(object) {

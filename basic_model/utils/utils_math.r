@@ -160,3 +160,33 @@ glue_mats <- function(li_beta_matrix) {
     beta_matrix_combined <- do.call(cbind, adjusted_matrices)
     return(beta_matrix_combined)
 }
+
+
+silent_run <- function(func, ...) {
+    # Créer un fichier temporaire pour capturer les sorties
+    temp_file <- tempfile()
+
+    # Ouvrir une connexion au fichier temporaire
+    temp_conn <- file(temp_file, open = "wt")
+
+    # Rediriger les messages de sortie standard vers la connexion au fichier temporaire
+    sink(temp_conn)
+
+    # Rediriger les messages d'avertissement vers la connexion au fichier temporaire
+    sink(temp_conn, type = "message")
+
+    # Exécuter la fonction en mode silencieux avec les arguments supplémentaires
+    result <- func(...)
+
+    # Réinitialiser les sorties à leurs destinations d'origine
+    sink()
+    sink(type = "message")
+
+    # Fermer la connexion au fichier temporaire
+    close(temp_conn)
+
+    # Supprimer le fichier temporaire
+    unlink(temp_file)
+
+    return(result)
+}

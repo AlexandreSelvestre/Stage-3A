@@ -48,6 +48,9 @@ execute <- function(config, config_run, id_term, seed_cv, sysname) {
     print("End of prediction phase")
 
     inference <- analyse_results(inference)
+
+    print("End of analysis phase")
+
     if (config_run$do_picto) {
         source("./analyse_data/reform_plots.r")
         inference <- reform_beta(inference)

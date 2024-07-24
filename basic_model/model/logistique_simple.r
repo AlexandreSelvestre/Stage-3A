@@ -34,7 +34,7 @@ create_grid_simple <- function(x, y, len = NULL, search = "grid") {
 li_caret_simple$grid <- create_grid_simple
 
 fit_simple <- function(x, y, wts, param, lev, last, weights_dict, classProbs, k_smote, do_smote, index_variable, is_binary, classe_1 = NULL) {
-    li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, is_binary)
+    li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, index_bloc, is_binary)
     ######## THE GOOD LINE FOR NORMALIZATION
     x <- li_norm$new_x
     classe_min <- names(which.min(table(y)))

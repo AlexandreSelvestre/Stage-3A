@@ -38,7 +38,7 @@ li_caret_multiway$grid <- create_grid_multiway
 
 
 fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, index, eps, ite_max, n_iter_per_reg, k_smote, do_smote, index_variable, is_binary) {
-    li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, is_binary)
+    li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, index_bloc, is_binary)
     x <- li_norm$new_x
     classe_min <- names(which.min(table(y)))
     classe_maj <- setdiff(levels(y), classe_min)
@@ -479,95 +479,94 @@ setMethod("train_method", "apply_model", function(object) {
 })
 
 setMethod("get_results", "apply_model", function(object) {
-    # x_train <- reorder_in_modes(object@train_cols[, object@col_x], index_mode = object@index_mode, index_variable = object@index_variable, index_bloc = object@index_bloc, is_binary = object@is_binary)$x
-    # x_test <- reorder_in_modes(object@test_set[, object@col_x], index_mode = object@index_mode, index_variable = object@index_variable, index_bloc = object@index_bloc, is_binary = object@is_binary)$x
     object@predictions <- as.vector(predict(object@model, newdata = as.matrix(object@test_set[, object@col_x])))
     object@predictions_proba <- predict(object@model, newdata = as.matrix(object@test_set[, object@col_x]), type = "prob")
     object@predictions_train_proba <- predict(object@model, newdata = as.matrix(object@train_cols[, object@col_x]), type = "prob")
+    object@beta_final <- object@model$finalModel$beta_unfolded
     return(object)
 })
 
 setMethod("importance_method", "apply_model", function(object) {
-    object@beta_final <- object@model$finalModel$beta_unfolded
-    best_beta_J <- object@model$finalModel$beta_J
-    best_beta_K <- object@model$finalModel$beta_K
-    best_beta_autre <- object@model$finalModel$beta_autre
-    Variable_names_seul <- unique(object@name_variable[object@index > -0.5])
-    Variables_temps_seul <- unique(object@name_mode[object@index > -0.5])
-    Variable_names <- c()
-    Variables_temps <- c()
-    R <- object@model$bestTune$R
-    for (r in 1:R) {
-        variable_name_local <- paste0(Variable_names_seul, "_", r)
-        Variable_names <- append(Variable_names, variable_name_local)
-        variables_temps_local <- paste0(Variables_temps_seul, "_", r)
-        Variables_temps <- append(Variables_temps, variables_temps_local)
-    }
-    variable_importance <- data.frame(Variable = Variable_names, Overall = abs(best_beta_J))
-    # print(variable_importance)
-    name_df <- paste0("variable_importance_", object@id_term)
-    object@li_df_var_imp[[name_df]] <- variable_importance
-    variable_importance <- variable_importance[order(-variable_importance$Overall), ]
-    variable_importance <- subset(variable_importance, Overall > 0.0001)
+    # Vieux, inutilisable: un seul R
+    #     object@beta_final <- object@model$finalModel$beta_unfolded
+    #     best_beta_J <- object@model$finalModel$beta_J
+    #     best_beta_K <- object@model$finalModel$beta_K
+    #     best_beta_autre <- object@model$finalModel$beta_autre
+    #     Variable_names_seul <- unique(object@name_variable[object@index > -0.5])
+    #     Variables_temps_seul <- unique(object@name_mode[object@index > -0.5])
+    #     Variable_names <- c()
+    #     Variables_temps <- c()
+    #     R <- object@model$bestTune$R
+    #     for (r in 1:R) {
+    #         variable_name_local <- paste0(Variable_names_seul, "_", r)
+    #         Variable_names <- append(Variable_names, variable_name_local)
+    #         variables_temps_local <- paste0(Variables_temps_seul, "_", r)
+    #         Variables_temps <- append(Variables_temps, variables_temps_local)
+    #     }
+    #     variable_importance <- data.frame(Variable = Variable_names, Overall = abs(best_beta_J))
+    #     # print(variable_importance)
+    #     name_df <- paste0("variable_importance_", object@id_term)
+    #     object@li_df_var_imp[[name_df]] <- variable_importance
+    #     variable_importance <- variable_importance[order(-variable_importance$Overall), ]
+    #     variable_importance <- subset(variable_importance, Overall > 0.0001)
 
-    image <- ggplot2::ggplot(variable_importance, aes(x = reorder(Variable, Overall), y = Overall)) +
-        geom_bar(stat = "identity") +
-        coord_flip() +
-        theme_light() +
-        xlab("Variable") +
-        ylab("Importance") +
-        ggtitle("Variable Importance")
-    ggsave(paste0("plots/logistic_multiway/importance_var_multi", "_", object@id_term, ".png"), image)
+    #     image <- ggplot2::ggplot(variable_importance, aes(x = reorder(Variable, Overall), y = Overall)) +
+    #         geom_bar(stat = "identity") +
+    #         coord_flip() +
+    #         theme_light() +
+    #         xlab("Variable") +
+    #         ylab("Importance") +
+    #         ggtitle("Variable Importance")
+    #     ggsave(paste0("plots/logistic_multiway/importance_var_multi", "_", object@id_term, ".png"), image)
 
-    time_importance <- data.frame(Variable = Variables_temps, Overall = abs(best_beta_K))
-    name_df <- paste0("time_importance_", object@id_term)
-    object@li_df_var_imp[[name_df]] <- time_importance
-    time_importance <- time_importance[order(-time_importance$Overall), ]
-    time_importance <- subset(time_importance, Overall > 0.0001)
+    #     time_importance <- data.frame(Variable = Variables_temps, Overall = abs(best_beta_K))
+    #     name_df <- paste0("time_importance_", object@id_term)
+    #     object@li_df_var_imp[[name_df]] <- time_importance
+    #     time_importance <- time_importance[order(-time_importance$Overall), ]
+    #     time_importance <- subset(time_importance, Overall > 0.0001)
 
-    image <- ggplot2::ggplot(time_importance, aes(x = reorder(Variable, Overall), y = Overall)) +
-        geom_bar(stat = "identity") +
-        coord_flip() +
-        theme_light() +
-        xlab("Variable") +
-        ylab("Importance") +
-        ggtitle("Variable Importance")
-    ggsave(paste0("plots/logistic_multiway/importance_time", "_", object@id_term, ".png"), image)
+    #     image <- ggplot2::ggplot(time_importance, aes(x = reorder(Variable, Overall), y = Overall)) +
+    #         geom_bar(stat = "identity") +
+    #         coord_flip() +
+    #         theme_light() +
+    #         xlab("Variable") +
+    #         ylab("Importance") +
+    #         ggtitle("Variable Importance")
+    #     ggsave(paste0("plots/logistic_multiway/importance_time", "_", object@id_term, ".png"), image)
 
-    if (length(best_beta_autre) > 0) {
-        other_names <- colnames(object@train_cols[, object@col_x])[object@index_mode == -1]
-        other_importance <- data.frame(Variable = other_names, Overall = abs(best_beta_autre))
-        name_df <- paste0("other_importance_", object@id_term)
-        object@li_df_var_imp[[name_df]] <- other_importance
-        other_importance <- other_importance[order(-other_importance$Overall), ]
-        other_importance <- subset(other_importance, Overall > 0.0001)
+    #     if (length(best_beta_autre) > 0) {
+    #         other_names <- colnames(object@train_cols[, object@col_x])[object@index_mode == -1]
+    #         other_importance <- data.frame(Variable = other_names, Overall = abs(best_beta_autre))
+    #         name_df <- paste0("other_importance_", object@id_term)
+    #         object@li_df_var_imp[[name_df]] <- other_importance
+    #         other_importance <- other_importance[order(-other_importance$Overall), ]
+    #         other_importance <- subset(other_importance, Overall > 0.0001)
 
-        image <- ggplot2::ggplot(other_importance, aes(x = reorder(Variable, Overall), y = Overall)) +
-            geom_bar(stat = "identity") +
-            coord_flip() +
-            theme_light() +
-            xlab("Variable") +
-            ylab("Importance") +
-            ggtitle("Variable Importance")
-        ggsave(paste0("plots/logistic_multiway/importance_other", "_", object@id_term, ".png"), image)
-    }
+    #         image <- ggplot2::ggplot(other_importance, aes(x = reorder(Variable, Overall), y = Overall)) +
+    #             geom_bar(stat = "identity") +
+    #             coord_flip() +
+    #             theme_light() +
+    #             xlab("Variable") +
+    #             ylab("Importance") +
+    #             ggtitle("Variable Importance")
+    #         ggsave(paste0("plots/logistic_multiway/importance_other", "_", object@id_term, ".png"), image)
+    #     }
 
 
-    df_cv <- object@model$resample
-    df_cv <- df_cv[, setdiff(names(df_cv), "Resample")]
-    df_long <- melt(df_cv)
-    object@li_box_plots[[object@id_term]] <- df_long
+    #     df_cv <- object@model$resample
+    #     df_cv <- df_cv[, setdiff(names(df_cv), "Resample")]
+    #     df_long <- melt(df_cv)
+    #     object@li_box_plots[[object@id_term]] <- df_long
 
-    box_plots_stats <- ggplot(df_long, aes(x = variable, y = value)) +
-        geom_boxplot() +
-        stat_summary(fun = median, geom = "point", shape = 20, size = 3, color = "red") +
-        theme(axis.text.x = element_text(angle = 90, hjust = 1)) # Rotate x-axis labels for readability
-    ggsave(paste0("plots/logistic_multiway/box_plots_stats", "_", object@id_term, ".png"), box_plots_stats)
+    #     box_plots_stats <- ggplot(df_long, aes(x = variable, y = value)) +
+    #         geom_boxplot() +
+    #         stat_summary(fun = median, geom = "point", shape = 20, size = 3, color = "red") +
+    #         theme(axis.text.x = element_text(angle = 90, hjust = 1)) # Rotate x-axis labels for readability
+    #     ggsave(paste0("plots/logistic_multiway/box_plots_stats", "_", object@id_term, ".png"), box_plots_stats)
 
-    return(object)
+    #     return(object)
 })
 
 setMethod("get_df_imp", "apply_model", function(object) {
     return(data.frame(Variable = names(object@data_used[, object@col_x]), Overall = abs(object@model$finalModel$beta_unfolded)))
-
 })

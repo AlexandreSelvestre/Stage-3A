@@ -10,7 +10,7 @@ default:
   rep: 1
   k_smote: 3
   sampling: "up" # "up", NULL ou  "smote"
-  search: "random" #grid ou random
+  search: "grid" #grid ou random
   do_parallel: TRUE
   analyse_data: 
     do: FALSE
@@ -20,10 +20,10 @@ default:
 
   #name_model: "random_forest"  #To norm et à refaire en mode li_caret
   #name_model: "logistic_grp"
-  name_model: "logistique_simple"
+  #name_model: "logistique_simple"
   #name_model: "logistic_multiway"
   #name_model: "logistic_select"
-  #name_model: "logistic_multibloc"
+  name_model: "logistic_multibloc"
 
 
 radio:
