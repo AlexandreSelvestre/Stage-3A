@@ -6,10 +6,9 @@ default:
   n_sample: 1000
   resample: FALSE #ignoré pour l'instant
   ecart_class: 1  #ecart entre les moyennes des classes
-  dist_sepa: 0.1
-  dist_non_sepa: 1.7 #trop, mais rester au dessus de 1
+  dist_sepa: 0.2
+  dist_non_sepa: 0.5
   prop_class_1: 0.5
 
 
 my_config:
-

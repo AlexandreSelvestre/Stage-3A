@@ -52,7 +52,7 @@ better_create_grid_multibloc <- function(x, y, len = NULL, search = "grid", L, l
 
 fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, index, index_bloc, eps, ite_max, n_iter_per_reg, k_smote, do_smote, index_variable, is_binary, classe_1 = NULL) {
     # ici, index est bien sûr index_mode
-    li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, index_bloc,is_binary)
+    li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, index_bloc, is_binary)
     x <- li_norm$new_x
     classe_min <- names(which.min(table(y)))
     classe_maj <- setdiff(levels(y), classe_min)
@@ -141,7 +141,7 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
 
         logistic_classic <- glmnet:::glmnet.fit(
             x = t(Q %*% Z), y = y_numeric, family = binomial(), alpha = 1,
-            weights = weights / dim(Z)[2], lambda = param$lambda, intercept = TRUE, maxit = 1e9,
+            weights = weights / dim(Z)[2], lambda = param$lambda, intercept = TRUE, maxit = 1e8,
             thresh = 1e-8
         )
         faux_beta <- as.numeric(logistic_classic$beta)
@@ -394,12 +394,14 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
             continue <- FALSE
             print(paste("Warning, pas de convergence. Le rapport vaut:", rapport))
         }
-        if (abs(crit_log_J - memoire_crit_J) < 1e-10 & abs(crit_log_K - memoire_crit_K) < 1e-10) {
-            continue <- FALSE
-            print("Warning, LOOP!!")
-            print(paste("Rapport:", rapport))
-            print(paste("Crit_J:", crit_log_J))
-            print(paste("Crit_K:", crit_log_K))
+        if (crit_log_J != -Inf & crit_log_K != -Inf) {
+            if (abs(crit_log_J - memoire_crit_J) < 1e-10 & abs(crit_log_K - memoire_crit_K) < 1e-10) {
+                continue <- FALSE
+                print("Warning, LOOP!!")
+                print(paste("Rapport:", rapport))
+                print(paste("Crit_J:", crit_log_J))
+                print(paste("Crit_K:", crit_log_K))
+            }
         }
         iteration <- iteration + 1
         memoire_crit_J <- crit_log_J

@@ -29,9 +29,15 @@ config_run <- config::get(file = "configs/config_run.yml", config = "my_config")
 
 if (config_run$simulated_data) {
     config_model <- config::get(file = "configs/config_model.yml", config = "simu")
-    config_extrac <- config::get(file = "configs/extrac/config_join_picto.yml", config = "my_config")
-    name_config <- "simu"
-    source("extrac/join_picto.r")
+    if (config_run$simple_generation) {
+        config_extrac <- config::get(file = "configs/extrac/config_simul_basic.yml", config = "my_config")
+        name_config <- "simu"
+        source("extrac/simul_basic.r")
+    } else {
+        config_extrac <- config::get(file = "configs/extrac/config_join_picto.yml", config = "my_config")
+        name_config <- "simu"
+        source("extrac/join_picto.r")
+    }
     # config_extrac <- read_json("configs/extrac/config_extrac_simul_old.json", simplifyVector = TRUE, simplifyMatrix = FALSE)
     # source("extrac/extrac_simul_old.r")
 } else {
@@ -163,53 +169,4 @@ if (config$minimal_information) {
     run_imp_extra(imp_li, performance, li_confus, is_null, length(id_li), path_plot, inference)
 }
 
-# Multibloc R = 3 (favorisé si on ne laisse pas lambda sous 5e-4)
-# [1] "L'erreur totale de reconstruction du pictogramme est de 0.409446064324835"
-# [1] "actuelle moyenne AUC test 0.953936 ite: 1"
-
-# Multibloc R = 12, lambda = 0.0089
-# [1] "L'erreur moyenne de reconstruction du pictogramme est de 0.417598026987947"
-# [1] "actuelle moyenne AUC test 0.96008 ite: 1"
-
-# Multibloc R = 12, lambda = 1.4e-5
-# [1] "L'erreur moyenne de reconstruction du pictogramme est de 0.34866414322918"
-# [1] "actuelle moyenne AUC test 0.93776 ite: 1"
-
-# Simple: lambda = 10^{-8}
-# [1] "L'erreur moyenne de reconstruction du pictogramme est de 0.368666728274711"
-# [1] "actuelle moyenne AUC test 0.89124 ite: 1"
-
-# Conclusion, la cross validation donne des AUC similaires au modèle trop sparse et au bon modèle. Par contre avec un range assez grand, bon résultats du multibloc sur 1 image. A comparer au meilleur paramétrage du logistic simple.
-
-# avec deux picto et les dernier reglages multiblocs... quel lambda choisi?
-# [1] "L'erreur moyenne de reconstruction du pictogramme est de 0.232923808204596"
-# [1] "actuelle moyenne AUC test 0.980832 ite: 1"
-# [1] "actuelle moyenne AUC val 0.979466666666667 ite: 1"
-# [1] "moyenne AUC test 0.980832"
-# [1] "moyenne AUC val 0.979466666666667"
-# Warning message:
-# glmnet.fit: algorithm did not converge
-
-# Mêmes picto mais en logistic simple avec wide range of small lambda: ici le multibloc semble gagner
-# [1] "La valeur de l'AUC de test est de 0.947232"
-# [1] "La valeur de l'AUC de validation sur chaque fold est de 0.947422222222222"
-# [2] "La valeur de l'AUC de validation sur chaque fold est de 0.965822222222222"
-# [3] "La valeur de l'AUC de validation sur chaque fold est de 0.958444444444444"
-# [4] "La valeur de l'AUC de validation sur chaque fold est de 0.951511111111111"
-# [5] "La valeur de l'AUC de validation sur chaque fold est de 0.946755555555556"
-# [1] "Ce qui donne une moyenne d'AUC de 0.953991111111111"
-# [1] "La valeur de l'AUC de train est de 1"
-# "L'erreur moyenne de reconstruction du pictogramme est de 0.252991194870852"
-
-
-# Tendance vers les faibles rangs... pourquoi??
-
-# Eclaircir WTF: [1] "dimensions data used" "2000"                 "5149"
-# nombre de la classe majoritaire dans train 750
-# nombre de la classe minoritaire dans train 750
-# nombre de la classe majoritaire dans test 250
-# nombre de la classe minoritaire dans test 250
-# rapport nb_minoritaire/nb_majoritaire en training 1
-# rapport nb_minoritaire/nb_majoritaire  en testing 1
-# Error in { : task 1 failed - "missing value where TRUE/FALSE needed"
-# > attention quand c'est compris, config run passe à TRUE
+# avec dist sepa = 0.1 et dist non sepa = 10, n = 1000, logistic simple donne:

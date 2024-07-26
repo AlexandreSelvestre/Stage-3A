@@ -293,9 +293,11 @@ plot_global <- function(imp_average, path_plot, ending_name, inference) {
         )
     ggsave(paste0(path_plot, "/global_blocs", "_", ending_name, ".png"), image) # bloc par bloc
 
-    variable_importance <- variable_importance[variable_importance$bloc != "clinical", ]
-    variable_importance$Group <- substr(variable_importance$Variable, nchar(variable_importance$Variable) - 3, nchar(variable_importance$Variable))
-    variable_importance$small_Group <- substr(variable_importance$Variable, 0, nchar(variable_importance$Variable) - 5)
+    variable_importance <- variable_importance[inference@index_bloc > -0.5, ]
+    ##### A refaire
+    variable_importance$Group <- inference@name_mode
+    variable_importance$small_Group <- inference@name_variable
+    renorm <- TRUE # Ajoute les pourcentages et tient compte de l'imbalance potentiel entre les groupes... (même s'il n'y en avait pas jusqu'à présent)
     if (renorm) {
         variable_importance_grouped <- aggregate_prop(Overall ~ Group, data = variable_importance, FUN = mean)
         variable_importance_small_grouped <- aggregate_prop(Overall ~ small_Group, data = variable_importance, FUN = mean)
@@ -338,12 +340,13 @@ plot_global <- function(imp_average, path_plot, ending_name, inference) {
 
     ggsave(paste0(path_plot, "/global_small_groups", "_", ending_name, ".png"), image, width = 10, height = 20) # variable par variable
 }
-library(readxl)
-library(writexl)
-if (Sys.info()["sysname"] == "Linux") {
-    path <- "..//data//"
-    path_RDS <- "..//data//RDS//"
-}
+
+# library(readxl)
+# library(writexl)
+# if (Sys.info()["sysname"] == "Linux") {
+#     path <- "..//data//"
+#     path_RDS <- "..//data//RDS//"
+# }
 
 convert_y <- function(y, classe_1) {
     classe_min <- names(which.min(table(y)))

@@ -1,9 +1,10 @@
 default:
   do_extract: TRUE
   extrac_first: TRUE
-  simulated_data: FALSE
+  simulated_data: TRUE
   num_runs: 2
   do_picto: TRUE
+  simple_generation: FALSE #Si TRUE: une seule loi pour X et on utilise simul_basic
   
 
 my_config:

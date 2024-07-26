@@ -190,3 +190,25 @@ silent_run <- function(func, ...) {
 
     return(result)
 }
+
+complete_orthonormal_basis <- function(vec) {
+    # Normaliser le vecteur d'entrée
+    vec <- vec / sqrt(sum(vec^2))
+
+    # Créer une matrice en ajoutant des vecteurs aléatoires
+    n <- length(vec)
+    mat <- matrix(rnorm(n * n), n, n)
+    mat[, 1] <- vec
+
+    # Appliquer la décomposition QR
+    qr_decomp <- qr(mat)
+    Q <- qr.Q(qr_decomp)
+
+    return(Q)
+}
+
+# vec <- c(1, 1, 2, 3)
+# vec <- vec / sqrt(sum(vec^2))
+# Q <- complete_orthonormal_basis(vec)
+# print(Q)
+# print(vec)

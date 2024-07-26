@@ -33,7 +33,7 @@ create_grid_simple <- function(x, y, len = NULL, search = "grid") {
 
 li_caret_simple$grid <- create_grid_simple
 
-fit_simple <- function(x, y, wts, param, lev, last, weights_dict, classProbs, k_smote, do_smote, index_variable, is_binary, classe_1 = NULL) {
+fit_simple <- function(x, y, wts, param, lev, last, weights_dict, classProbs, k_smote, do_smote, index_variable, index_bloc, is_binary, classe_1 = NULL) {
     li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, index_bloc, is_binary)
     ######## THE GOOD LINE FOR NORMALIZATION
     x <- li_norm$new_x
@@ -105,9 +105,7 @@ li_caret_simple$prob <- function(modelFit, newdata, preProc = NULL, submodels = 
     df_mu <- modelFit$li_norm$df_mu
     df_sigma <- modelFit$li_norm$df_sigma
     newdata <- renormalize_in_model_pred_index_mode(newdata, df_mu, df_sigma)
-
-
-
+    # print(newdata[(nrow(newdata) - 1):nrow(newdata), ])
     proba <- 1 / (1 + exp(-as.vector(newdata %*% beta) - intercept))
     str_1 <- as.character(classe_1)
     str_0 <- as.character(classe_0)
@@ -146,7 +144,7 @@ setMethod("train_method", "apply_model", function(object) {
             method = li_caret_simple, trControl = object@cv, metric = "AUC",
             tuneLength = 8, tuneGrid = tuneGrid,
             weights_dict = object@weights, k_smote = object@k_smote, do_smote = object@do_smote,
-            index_variable = object@index_variable, is_binary = object@is_binary,
+            index_variable = object@index_variable, index_bloc = object@index_bloc, is_binary = object@is_binary,
             classe_1 = object@classe_1
         )
         # x, y, wts, param, lev, last, weights_dict, classProbs, k_smote, do_smote, index, is_binary

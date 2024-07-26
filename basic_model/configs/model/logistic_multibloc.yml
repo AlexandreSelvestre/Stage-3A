@@ -18,14 +18,14 @@ radio:
     "CHC": 1
 
 simu:
-  lambda_min: 0.00000001
+  lambda_min: 0.0000001
   lambda_max: 0.00001
   R_min: 12
   R_max: 12
   same_R: FALSE
   li_R:
-    block_1: [1]
-    block_2: [1,2]
+    block_1: [1,5,10]
+    block_2: [1]
   tuneLength: 5
 
   weights:
