@@ -3,26 +3,32 @@ default:
   eps: 0.00000001 #10^-8
   ite_max: 1000
   n_iter_per_reg: 50
-  tune_R: 3
 
 
 radio:
-  lambda_min: 0.0005
+  lambda_min: 0.00005
   lambda_max: 0.01
   R_min: 1
   R_max: 2 
-  tuneLength: 20
+  tuneLength: 4
+  tune_R: 2
+  same_R: FALSE
 
   weights:
     "CCK": 1
     "CHC": 1
 
 simu:
-  lambda_min: 0.00005
-  lambda_max: 0.01
-  R_min: 2
+  lambda_min: 0.000001
+  lambda_max: 0.001
+  R_min: 12
   R_max: 12
-  tuneLength: 5
+  same_R: FALSE
+  li_R:
+    block_1: [1,6,10]
+    block_2: [1]
+    block_3: [10]
+  tuneLength: 3
 
   weights:
     "Classe_0": 1

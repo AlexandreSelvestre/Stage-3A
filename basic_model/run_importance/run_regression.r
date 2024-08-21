@@ -53,10 +53,8 @@ run_imp_extra <- function(imp_li, performance, li_confus, is_null, n_samples, pa
 
     ending_name <- "beta_value"
     ##### Utiliser l'inference pour les index et refaire les plots en général
-    plot_global(imp_average, path_plot, ending_name)
+    plot_global(imp_average, path_plot, ending_name, inference)
 
-    # ending_name <- "non_null"
-    # plot_global(non_null, path_plot, ending_name, renorm = FALSE)
     performance_long <- melt_mine(as.data.frame(performance)[, setdiff(names(performance), "AUC_val")])
     box_plots_stats <- ggplot(performance_long, aes(x = variable, y = value)) +
         stat_summary(fun = median, geom = "point", shape = 20, size = 3, color = "red") +
@@ -74,7 +72,7 @@ run_imp_extra <- function(imp_li, performance, li_confus, is_null, n_samples, pa
     new_mat[2, 2] <- mat_sum[2, 2] / sum(mat_sum[, 2])
     colnames(new_mat) <- colnames(mat_sum)
     rownames(new_mat) <- rownames(mat_sum)
-    print("voilà la matrice de confusion en pourcentage: ... % de CCK ont été bien classés vs ... % mal classés")
+    print("voilà la matrice de confusion en pourcentage: ... % de classe 1 ont été bien classés vs ... % mal classés")
     print(new_mat)
 
     final_accuracy_macro <- mean(c(mat_sum[1, 1] / sum(mat_sum[1, ]), mat_sum[2, 2] / sum(mat_sum[2, ])))

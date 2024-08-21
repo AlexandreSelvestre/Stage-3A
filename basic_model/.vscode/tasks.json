@@ -6,6 +6,12 @@
 			"label": "Nsight: autostart (localhost)",
 			"command": "cuda-gdbserver ${config:host}:${config:port} ${config:executable}",
 			"problemMatcher": []
+		},
+		{
+			"type": "shell",
+			"label": "Nsight: autostart (localhost)",
+			"command": "cuda-gdbserver ${config:host}:${config:port} ${config:executable}",
+			"problemMatcher": []
 		}
 	]
 }

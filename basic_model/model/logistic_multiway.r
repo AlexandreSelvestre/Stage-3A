@@ -22,13 +22,12 @@ create_grid_multiway <- function(x, y, len = NULL, search = "grid") {
     return(data_frame_grid)
 }
 
-better_create_grid_multiway <- function(x, y, len = NULL, search = "grid", lambda_min = 0.001, lambda_max = 0.05, R_min = 1, R_max = 4) {
+better_create_grid_multiway <- function(x, y, len = NULL, search = "grid", lambda_min, lambda_max, R_min = 1, R_max = 4, tune_R) {
+    R <- round(seq(R_min, R_max, length.out = tune_R))
     if (search == "grid") {
-        lambda <- log(seq(exp(lambda_min), exp(lambda_max), length.out = len)[1:len])
-        R <- R_min:R_max
+        lambda <- logspace(log10(lambda_min), log10(lambda_max), len)
     } else {
-        lambda <- log(runif(len, min = exp(lambda_min), max = exp(lambda_max)))
-        R <- R_min:R_max
+        lambda <- exp(log(10) * runif(len, min = log10(lambda_min), max = log10(lambda_max)))
     }
     data_frame_grid <- expand.grid(lambda = lambda, R = R)
     return(data_frame_grid)
@@ -37,8 +36,8 @@ better_create_grid_multiway <- function(x, y, len = NULL, search = "grid", lambd
 li_caret_multiway$grid <- create_grid_multiway
 
 
-fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, index, eps, ite_max, n_iter_per_reg, k_smote, do_smote, index_variable, is_binary) {
-    li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, is_binary)
+fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, index, eps, ite_max, n_iter_per_reg, k_smote, do_smote, index_variable, index_bloc, is_binary, classe_1 = NULL) {
+    li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, index_bloc, is_binary)
     x <- li_norm$new_x
     classe_min <- names(which.min(table(y)))
     classe_maj <- setdiff(levels(y), classe_min)
@@ -58,12 +57,18 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
     # On prend en entrée un dataframe
     # Formalisme pour les indices: il faut indiquer qui est dans quel mode dans index. On met -1 pour les variables cliniques
     # On supposera que l'ordre est la même pour toutes les variables: pas de décalage. Le tester au début: checker que c'est bien le même nom de colonne
+    y_numeric <- convert_y(y, classe_1)
+    if (is.null(classe_1)) {
+        classe_1 <- classe_min
+    }
+    classe_0 <- setdiff(levels(y), classe_1)
+
 
     weights <- numeric(length(y))
-    weights[y == classe_maj] <- weights_dict[[classe_maj]]
-    weights[y == classe_min] <- weights_dict[[classe_min]]
+    weights[y == classe_1] <- weights_dict[[classe_1]]
+    weights[y == classe_0] <- weights_dict[[classe_0]]
 
-    y_numeric <- ifelse(y == classe_min, 1, 0) # CCK donne 1 CHC donne 0
+
     R <- param$R
     names_x <- colnames(x)
     names_x_multimodal <- names_x[index != -1]
@@ -321,24 +326,28 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         crit_log_J <- li_grande_boucle$crit_log_J
         crit_log_K <- li_grande_boucle$crit_log_K
         # print(rapport)
-        if (rapport < eps) {
-            continue <- FALSE
+        if (crit_log_J != -Inf & crit_log_K != -Inf) {
+            if (rapport < eps) {
+                continue <- FALSE
+            }
         }
         if (iteration >= ite_max) {
             continue <- FALSE
             print(paste("Warning, pas de convergence. Le rapport vaut:", rapport))
         }
-        if (abs(crit_log_J - memoire_crit_J) < 1e-10 & abs(crit_log_K - memoire_crit_K) < 1e-10) {
-            continue <- FALSE
-            print("Warning, LOOP!!")
-            print(paste("Rapport:", rapport))
-            print(paste("Crit_J:", crit_log_J))
-            print(paste("Crit_K:", crit_log_K))
+        if (crit_log_J != -Inf & crit_log_K != -Inf) {
+            if (abs(crit_log_J - memoire_crit_J) < 1e-10 & abs(crit_log_K - memoire_crit_K) < 1e-10) {
+                continue <- FALSE
+                print("Warning, LOOP!!")
+                print(paste("Rapport:", rapport))
+                print(paste("Crit_J:", crit_log_J))
+                print(paste("Crit_K:", crit_log_K))
+            }
         }
         iteration <- iteration + 1
         memoire_crit_J <- crit_log_J
         memoire_crit_K <- crit_log_K
-        delta_t <- Sys.time() - debut_time
+        delta_t <- delta_t <- as.numeric(Sys.time() - debut_time, units = "secs")
         if (delta_t > 30) {
             continue <- FALSE
             print("Warning, trop long")
@@ -347,7 +356,7 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
             print(paste("Crit_K:", crit_log_K))
         }
     }
-    futur_fit <- list(beta_J = beta_J, beta_K = beta_K, beta_autre = beta_autre, intercept = intercept_K, R = R, J = J, K = K, lev = lev, li_norm = li_norm, classe_maj = classe_maj, classe_min = classe_min)
+    futur_fit <- list(beta_J = beta_J, beta_K = beta_K, beta_autre = beta_autre, intercept = intercept_K, R = R, J = J, K = K, lev = lev, li_norm = li_norm, classe_maj = classe_maj, classe_min = classe_min, classe_1 = classe_1, classe_0 = classe_0)
     futur_fit$beta_unfolded <- get_beta_multiway(futur_fit)
     return(futur_fit)
 }
@@ -383,6 +392,8 @@ predict_multiway <- function(modelFit, newdata, preProc = NULL, submodels = NULL
     df_sigma <- modelFit$li_norm$df_sigma
     classe_min <- modelFit$classe_min
     classe_maj <- modelFit$classe_maj
+    classe_1 <- modelFit$classe_1
+    classe_0 <- modelFit$classe_0
     newdata <- renormalize_in_model_pred_index_mode(newdata, df_mu, df_sigma)
     beta <- get_beta_multiway(modelFit)
     intercept <- modelFit$intercept
@@ -391,7 +402,7 @@ predict_multiway <- function(modelFit, newdata, preProc = NULL, submodels = NULL
         ligne %*% beta + intercept
     })
     proba <- 1 / (1 + exp(-value))
-    predicted_labels <- ifelse(proba > 0.5, classe_min, classe_maj)
+    predicted_labels <- ifelse(proba > 0.5, classe_1, classe_0)
     return(predicted_labels)
 }
 
@@ -403,6 +414,8 @@ li_caret_multiway$prob <- function(modelFit, newdata, preProc = NULL, submodels 
     df_sigma <- modelFit$li_norm$df_sigma
     classe_min <- modelFit$classe_min
     classe_maj <- modelFit$classe_maj
+    classe_1 <- modelFit$classe_1
+    classe_0 <- modelFit$classe_0
     newdata <- renormalize_in_model_pred_index_mode(newdata, df_mu, df_sigma)
     beta <- get_beta_multiway(modelFit)
     intercept <- modelFit$intercept
@@ -411,9 +424,9 @@ li_caret_multiway$prob <- function(modelFit, newdata, preProc = NULL, submodels 
     })
     proba_class_1 <- 1 / (1 + exp(-value))
     proba_class_0 <- 1 - proba_class_1
-    str_min <- as.character(classe_min)
-    str_maj <- as.character(classe_maj)
-    return(setNames(data.frame(proba_class_0, proba_class_1), c(str_maj, str_min)))
+    str_1 <- as.character(classe_1)
+    str_0 <- as.character(classe_0)
+    return(setNames(data.frame(proba_class_0, proba_class_1), c(str_0, str_1)))
 }
 
 li_caret_multiway$loop <- NULL
@@ -446,16 +459,15 @@ setMethod("train_method", "apply_model", function(object) {
     object@name_bloc <- li$name_bloc
     object@is_binary <- li$is_binary
 
-
     grid <- better_create_grid_multiway(
         x = object@train_cols[, object@col_x], y = object@y_train, len = object@tuneLength,
-        search = object@search, lambda_min = object@lambda_min, lambda_max = object@lambda_max, object@R_min, object@R_max
+        search = object@search, lambda_min = object@lambda_min, lambda_max = object@lambda_max, object@R_min, object@R_max, tune_R = object@tune_R
     )
     # print(object@index_variable)
 
-    if (object@do_parallel) {
+    if (object@parallel$do) {
         numCores <- detectCores()
-        cl <- makePSOCKcluster(numCores - 1)
+        cl <- makePSOCKcluster(object@parallel$n_process)
         registerDoParallel(cl)
         clusterEvalQ(cl, {
             files <- list.files("./utils", full.names = TRUE, pattern = "\\.r$")
@@ -470,104 +482,126 @@ setMethod("train_method", "apply_model", function(object) {
         method = li_caret_multiway, trControl = object@cv, metric = "AUC",
         tuneLength = object@tuneLength, weights_dict = object@weights, tuneGrid = grid,
         eps = object@eps, ite_max = object@ite_max, n_iter_per_reg = object@n_iter_per_reg,
-        k_smote = object@k_smote, do_smote = object@do_smote, index_variable = object@index_variable, is_binary = object@is_binary
+        k_smote = object@k_smote, do_smote = object@do_smote, index_variable = object@index_variable, index_bloc = object@index_bloc, is_binary = object@is_binary, classe_1 = object@classe_1
     )
-    if (object@do_parallel) {
+    if (object@parallel$do) {
         stopCluster(cl)
     }
     return(object)
 })
 
 setMethod("get_results", "apply_model", function(object) {
-    # x_train <- reorder_in_modes(object@train_cols[, object@col_x], index_mode = object@index_mode, index_variable = object@index_variable, index_bloc = object@index_bloc, is_binary = object@is_binary)$x
-    # x_test <- reorder_in_modes(object@test_set[, object@col_x], index_mode = object@index_mode, index_variable = object@index_variable, index_bloc = object@index_bloc, is_binary = object@is_binary)$x
     object@predictions <- as.vector(predict(object@model, newdata = as.matrix(object@test_set[, object@col_x])))
     object@predictions_proba <- predict(object@model, newdata = as.matrix(object@test_set[, object@col_x]), type = "prob")
     object@predictions_train_proba <- predict(object@model, newdata = as.matrix(object@train_cols[, object@col_x]), type = "prob")
+    object@beta_final <- object@model$finalModel$beta_unfolded
     return(object)
 })
 
 setMethod("importance_method", "apply_model", function(object) {
-    object@beta_final <- object@model$finalModel$beta_unfolded
-    best_beta_J <- object@model$finalModel$beta_J
-    best_beta_K <- object@model$finalModel$beta_K
-    best_beta_autre <- object@model$finalModel$beta_autre
-    Variable_names_seul <- unique(object@name_variable[object@index > -0.5])
-    Variables_temps_seul <- unique(object@name_mode[object@index > -0.5])
-    Variable_names <- c()
-    Variables_temps <- c()
-    R <- object@model$bestTune$R
-    for (r in 1:R) {
-        variable_name_local <- paste0(Variable_names_seul, "_", r)
-        Variable_names <- append(Variable_names, variable_name_local)
-        variables_temps_local <- paste0(Variables_temps_seul, "_", r)
-        Variables_temps <- append(Variables_temps, variables_temps_local)
-    }
-    variable_importance <- data.frame(Variable = Variable_names, Overall = abs(best_beta_J))
-    # print(variable_importance)
-    name_df <- paste0("variable_importance_", object@id_term)
-    object@li_df_var_imp[[name_df]] <- variable_importance
-    variable_importance <- variable_importance[order(-variable_importance$Overall), ]
-    variable_importance <- subset(variable_importance, Overall > 0.0001)
+    # Vieux, inutilisable: un seul R
+    #     object@beta_final <- object@model$finalModel$beta_unfolded
+    #     best_beta_J <- object@model$finalModel$beta_J
+    #     best_beta_K <- object@model$finalModel$beta_K
+    #     best_beta_autre <- object@model$finalModel$beta_autre
+    #     Variable_names_seul <- unique(object@name_variable[object@index > -0.5])
+    #     Variables_temps_seul <- unique(object@name_mode[object@index > -0.5])
+    #     Variable_names <- c()
+    #     Variables_temps <- c()
+    #     R <- object@model$bestTune$R
+    #     for (r in 1:R) {
+    #         variable_name_local <- paste0(Variable_names_seul, "_", r)
+    #         Variable_names <- append(Variable_names, variable_name_local)
+    #         variables_temps_local <- paste0(Variables_temps_seul, "_", r)
+    #         Variables_temps <- append(Variables_temps, variables_temps_local)
+    #     }
+    #     variable_importance <- data.frame(Variable = Variable_names, Overall = abs(best_beta_J))
+    #     # print(variable_importance)
+    #     name_df <- paste0("variable_importance_", object@id_term)
+    #     object@li_df_var_imp[[name_df]] <- variable_importance
+    #     variable_importance <- variable_importance[order(-variable_importance$Overall), ]
+    #     variable_importance <- subset(variable_importance, Overall > 0.0001)
 
-    image <- ggplot2::ggplot(variable_importance, aes(x = reorder(Variable, Overall), y = Overall)) +
-        geom_bar(stat = "identity") +
-        coord_flip() +
-        theme_light() +
-        xlab("Variable") +
-        ylab("Importance") +
-        ggtitle("Variable Importance")
-    ggsave(paste0("plots/logistic_multiway/importance_var_multi", "_", object@id_term, ".png"), image)
+    #     image <- ggplot2::ggplot(variable_importance, aes(x = reorder(Variable, Overall), y = Overall)) +
+    #         geom_bar(stat = "identity") +
+    #         coord_flip() +
+    #         theme_light() +
+    #         xlab("Variable") +
+    #         ylab("Importance") +
+    #         ggtitle("Variable Importance")
+    #     ggsave(paste0("plots/logistic_multiway/importance_var_multi", "_", object@id_term, ".png"), image)
 
-    time_importance <- data.frame(Variable = Variables_temps, Overall = abs(best_beta_K))
-    name_df <- paste0("time_importance_", object@id_term)
-    object@li_df_var_imp[[name_df]] <- time_importance
-    time_importance <- time_importance[order(-time_importance$Overall), ]
-    time_importance <- subset(time_importance, Overall > 0.0001)
+    #     time_importance <- data.frame(Variable = Variables_temps, Overall = abs(best_beta_K))
+    #     name_df <- paste0("time_importance_", object@id_term)
+    #     object@li_df_var_imp[[name_df]] <- time_importance
+    #     time_importance <- time_importance[order(-time_importance$Overall), ]
+    #     time_importance <- subset(time_importance, Overall > 0.0001)
 
-    image <- ggplot2::ggplot(time_importance, aes(x = reorder(Variable, Overall), y = Overall)) +
-        geom_bar(stat = "identity") +
-        coord_flip() +
-        theme_light() +
-        xlab("Variable") +
-        ylab("Importance") +
-        ggtitle("Variable Importance")
-    ggsave(paste0("plots/logistic_multiway/importance_time", "_", object@id_term, ".png"), image)
+    #     image <- ggplot2::ggplot(time_importance, aes(x = reorder(Variable, Overall), y = Overall)) +
+    #         geom_bar(stat = "identity") +
+    #         coord_flip() +
+    #         theme_light() +
+    #         xlab("Variable") +
+    #         ylab("Importance") +
+    #         ggtitle("Variable Importance")
+    #     ggsave(paste0("plots/logistic_multiway/importance_time", "_", object@id_term, ".png"), image)
 
-    if (length(best_beta_autre) > 0) {
-        other_names <- colnames(object@train_cols[, object@col_x])[object@index_mode == -1]
-        other_importance <- data.frame(Variable = other_names, Overall = abs(best_beta_autre))
-        name_df <- paste0("other_importance_", object@id_term)
-        object@li_df_var_imp[[name_df]] <- other_importance
-        other_importance <- other_importance[order(-other_importance$Overall), ]
-        other_importance <- subset(other_importance, Overall > 0.0001)
+    #     if (length(best_beta_autre) > 0) {
+    #         other_names <- colnames(object@train_cols[, object@col_x])[object@index_mode == -1]
+    #         other_importance <- data.frame(Variable = other_names, Overall = abs(best_beta_autre))
+    #         name_df <- paste0("other_importance_", object@id_term)
+    #         object@li_df_var_imp[[name_df]] <- other_importance
+    #         other_importance <- other_importance[order(-other_importance$Overall), ]
+    #         other_importance <- subset(other_importance, Overall > 0.0001)
 
-        image <- ggplot2::ggplot(other_importance, aes(x = reorder(Variable, Overall), y = Overall)) +
-            geom_bar(stat = "identity") +
-            coord_flip() +
-            theme_light() +
-            xlab("Variable") +
-            ylab("Importance") +
-            ggtitle("Variable Importance")
-        ggsave(paste0("plots/logistic_multiway/importance_other", "_", object@id_term, ".png"), image)
-    }
+    #         image <- ggplot2::ggplot(other_importance, aes(x = reorder(Variable, Overall), y = Overall)) +
+    #             geom_bar(stat = "identity") +
+    #             coord_flip() +
+    #             theme_light() +
+    #             xlab("Variable") +
+    #             ylab("Importance") +
+    #             ggtitle("Variable Importance")
+    #         ggsave(paste0("plots/logistic_multiway/importance_other", "_", object@id_term, ".png"), image)
+    #     }
 
 
-    df_cv <- object@model$resample
-    df_cv <- df_cv[, setdiff(names(df_cv), "Resample")]
-    df_long <- melt(df_cv)
-    object@li_box_plots[[object@id_term]] <- df_long
+    #     df_cv <- object@model$resample
+    #     df_cv <- df_cv[, setdiff(names(df_cv), "Resample")]
+    #     df_long <- melt(df_cv)
+    #     object@li_box_plots[[object@id_term]] <- df_long
 
-    box_plots_stats <- ggplot(df_long, aes(x = variable, y = value)) +
-        geom_boxplot() +
-        stat_summary(fun = median, geom = "point", shape = 20, size = 3, color = "red") +
-        theme(axis.text.x = element_text(angle = 90, hjust = 1)) # Rotate x-axis labels for readability
-    ggsave(paste0("plots/logistic_multiway/box_plots_stats", "_", object@id_term, ".png"), box_plots_stats)
+    #     box_plots_stats <- ggplot(df_long, aes(x = variable, y = value)) +
+    #         geom_boxplot() +
+    #         stat_summary(fun = median, geom = "point", shape = 20, size = 3, color = "red") +
+    #         theme(axis.text.x = element_text(angle = 90, hjust = 1)) # Rotate x-axis labels for readability
+    #     ggsave(paste0("plots/logistic_multiway/box_plots_stats", "_", object@id_term, ".png"), box_plots_stats)
 
-    return(object)
+    #     return(object)
 })
 
 setMethod("get_df_imp", "apply_model", function(object) {
     return(data.frame(Variable = names(object@data_used[, object@col_x]), Overall = abs(object@model$finalModel$beta_unfolded)))
-
 })
+
+# Fitting lambda = 7.07e-05, R = 6 on full training set
+
+#               lambda R
+# 10 7.07106781187e-05 6
+# Setting levels: control = Classe_0, case = Classe_1
+# Setting direction: controls > cases
+# [1] "La valeur de l'AUC de test est de 1"
+# [1] "La valeur de l'AUC de validation sur chaque fold est de 0.999866666666667"
+# [2] "La valeur de l'AUC de validation sur chaque fold est de 0.999955555555556"
+# [3] "La valeur de l'AUC de validation sur chaque fold est de 0.998355555555556"
+# [4] "La valeur de l'AUC de validation sur chaque fold est de 0.999955555555556"
+# [5] "La valeur de l'AUC de validation sur chaque fold est de 0.999333333333333"
+# [1] "Ce qui donne une moyenne d'AUC de 0.999493333333333"
+# Setting levels: control = Classe_0, case = Classe_1
+# Setting direction: controls > cases
+# [1] "La valeur de l'AUC de train est de 1"
+# [1] "End of analysis phase"
+# [1] "L'erreur moyenne de reconstruction du pictogramme est de 0.18338051081815"
+# [1] "actuelle moyenne AUC test 1 ite: 1"
+# [1] "actuelle moyenne AUC val 0.999493333333333 ite: 1"
+# [1] "moyenne AUC test 1"
+# [1] "moyenne AUC val 0.999493333333333"

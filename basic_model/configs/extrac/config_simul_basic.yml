@@ -1,0 +1,10 @@
+default:
+  include_products: FALSE
+  num_picto:
+    - 6
+    - 1
+  n_sample: 2000
+  sd: 1
+
+
+my_config:

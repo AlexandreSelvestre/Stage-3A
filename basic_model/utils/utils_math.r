@@ -94,6 +94,8 @@ unregister_dopar <- function() {
 
 
 aggregate_prop <- function(formula, data, ...) {
+    # On moyenne les pourcentages de non nullité mais on somme les importances
+    # On rescale ensuite les importances (elles sont relatives)
     df_grouped <- aggregate(formula, data = data, FUN = sum)
     col_grp <- as.character(formula)[3]
     col_values <- as.character(formula)[2]
@@ -160,3 +162,54 @@ glue_mats <- function(li_beta_matrix) {
     beta_matrix_combined <- do.call(cbind, adjusted_matrices)
     return(beta_matrix_combined)
 }
+
+
+silent_run <- function(func, ...) {
+    # Créer un fichier temporaire pour capturer les sorties
+    temp_file <- tempfile()
+
+    # Ouvrir une connexion au fichier temporaire
+    temp_conn <- file(temp_file, open = "wt")
+
+    # Rediriger les messages de sortie standard vers la connexion au fichier temporaire
+    sink(temp_conn)
+
+    # Rediriger les messages d'avertissement vers la connexion au fichier temporaire
+    sink(temp_conn, type = "message")
+
+    # Exécuter la fonction en mode silencieux avec les arguments supplémentaires
+    result <- func(...)
+
+    # Réinitialiser les sorties à leurs destinations d'origine
+    sink()
+    sink(type = "message")
+
+    # Fermer la connexion au fichier temporaire
+    close(temp_conn)
+
+    # Supprimer le fichier temporaire
+    unlink(temp_file)
+
+    return(result)
+}
+
+complete_orthonormal_basis <- function(vec) {
+    # Normaliser le vecteur d'entrée
+    vec <- vec / sqrt(sum(vec^2))
+
+    # Créer une matrice en ajoutant des vecteurs aléatoires
+    n <- length(vec)
+    mat <- matrix(rnorm(n * n), n, n)
+    mat[, 1] <- vec
+    # Appliquer la décomposition QR
+    qr_decomp <- qr(mat)
+    Q <- qr.Q(qr_decomp)
+
+    return(Q)
+}
+
+# vec <- c(1, 1, 2, 3)
+# vec <- vec / sqrt(sum(vec^2))
+# Q <- complete_orthonormal_basis(vec)
+# print(Q)
+# print(vec)

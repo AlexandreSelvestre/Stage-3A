@@ -13,7 +13,6 @@ library(ExPanDaR)
 library(NbClust)
 library(EMCluster)
 library(magrittr)
-source("extrac/gene_x_scalar.r")
 
 # Beta sera décomposé ligne par ligne pour rester cohérent
 extract_all <- function(config_extrac, sysname) {
@@ -43,7 +42,6 @@ extract_all <- function(config_extrac, sysname) {
         return(beta_matrix)
     })
 
-    # Créer les noms de variables
     li_names <- lapply(1:length(name_picto), function(n) {
         beta_matrix <- li_beta_matrix[[n]]
         vec_names <- c()
@@ -54,45 +52,34 @@ extract_all <- function(config_extrac, sysname) {
         }
         return(vec_names)
     })
-    # Mettre les noms de vecteurs en variables
     vec_names <- do.call(c, li_names)
 
-    # Déplier beta
     li_beta_vec <- lapply(1:length(li_beta_matrix), function(n) {
         beta_matrix <- li_beta_matrix[[n]]
         beta_vec <- c(t(beta_matrix))
         return(beta_vec)
     })
-    beta_vec <- do.call(c, li_beta_vec)
 
-    # Nommer beta
+    beta_vec <- do.call(c, li_beta_vec)
     names(beta_vec) <- vec_names
 
-    # Générer les données complexes
     print("start gene")
-    X <- gene_x_scalar(config_extrac, beta_vec)
+    X <- matrix(rnorm(length(beta_vec) * config_extrac$n_sample, mean = 0, sd = config_extrac$sd), nrow = config_extrac$n_sample, ncol = length(beta_vec))
     print("end gene")
 
     colnames(X) <- vec_names
-
-
-
-
-
-    # # renommer beta_vec
-    # lapply(1:length(li_beta_vec), function(n) {
-    #     names(li_beta_vec[[n]]) <- colnames(li_X[[n]])
-    # })
-
 
 
     # coller les matrices beta
     beta_matrix <- glue_mats(li_beta_matrix)
 
     # Calculer le bruit puis y
-    # proba <- 1 / (1 + exp(-X %*% beta_vec))
-    # y <- rbinom(length(proba), size = 1, prob = proba)
-    y <- c(rep("Classe_1", round(config_extrac$prop_class_1 * nrow(X))), rep("Classe_0", nrow(X) - round(config_extrac$prop_class_1 * nrow(X))))
+    print("calc_y")
+    proba <- 1 / (1 + exp(-X %*% beta_vec))
+    y <- rbinom(length(proba), size = 1, prob = proba)
+    y <- ifelse(y == 1, "Classe_1", "Classe_0")
+    print("y_done")
+
 
     # Sauvegarder data_used
     data_used <- cbind(y, as.data.frame(X))
@@ -132,7 +119,7 @@ extract_all <- function(config_extrac, sysname) {
 
     name_bloc <- unname(unlist(lapply(1:length(li_beta_matrix), function(l) {
         beta_matrix <- li_beta_matrix[[l]]
-        return(rep(paste0("bloc_", l), nrow(beta_matrix) * ncol(beta_matrix)))
+        return(rep("bloc l", nrow(beta_matrix) * ncol(beta_matrix)))
     })))
 
     name_mode <- unname(unlist(lapply(1:length(li_beta_matrix), function(l) {

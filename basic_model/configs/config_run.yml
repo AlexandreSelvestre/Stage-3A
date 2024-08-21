@@ -2,12 +2,12 @@ default:
   do_extract: TRUE
   extrac_first: TRUE
   simulated_data: FALSE
-  num_runs: 2
+  num_runs: 1
   do_picto: TRUE
-  
+  simple_generation: FALSE
 
 my_config:
   do_extract: FALSE #réextraire ou non après la première fois
   extrac_first: TRUE #extraire ou non la toute première fois
-  simulated_data: TRUE
+  simulated_data: FALSE
   num_runs: 1

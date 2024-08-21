@@ -1,0 +1,46 @@
+default:
+  include_products: FALSE
+  num_picto:
+    - 6
+    - 1
+    - 2
+  n_sample: 4000
+  resample: FALSE #ignoré pour l'instant
+  ecart_class: 1  #ecart entre les moyennes des classes
+  dist_sepa: 0.1
+  dist_non_sepa: 0.5 
+  prop_class_1: 0.5
+  do_QR: FALSE
+
+
+multiway
+  R_min: 1
+  R_max: 15
+  tune_R: 4
+  lambda_min: 0.000001
+  lambda_max: 0.005
+  tuneLength: 4
+
+donne
+        lambda    R
+0.000292401773821 6
+[1] "L'erreur moyenne de reconstruction du pictogramme est de 0.202374633307099"
+et picto raté
+
+vs multiblocs :
+  lambda_min: 0.000001
+  lambda_max: 0.001
+  R_min: 12
+  R_max: 12
+  same_R: FALSE
+  li_R:
+    block_1: [1,6,10]
+    block_2: [1]
+    block_3: [10]
+  tuneLength: 3
+
+  donne
+  R_1 R_2 R_3 lambda
+   6   1  10  1e-06
+   [1] "L'erreur moyenne de reconstruction du pictogramme est de 0.168811410037774"
+   et picto top

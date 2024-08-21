@@ -14,6 +14,10 @@ docs/papiers/
 *_*Tarball*
 *-Ex.R
 
+# Pas de fichier de données excel
+*.xlsx
+*.xls
+
 # Fichiers générés par RStudio
 .Rproj.user/
 .Rhistory
@@ -24,3 +28,4 @@ docs/papiers/
 .vsc.settings.json
 .Rprofile
 .renviron
+

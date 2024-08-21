@@ -33,8 +33,8 @@ create_grid_simple <- function(x, y, len = NULL, search = "grid") {
 
 li_caret_simple$grid <- create_grid_simple
 
-fit_simple <- function(x, y, wts, param, lev, last, weights_dict, classProbs, k_smote, do_smote, index_variable, is_binary) {
-    li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, is_binary)
+fit_simple <- function(x, y, wts, param, lev, last, weights_dict, classProbs, k_smote, do_smote, index_variable, index_bloc, is_binary, classe_1 = NULL) {
+    li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, index_bloc, is_binary)
     ######## THE GOOD LINE FOR NORMALIZATION
     x <- li_norm$new_x
     classe_min <- names(which.min(table(y)))
@@ -59,8 +59,11 @@ fit_simple <- function(x, y, wts, param, lev, last, weights_dict, classProbs, k_
     weights[y == classe_maj] <- weights_dict[[classe_maj]]
     weights[y == classe_min] <- weights_dict[[classe_min]]
     # write_xlsx(cbind(y, x), "..\\data\\no.xlsx")
-
-    y_numeric <- ifelse(y == classe_min, 1, 0)
+    y_numeric <- convert_y(y, classe_1)
+    if (is.null(classe_1)) {
+        classe_1 <- classe_min
+    }
+    classe_0 <- setdiff(levels(y), classe_1)
 
     regression <- glmnet:::glmnet.fit(
         x = as.matrix(x), y = y_numeric, family = binomial(), alpha = 1,
@@ -69,7 +72,7 @@ fit_simple <- function(x, y, wts, param, lev, last, weights_dict, classProbs, k_
 
     beta <- as.numeric(regression$beta)
     intercept <- regression$a0
-    return(list(beta = beta, intercept = intercept, lev = lev, li_norm = li_norm, classe_min = classe_min, classe_maj = classe_maj))
+    return(list(beta = beta, intercept = intercept, lev = lev, li_norm = li_norm, classe_min = classe_min, classe_maj = classe_maj, classe_1 = classe_1, classe_0 = classe_0))
 }
 
 li_caret_simple$fit <- fit_simple
@@ -80,14 +83,15 @@ li_caret_simple$predict <- function(modelFit, newdata, preProc = NULL, submodels
     df_sigma <- modelFit$li_norm$df_sigma
     classe_min <- modelFit$classe_min
     classe_maj <- modelFit$classe_maj
+    classe_1 <- modelFit$classe_1
+    classe_0 <- modelFit$classe_0
     newdata <- renormalize_in_model_pred_index_mode(newdata, df_mu, df_sigma)
 
     beta <- modelFit$beta
     intercept <- modelFit$intercept
 
-
     proba <- 1 / (1 + exp(-as.vector(newdata %*% beta) - intercept))
-    predicted_labels <- ifelse(proba > 0.5, classe_min, classe_maj)
+    predicted_labels <- ifelse(proba > 0.5, classe_1, classe_0)
     return(predicted_labels)
 }
 
@@ -96,17 +100,16 @@ li_caret_simple$prob <- function(modelFit, newdata, preProc = NULL, submodels = 
     intercept <- modelFit$intercept
     classe_min <- modelFit$classe_min
     classe_maj <- modelFit$classe_maj
-
+    classe_1 <- modelFit$classe_1
+    classe_0 <- modelFit$classe_0
     df_mu <- modelFit$li_norm$df_mu
     df_sigma <- modelFit$li_norm$df_sigma
     newdata <- renormalize_in_model_pred_index_mode(newdata, df_mu, df_sigma)
-
-
-
+    # print(newdata[(nrow(newdata) - 1):nrow(newdata), ])
     proba <- 1 / (1 + exp(-as.vector(newdata %*% beta) - intercept))
-    str_min <- as.character(classe_min)
-    str_maj <- as.character(classe_maj)
-    return(setNames(data.frame(1 - proba, proba), c(str_maj, str_min)))
+    str_1 <- as.character(classe_1)
+    str_0 <- as.character(classe_0)
+    return(setNames(data.frame(1 - proba, proba), c(str_0, str_1)))
 }
 
 li_caret_simple$loop <- NULL
@@ -114,18 +117,18 @@ li_caret_simple$loop <- NULL
 
 
 setMethod("train_method", "apply_model", function(object) {
-    tuneGrid <- expand.grid(lambda = seq(object@lambda_min, object@lambda_max, length = object@tuneLength))
+    tuneGrid <- expand.grid(lambda = exp(log(10) * seq(log10(object@lambda_min), log10(object@lambda_max), length = object@tuneLength)))
     if (object@do_PCA) {
         object@model <- caret::train(
             y = object@train_cols$classe_name, x = as.matrix(object@train_cols[, object@col_x]),
             method = "glmnet", trControl = object@cv, metric = "AUC",
             tuneLength = 8, family = "binomial", tuneGrid = tuneGrid, preProcess = "pca",
-            weights = weights, index = object@index_variable, is_binary = object@is_binary
+            weights = weights, index = object@index_variable, is_binary = object@is_binary, classe_1 = object@classe_1
         )
     } else {
-        if (object@do_parallel) {
+        if (object@parallel$do) {
             numCores <- detectCores()
-            cl <- makePSOCKcluster(numCores - 1)
+            cl <- makePSOCKcluster(object@parallel$n_process)
             # cl <- makePSOCKcluster(2)
             registerDoParallel(cl)
             clusterEvalQ(cl, {
@@ -141,10 +144,11 @@ setMethod("train_method", "apply_model", function(object) {
             method = li_caret_simple, trControl = object@cv, metric = "AUC",
             tuneLength = 8, tuneGrid = tuneGrid,
             weights_dict = object@weights, k_smote = object@k_smote, do_smote = object@do_smote,
-            index_variable = object@index_variable, is_binary = object@is_binary
+            index_variable = object@index_variable, index_bloc = object@index_bloc, is_binary = object@is_binary,
+            classe_1 = object@classe_1
         )
         # x, y, wts, param, lev, last, weights_dict, classProbs, k_smote, do_smote, index, is_binary
-        if (object@do_parallel) {
+        if (object@parallel$do) {
             stopCluster(cl)
         }
         print("done")
@@ -243,32 +247,3 @@ setMethod("importance_method", "apply_model", function(object) {
 setMethod("get_df_imp", "apply_model", function(object) {
     return(object@li_df_var_imp)
 })
-
-# [1] "actuelle moyenne AUC test 0.737847222222222 ite: 40"
-# [1] "actuelle moyenne AUC val 0.801590909090909 ite: 40"
-# [1] "actuelle moyenne Accuracy test 0.674652777777778 ite: 40"
-# [1] "actuelle somme des confusion matrix ite: 40 :"
-# [1] "actuelle moyenne du macro F1 test 0.655859353795209 ite: 40"
-# [1] "actuelle moyenne du F1 CCK test 0.455854978355 ite: 40"
-# [1] "actuelle moyenne du F1 CHC test 0.855863729235 ite: 40"
-
-
-
-
-# [1] "Voilà la matrice de confusion sommée"
-#           Reference
-# Prediction CCK CHC
-#        CCK  83 122
-#        CHC  77 598
-
-# [1] "voilà la matrice de confusion en pourcentage: ... % de CCK ont été bien classés vs ... % mal classés"
-
-#     CCK                  CHC
-# CCK "
-# CHC " ##### A ecrire: il a sorti n'importe quoi
-
-
-# [1] "La balanced accuracy sur l'échantillon total vaut: 0.645401987353207"
-# le f1 score CCK sur l'échantillon entier vaut: 0.454794520548
-# le f1 score CHC sur l'échantillon entier vaut: 0.857347670251
-# [1] "Le f1 macro sur l'échantillon total vaut: 0.656071095399421"

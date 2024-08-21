@@ -10,8 +10,11 @@ default:
   rep: 1
   k_smote: 3
   sampling: "up" # "up", NULL ou  "smote"
-  search: "random" #grid ou random
-  do_parallel: TRUE
+  search: "grid" #grid ou random
+  parallel: 
+    do: FALSE
+    n_process: 8
+    forking: FALSE #useless
   analyse_data: 
     do: FALSE
     EM: FALSE
@@ -28,7 +31,10 @@ default:
 
 radio:
   minimal_information: TRUE
+  classe_1: "CCK"
+
 
 simu:
-  minimal_information: TRUE
+  minimal_information: FALSE
+  classe_1: "Classe_1"
 

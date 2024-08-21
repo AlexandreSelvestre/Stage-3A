@@ -76,33 +76,33 @@ apply_boot <- function(x, y) {
 
 
 
-find_sigma_mu_index_mode <- function(x, index, is_binary) {
-    # index_variable nécessaire: c'est index
+find_sigma_mu_index_mode <- function(x, index_variable, index_bloc, is_binary) {
     x <- as.matrix(x)
     # l'indice -1 est attribué aux variables tabulaires dans index
     # is_binary contient des 1 au niveau des variables à ne pas normaliser (binaires), même taille que index même si seule premiere occurence (en mode) regardée
-    index_non_neg <- index[index >= 0]
-    M <- length(index[index == -1])
-    K <- sum(index_non_neg == index_non_neg[1])
-    J <- length(unique(index_non_neg))
     df_mu <- as.data.frame(matrix(0, nrow = nrow(x), ncol = ncol(x)))
     df_sigma <- as.data.frame(matrix(1, nrow = nrow(x), ncol = ncol(x)))
-    li_dico <- lapply(1:J, function(x) c())
+    li_dico <- list()
     li_dico$tab <- c()
-    # print(li_dico)
     for (a in 1:ncol(x)) {
-        if (index[a] > -0.5) {
-            # print(index[a])
-            li_dico[[index[a]]] <- c(li_dico[[index[a]]], a)
+        if (index_variable[a] > -0.5) {
+            var_num <- index_variable[a]
+            bloc_num <- index_bloc[a]
+            key <- paste0(var_num, "_", bloc_num)
+            if (!key %in% names(li_dico)) {
+                li_dico[[key]] <- c(a)
+            } else {
+                li_dico[[key]] <- c(li_dico[[key]], a)
+            }
         } else {
             li_dico$tab <- c(li_dico$tab, a)
         }
     }
 
-    for (j in 1:J) {
-        if (!is_binary[j]) {
+    for (key in names(li_dico)) {
+        if (!is_binary[li_dico[[key]][1]]) {
             full_col <- c()
-            for (col_num in li_dico[[j]]) {
+            for (col_num in li_dico[[key]]) {
                 col <- x[, col_num]
                 full_col <- c(full_col, col)
             }
@@ -112,7 +112,7 @@ find_sigma_mu_index_mode <- function(x, index, is_binary) {
                 sigma <- 1
                 print(paste("Attention, la variable", colnames(x)[col_num], "a une variance nulle"))
             }
-            for (col_num in li_dico[[j]]) {
+            for (col_num in li_dico[[key]]) {
                 df_mu[, col_num] <- mu
                 df_sigma[, col_num] <- sigma
             }
@@ -135,13 +135,13 @@ find_sigma_mu_index_mode <- function(x, index, is_binary) {
     return(list(mu = df_mu, sigma = df_sigma))
 }
 
-renormalize_in_model_fit_index_mode <- function(x, index, is_binary = NULL) {
-    # index_variable nécessaire
+renormalize_in_model_fit_index_mode <- function(x, index_variable, index_bloc, is_binary = NULL) {
+    # index_variable nécessaire (c'est index...)
     if (is.null(is_binary)) {
         is_binary <- rep(FALSE, ncol(x))
     }
     x <- as.data.frame(x)
-    li <- find_sigma_mu_index_mode(x, index, is_binary)
+    li <- find_sigma_mu_index_mode(x, index_variable, index_bloc, is_binary)
     df_mu <- li$mu
     df_sigma <- li$sigma
     new_x <- data.table::copy(x)
@@ -161,30 +161,29 @@ renormalize_in_model_pred_index_mode <- function(newdata, df_mu, df_sigma) {
 }
 
 reorder_in_modes <- function(x, index_mode, index_variable, index_bloc, name_mode, name_variable, name_bloc, is_binary) {
+    ## !!!Attention si K varie!!!
     # Seule nécessité avant cetet fonction: variables tabulaires à la fin
     # L'application de cette fonction assure que les indices de sortie sont tous bien jolis et contigus... Ca sauve certains modèles un peu mal construits. Et on arrange tout sur le modèle du data used des radiomiques (par mode mais pas par bloc).
     # different_variables <- order(unique(index_variable[index_variable > -0.5]))
-    different_blocs <- order(unique(index_bloc[index_bloc > -0.5]))
+
+    different_blocs <- sort(unique(index_bloc[index_bloc > -0.5]))
     li_different_variables <- lapply(1:length(different_blocs), function(l) {
-        return(order(unique(index_variable[index_bloc == different_blocs[l]])))
+        return(sort(unique(index_variable[index_bloc == different_blocs[l]])))
     })
     x <- as.data.frame(x)
     li_modes <- list()
     count_tab <- 1
     # Calculer les indices de départ des variables de chaque bloc
     vec_offset_var_bloc <- c(0)
-    if (length(different_blocs > 0)) {
-        if (length(different_blocs) > 1) {
-            for (l in 1:(length(different_blocs) - 1)) {
-                previous_offset <- vec_offset_var_bloc[l]
-                cat("JU", l, "\n")
-                print(li_different_variables)
-                n_variables <- length(li_different_variables[[l]])
-                offset <- previous_offset + n_variables
-                vec_offset_var_bloc <- c(vec_offset_var_bloc, offset)
-            }
+    if (length(different_blocs > 1)) {
+        for (l in 1:(length(different_blocs) - 1)) {
+            previous_offset <- vec_offset_var_bloc[l]
+            n_variables <- length(li_different_variables[[l]])
+            offset <- previous_offset + n_variables
+            vec_offset_var_bloc <- c(vec_offset_var_bloc, offset)
         }
     }
+
 
 
     new_index_mode <- rep(-1, length(index_mode))
@@ -202,9 +201,9 @@ reorder_in_modes <- function(x, index_mode, index_variable, index_bloc, name_mod
         if (!as.character(index_mode[i]) %in% names(li_modes)) {
             li_modes[[as.character(index_mode[i])]] <- as.data.frame(matrix(0, ncol = length(index_mode[index_mode == index_mode[i]]), nrow = nrow(x)))
         }
-        num_bloc <- which(different_blocs == index_bloc[i])
-        num_var <- which(li_different_variables[[num_bloc]] == index_variable[i])
         if (index_mode[i] > -0.5) {
+            num_bloc <- which(different_blocs == index_bloc[i])
+            num_var <- which(li_different_variables[[num_bloc]] == index_variable[i])
             li_modes[[as.character(index_mode[i])]][, num_var + vec_offset_var_bloc[num_bloc]] <- x[, i]
             colnames(li_modes[[as.character(index_mode[i])]])[num_var + vec_offset_var_bloc[num_bloc]] <- colnames(x)[i]
         } else {
@@ -232,7 +231,7 @@ reorder_in_modes <- function(x, index_mode, index_variable, index_bloc, name_mod
             }
             new_index_mode[(k - 1) * J + j] <- k
             new_index_variable[(k - 1) * J + j] <- j
-            where_mode <- which(index_mode == order(unique(index_mode[index_mode > -0.5]))[k])
+            where_mode <- which(index_mode == sort(unique(index_mode[index_mode > -0.5]))[k])
             where_bloc <- which(index_bloc == different_blocs[num_bloc])
             where_variable <- which(index_variable == li_different_variables[[num_bloc]][j - vec_offset_var_bloc[num_bloc]])
             previous_index <- intersect(intersect(where_mode, where_variable), where_bloc)
@@ -248,7 +247,6 @@ reorder_in_modes <- function(x, index_mode, index_variable, index_bloc, name_mod
             # cat(previous_index, j, index_variable[previous_index], "\n")
         }
     }
-    write_xlsx(new_x, "..//data//test.xlsx")
     return(list(x = new_x, index_mode = new_index_mode, index_variable = new_index_variable, index_bloc = new_index_bloc, is_binary = new_is_binary, name_mode = new_name_mode, name_variable = new_name_variable, name_bloc = new_name_bloc))
 }
 
@@ -291,9 +289,11 @@ plot_global <- function(imp_average, path_plot, ending_name, inference) {
         )
     ggsave(paste0(path_plot, "/global_blocs", "_", ending_name, ".png"), image) # bloc par bloc
 
-    variable_importance <- variable_importance[variable_importance$bloc != "clinical", ]
-    variable_importance$Group <- substr(variable_importance$Variable, nchar(variable_importance$Variable) - 3, nchar(variable_importance$Variable))
-    variable_importance$small_Group <- substr(variable_importance$Variable, 0, nchar(variable_importance$Variable) - 5)
+    variable_importance <- variable_importance[inference@index_bloc > -0.5, ]
+    ##### A refaire
+    variable_importance$Group <- inference@name_mode
+    variable_importance$small_Group <- inference@name_variable
+    renorm <- TRUE # Ajoute les pourcentages et tient compte de l'imbalance potentiel entre les groupes... (même s'il n'y en avait pas jusqu'à présent)
     if (renorm) {
         variable_importance_grouped <- aggregate_prop(Overall ~ Group, data = variable_importance, FUN = mean)
         variable_importance_small_grouped <- aggregate_prop(Overall ~ small_Group, data = variable_importance, FUN = mean)
@@ -336,12 +336,30 @@ plot_global <- function(imp_average, path_plot, ending_name, inference) {
 
     ggsave(paste0(path_plot, "/global_small_groups", "_", ending_name, ".png"), image, width = 10, height = 20) # variable par variable
 }
-library(readxl)
-library(writexl)
-if (Sys.info()["sysname"] == "Linux") {
-    path <- "..//data//"
-    path_RDS <- "..//data//RDS//"
+
+# library(readxl)
+# library(writexl)
+# if (Sys.info()["sysname"] == "Linux") {
+#     path <- "..//data//"
+#     path_RDS <- "..//data//RDS//"
+# }
+
+convert_y <- function(y, classe_1) {
+    classe_min <- names(which.min(table(y)))
+    if (is.null(classe_1)) {
+        y_numeric <- ifelse(y == classe_min, 1, 0) # CCK donne 1 CHC donne 0
+    } else {
+        y_numeric <- ifelse(y == classe_1, 1, 0)
+    }
+    return(y_numeric)
 }
+
+
+
+
+
+
+
 
 # data_used <- as.data.frame(read.csv(paste0(path, "data_used.csv")))
 # index_mode <- readRDS(paste0(path_RDS, "index_mode.rds"))

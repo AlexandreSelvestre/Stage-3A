@@ -16,12 +16,15 @@ library(NbClust)
 library(EMCluster)
 library(magrittr)
 library(parallel)
+library(pracma)
+library(mvnfast)
+library(Rfast)
 
 
 sysname <- Sys.info()["sysname"]
-set.seed(8) ## seed maîtresse: celle des modèles
+set.seed(9) ## seed maîtresse: celle des modèles
 seed_model <- .Random.seed
-set.seed(1)
+set.seed(2)
 seed_cv <- .Random.seed
 .Random.seed <- seed_model
 
@@ -29,11 +32,15 @@ config_run <- config::get(file = "configs/config_run.yml", config = "my_config")
 
 if (config_run$simulated_data) {
     config_model <- config::get(file = "configs/config_model.yml", config = "simu")
-    config_extrac <- config::get(file = "configs/extrac/config_join_picto.yml", config = "my_config")
-    name_config <- "simu"
-    source("extrac/join_picto.r")
-    # config_extrac <- read_json("configs/extrac/config_extrac_simul_old.json", simplifyVector = TRUE, simplifyMatrix = FALSE)
-    # source("extrac/extrac_simul_old.r")
+    if (config_run$simple_generation) {
+        config_extrac <- config::get(file = "configs/extrac/config_simul_basic.yml", config = "my_config")
+        name_config <- "simu"
+        source("extrac/simul_basic.r")
+    } else {
+        config_extrac <- config::get(file = "configs/extrac/config_join_picto.yml", config = "my_config")
+        name_config <- "simu"
+        source("extrac/join_picto.r")
+    }
 } else {
     config_model <- config::get(file = "configs/config_model.yml", config = "radio")
     config_extrac <- config::get(file = "configs/extrac/config_extrac.yml", config = "my_config")
@@ -69,6 +76,7 @@ source("main.r")
 source("./utils/utils.r")
 source("launch_model.r")
 source("analyse_data/find_outliers.r")
+source("analyse_data/heatmap.r")
 
 import_folder("./utils")
 import_folder("./StepReg_modif/R")
@@ -100,9 +108,8 @@ if (config_run$extrac_first) {
 }
 data_used_local <- as.data.frame(read.csv(path))
 
-# if (config_run$analyse_data) {
-#     analyse_data(data_used_local)
-# }
+
+
 # variables <- data_used_local[, setdiff(colnames(data_used_local), c("patient_num", "keys"))] ###### To change!!!!!
 # index_CCK <- rownames(variables[variables$classe_name == "CCK", ])
 # df_danger <- data.frame(is_bad = rep(0, length(index_CCK)), score_bad = rep(0, length(index_CCK)), is_good = rep(0, length(index_CCK)), score_good = rep(0, length(index_CCK)))
