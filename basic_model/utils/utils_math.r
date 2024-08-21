@@ -94,6 +94,8 @@ unregister_dopar <- function() {
 
 
 aggregate_prop <- function(formula, data, ...) {
+    # On moyenne les pourcentages de non nullité mais on somme les importances
+    # On rescale ensuite les importances (elles sont relatives)
     df_grouped <- aggregate(formula, data = data, FUN = sum)
     col_grp <- as.character(formula)[3]
     col_values <- as.character(formula)[2]
@@ -199,7 +201,6 @@ complete_orthonormal_basis <- function(vec) {
     n <- length(vec)
     mat <- matrix(rnorm(n * n), n, n)
     mat[, 1] <- vec
-
     # Appliquer la décomposition QR
     qr_decomp <- qr(mat)
     Q <- qr.Q(qr_decomp)

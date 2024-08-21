@@ -13,9 +13,6 @@ library(ExPanDaR)
 library(NbClust)
 library(EMCluster)
 library(magrittr)
-source("extrac/gene_x_scalar.r")
-
-### A ECRIRE: facile
 
 # Beta sera décomposé ligne par ligne pour rester cohérent
 extract_all <- function(config_extrac, sysname) {
@@ -45,47 +42,44 @@ extract_all <- function(config_extrac, sysname) {
         return(beta_matrix)
     })
 
-    # Générer les matrices X pour chaque pictogramme
-    li_X <- mclapply(1:length(name_picto), function(n) {
-        good_dir <- name_picto[n]
+    li_names <- lapply(1:length(name_picto), function(n) {
         beta_matrix <- li_beta_matrix[[n]]
-        path <- paste0("../data/beta_picto/", good_dir, "/X.csv")
-        X <- gene_x_scalar(config_extrac, beta_matrix)
-        write.csv(X, path, row.names = FALSE)
-        X <- as.matrix(read.csv(path))
         vec_names <- c()
         for (i in 1:nrow(beta_matrix)) {
             vec_names <- c(vec_names, sapply(1:ncol(beta_matrix), function(j) {
                 paste0("bloc_", n, "_row_", i, "_col_", j)
             }))
         }
-        colnames(X) <- vec_names
-        return(X)
-    }, mc.cores = detectCores() - 1)
+        return(vec_names)
+    })
+    vec_names <- do.call(c, li_names)
 
-    # Coller les X et déplier les beta
-    X <- do.call(cbind, li_X)
     li_beta_vec <- lapply(1:length(li_beta_matrix), function(n) {
         beta_matrix <- li_beta_matrix[[n]]
         beta_vec <- c(t(beta_matrix))
         return(beta_vec)
     })
 
-    # renommer beta_vec
-    lapply(1:length(li_beta_vec), function(n) {
-        names(li_beta_vec[[n]]) <- colnames(li_X[[n]])
-    })
-
-    # Coller les beta dépliés
     beta_vec <- do.call(c, li_beta_vec)
+    names(beta_vec) <- vec_names
+
+    print("start gene")
+    X <- matrix(rnorm(length(beta_vec) * config_extrac$n_sample, mean = 0, sd = config_extrac$sd), nrow = config_extrac$n_sample, ncol = length(beta_vec))
+    print("end gene")
+
+    colnames(X) <- vec_names
+
 
     # coller les matrices beta
     beta_matrix <- glue_mats(li_beta_matrix)
 
     # Calculer le bruit puis y
-    # proba <- 1 / (1 + exp(-X %*% beta_vec))
-    # y <- rbinom(length(proba), size = 1, prob = proba)
-    y <- c(rep("Classe_1", round(config_extrac$prop_class_1 * nrow(X))), rep("Classe_0", nrow(X) - round(config_extrac$prop_class_1 * nrow(X))))
+    print("calc_y")
+    proba <- 1 / (1 + exp(-X %*% beta_vec))
+    y <- rbinom(length(proba), size = 1, prob = proba)
+    y <- ifelse(y == 1, "Classe_1", "Classe_0")
+    print("y_done")
+
 
     # Sauvegarder data_used
     data_used <- cbind(y, as.data.frame(X))

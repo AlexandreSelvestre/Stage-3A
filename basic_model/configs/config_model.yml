@@ -11,7 +11,10 @@ default:
   k_smote: 3
   sampling: "up" # "up", NULL ou  "smote"
   search: "grid" #grid ou random
-  do_parallel: TRUE
+  parallel: 
+    do: FALSE
+    n_process: 8
+    forking: FALSE #useless
   analyse_data: 
     do: FALSE
     EM: FALSE
@@ -32,6 +35,6 @@ radio:
 
 
 simu:
-  minimal_information: TRUE
+  minimal_information: FALSE
   classe_1: "Classe_1"
 

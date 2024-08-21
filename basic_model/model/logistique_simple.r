@@ -117,7 +117,7 @@ li_caret_simple$loop <- NULL
 
 
 setMethod("train_method", "apply_model", function(object) {
-    tuneGrid <- expand.grid(lambda = seq(object@lambda_min, object@lambda_max, length = object@tuneLength))
+    tuneGrid <- expand.grid(lambda = exp(log(10) * seq(log10(object@lambda_min), log10(object@lambda_max), length = object@tuneLength)))
     if (object@do_PCA) {
         object@model <- caret::train(
             y = object@train_cols$classe_name, x = as.matrix(object@train_cols[, object@col_x]),
@@ -126,9 +126,9 @@ setMethod("train_method", "apply_model", function(object) {
             weights = weights, index = object@index_variable, is_binary = object@is_binary, classe_1 = object@classe_1
         )
     } else {
-        if (object@do_parallel) {
+        if (object@parallel$do) {
             numCores <- detectCores()
-            cl <- makePSOCKcluster(numCores - 1)
+            cl <- makePSOCKcluster(object@parallel$n_process)
             # cl <- makePSOCKcluster(2)
             registerDoParallel(cl)
             clusterEvalQ(cl, {
@@ -148,7 +148,7 @@ setMethod("train_method", "apply_model", function(object) {
             classe_1 = object@classe_1
         )
         # x, y, wts, param, lev, last, weights_dict, classProbs, k_smote, do_smote, index, is_binary
-        if (object@do_parallel) {
+        if (object@parallel$do) {
             stopCluster(cl)
         }
         print("done")
@@ -247,32 +247,3 @@ setMethod("importance_method", "apply_model", function(object) {
 setMethod("get_df_imp", "apply_model", function(object) {
     return(object@li_df_var_imp)
 })
-
-# [1] "actuelle moyenne AUC test 0.737847222222222 ite: 40"
-# [1] "actuelle moyenne AUC val 0.801590909090909 ite: 40"
-# [1] "actuelle moyenne Accuracy test 0.674652777777778 ite: 40"
-# [1] "actuelle somme des confusion matrix ite: 40 :"
-# [1] "actuelle moyenne du macro F1 test 0.655859353795209 ite: 40"
-# [1] "actuelle moyenne du F1 CCK test 0.455854978355 ite: 40"
-# [1] "actuelle moyenne du F1 CHC test 0.855863729235 ite: 40"
-
-
-
-
-# [1] "Voilà la matrice de confusion sommée"
-#           Reference
-# Prediction CCK CHC
-#        CCK  83 122
-#        CHC  77 598
-
-# [1] "voilà la matrice de confusion en pourcentage: ... % de CCK ont été bien classés vs ... % mal classés"
-
-#     CCK                  CHC
-# CCK "
-# CHC " ##### A ecrire: il a sorti n'importe quoi
-
-
-# [1] "La balanced accuracy sur l'échantillon total vaut: 0.645401987353207"
-# le f1 score CCK sur l'échantillon entier vaut: 0.454794520548
-# le f1 score CHC sur l'échantillon entier vaut: 0.857347670251
-# [1] "Le f1 macro sur l'échantillon total vaut: 0.656071095399421"

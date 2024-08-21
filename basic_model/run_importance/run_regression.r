@@ -53,10 +53,8 @@ run_imp_extra <- function(imp_li, performance, li_confus, is_null, n_samples, pa
 
     ending_name <- "beta_value"
     ##### Utiliser l'inference pour les index et refaire les plots en général
-    # plot_global(imp_average, path_plot, ending_name)
+    plot_global(imp_average, path_plot, ending_name, inference)
 
-    # ending_name <- "non_null"
-    # plot_global(non_null, path_plot, ending_name, renorm = FALSE)
     performance_long <- melt_mine(as.data.frame(performance)[, setdiff(names(performance), "AUC_val")])
     box_plots_stats <- ggplot(performance_long, aes(x = variable, y = value)) +
         stat_summary(fun = median, geom = "point", shape = 20, size = 3, color = "red") +

@@ -162,31 +162,28 @@ renormalize_in_model_pred_index_mode <- function(newdata, df_mu, df_sigma) {
 
 reorder_in_modes <- function(x, index_mode, index_variable, index_bloc, name_mode, name_variable, name_bloc, is_binary) {
     ## !!!Attention si K varie!!!
-
     # Seule nécessité avant cetet fonction: variables tabulaires à la fin
     # L'application de cette fonction assure que les indices de sortie sont tous bien jolis et contigus... Ca sauve certains modèles un peu mal construits. Et on arrange tout sur le modèle du data used des radiomiques (par mode mais pas par bloc).
     # different_variables <- order(unique(index_variable[index_variable > -0.5]))
-    different_blocs <- order(unique(index_bloc[index_bloc > -0.5]))
+
+    different_blocs <- sort(unique(index_bloc[index_bloc > -0.5]))
     li_different_variables <- lapply(1:length(different_blocs), function(l) {
-        return(order(unique(index_variable[index_bloc == different_blocs[l]])))
+        return(sort(unique(index_variable[index_bloc == different_blocs[l]])))
     })
     x <- as.data.frame(x)
     li_modes <- list()
     count_tab <- 1
     # Calculer les indices de départ des variables de chaque bloc
     vec_offset_var_bloc <- c(0)
-    if (length(different_blocs > 0)) {
-        if (length(different_blocs) > 1) {
-            for (l in 1:(length(different_blocs) - 1)) {
-                previous_offset <- vec_offset_var_bloc[l]
-                # cat("JU", l, "\n")
-                # print(li_different_variables)
-                n_variables <- length(li_different_variables[[l]])
-                offset <- previous_offset + n_variables
-                vec_offset_var_bloc <- c(vec_offset_var_bloc, offset)
-            }
+    if (length(different_blocs > 1)) {
+        for (l in 1:(length(different_blocs) - 1)) {
+            previous_offset <- vec_offset_var_bloc[l]
+            n_variables <- length(li_different_variables[[l]])
+            offset <- previous_offset + n_variables
+            vec_offset_var_bloc <- c(vec_offset_var_bloc, offset)
         }
     }
+
 
 
     new_index_mode <- rep(-1, length(index_mode))
@@ -204,9 +201,9 @@ reorder_in_modes <- function(x, index_mode, index_variable, index_bloc, name_mod
         if (!as.character(index_mode[i]) %in% names(li_modes)) {
             li_modes[[as.character(index_mode[i])]] <- as.data.frame(matrix(0, ncol = length(index_mode[index_mode == index_mode[i]]), nrow = nrow(x)))
         }
-        num_bloc <- which(different_blocs == index_bloc[i])
-        num_var <- which(li_different_variables[[num_bloc]] == index_variable[i])
         if (index_mode[i] > -0.5) {
+            num_bloc <- which(different_blocs == index_bloc[i])
+            num_var <- which(li_different_variables[[num_bloc]] == index_variable[i])
             li_modes[[as.character(index_mode[i])]][, num_var + vec_offset_var_bloc[num_bloc]] <- x[, i]
             colnames(li_modes[[as.character(index_mode[i])]])[num_var + vec_offset_var_bloc[num_bloc]] <- colnames(x)[i]
         } else {
@@ -234,7 +231,7 @@ reorder_in_modes <- function(x, index_mode, index_variable, index_bloc, name_mod
             }
             new_index_mode[(k - 1) * J + j] <- k
             new_index_variable[(k - 1) * J + j] <- j
-            where_mode <- which(index_mode == order(unique(index_mode[index_mode > -0.5]))[k])
+            where_mode <- which(index_mode == sort(unique(index_mode[index_mode > -0.5]))[k])
             where_bloc <- which(index_bloc == different_blocs[num_bloc])
             where_variable <- which(index_variable == li_different_variables[[num_bloc]][j - vec_offset_var_bloc[num_bloc]])
             previous_index <- intersect(intersect(where_mode, where_variable), where_bloc)
@@ -250,7 +247,6 @@ reorder_in_modes <- function(x, index_mode, index_variable, index_bloc, name_mod
             # cat(previous_index, j, index_variable[previous_index], "\n")
         }
     }
-    write_xlsx(new_x, "..//data//test.xlsx")
     return(list(x = new_x, index_mode = new_index_mode, index_variable = new_index_variable, index_bloc = new_index_bloc, is_binary = new_is_binary, name_mode = new_name_mode, name_variable = new_name_variable, name_bloc = new_name_bloc))
 }
 

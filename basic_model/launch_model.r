@@ -40,7 +40,7 @@ setClass(
     index = "numeric", # OPTIONNEL            index des données
     pas = "numeric", # OPTIONNEL              pas pour la descente de gradient
     id_term = "character", # OPTIONNEL        nombre d'identifiants
-    do_parallel = "logical", # OPTIONNEL     faire du parallélisme
+    parallel = "ANY",
     time_inj = "character",
     train_set = "data.frame",
     test_set = "data.frame",

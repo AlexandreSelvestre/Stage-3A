@@ -3,12 +3,8 @@ default:
   num_picto:
     - 6
     - 1
-  n_sample: 1000
-  resample: FALSE #ignoré pour l'instant
-  ecart_class: 1  #ecart entre les moyennes des classes
-  dist_sepa: 0.2
-  dist_non_sepa: 0.5
-  prop_class_1: 0.5
+  n_sample: 2000
+  sd: 1
 
 
 my_config:

@@ -1,0 +1,13 @@
+Erreurs:
+
+
+Warnings:
+
+
+To do:
+
+
+- Cleaner les classes avec de l'héritage
+
+- Cleaner le get result: c'est toujours la même chose 
+

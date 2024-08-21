@@ -148,10 +148,9 @@ setMethod("train_method", "apply_model", function(object) {
     object@tuneGrid <- tuneGrid
     ### Evaluer le modèle (pour l'instant on fait sans PCA)
     start_time <- Sys.time()
-    if (object@do_parallel) {
+    if (object@parallel$do) {
         numCores <- detectCores()
-        cl <- makePSOCKcluster(numCores - 1)
-        # cl <- makePSOCKcluster(2)
+        cl <- makePSOCKcluster(object@parallel$n_process)
         registerDoParallel(cl)
         clusterEvalQ(cl, {
             files <- list.files("./utils", full.names = TRUE, pattern = "\\.r$")
@@ -165,7 +164,7 @@ setMethod("train_method", "apply_model", function(object) {
         method = li_caret_sgl, trControl = object@cv, metric = "AUC", tuneGrid = tuneGrid, index = index, k_smote = object@k_smote, do_smote = object@do_smote,
         index_variable = object@index_variable, is_binary = object@is_binary
     )
-    if (object@do_parallel) {
+    if (object@parallel$do) {
         stopCluster(cl)
     }
     cat("time", Sys.time() - start_time)

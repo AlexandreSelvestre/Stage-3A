@@ -1,5 +1,4 @@
 extract_all <- function(config_extrac, sysname) {
-
     ##### Importer les données ########
     if (sysname == "Linux") {
         data_radio <- read_excel("../data/radiomiques_global.xlsx")
@@ -228,8 +227,8 @@ extract_all <- function(config_extrac, sysname) {
     # Ne pas présupposer l'existence de colonnes potentiellement inexistantes...
 
     is_binary <- rep(FALSE, ncol(data_used))
-    if ("Age_at_disease" %in% names(data_used)) {
-        is_binary[which(names(data_used) == "Age_at_disease")] <- TRUE
+    if ("Gender" %in% names(data_used)) {
+        is_binary[which(names(data_used) == "Gender")] <- TRUE
     }
 
     train_cols <- setdiff(names(data_used), c(exclude_cols, explained_col))
@@ -246,6 +245,11 @@ extract_all <- function(config_extrac, sysname) {
     li_index_variable <- get_variable_vec_liver(data_used[, train_cols])
     index_variable <- li_index_variable$index_variable
     name_variable <- li_index_variable$index_name
+
+    # Corriger le fait d'avoir des numéros de colonnes variables d'un bloc à l'autre.
+    for (i in 1:length(index_bloc)) {
+
+    }
 
 
     saveRDS(index_bloc, file = "../data/RDS/index_bloc.rds")

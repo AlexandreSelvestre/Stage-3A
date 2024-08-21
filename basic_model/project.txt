@@ -1,0 +1,34 @@
+#### Project creation form - Ruche - Mesocentre Paris Saclay ####
+
+# Note : to open a project send this form to ruche.support@universite-paris-saclay.fr and your lab referee
+# The project will be opened when validated by your lab referee
+
+## Identity of the project referee
+firstname= 
+lastname=
+email=
+
+# group : name of the lab hosting the project if CS/ENS/UPsaclay, or
+# "teaching" for a training session,
+# "mdls" if Maison de la Simulation.
+group=
+
+## project
+project_shortname="<identifier (20 characters max. without space)>"
+title=```
+---- project title here ----
+```
+
+## Description of the project (scientific goals, planned usage of the mesocenter...)
+description=```
+---- project description here ----
+```
+
+## Supports : if the project receives support (ANR, competitiveness cluster, European or other...), indicate the nature of this support as well as the duration and the amount.
+supports=```
+---- supports description here ----
+```
+
+## Resources : Indicate the job profile targeted for this project (number of cores, memory per job, storage needed...), softwares/libraries necessary to execute the codes (example: FFTW, HDF5...).
+resources=```
+---- resources description here ----

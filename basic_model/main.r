@@ -21,6 +21,7 @@ execute <- function(config, config_run, id_term, seed_cv, sysname) {
     inference <- init(inference)
     if (config$analyse_data$do & as.numeric(id_term) == 1) {
         analyse_data(inference)
+        print("data analysed")
     }
 
     # Gérer la seed et la séparation train/ test + la séparation en folds

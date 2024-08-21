@@ -21,19 +21,15 @@ setMethod("analyse_data", "apply_model", function(object) {
             stable.solution = TRUE, min.n = NULL, min.n.iter = 10,
             method = "em.EM"
         )
-        print("en cours")
+        print("en cours EM")
         li_clust$Best.partition <- assign.class(var_to_clust,
             emobj = emobj, pi = NULL, Mu = NULL, LTSigma = NULL,
             lab = NULL, return.all = TRUE
         )$class
         print("fait accompli")
     } else {
-        li_clust <- NbClust(data = var_to_clust, distance = "euclidean", min.nc = 2, max.nc = 2, method = "ward.D2", index = "kl")
+        li_clust <- NbClust(data = var_to_clust, distance = "euclidean", min.nc = 2, max.nc = 3, method = "ward.D2", index = "kl")
         cat("Meilleur nombre de clusters", li_clust$Best.nc)
-        print("Meilleure partition")
-        print(li_clust$Best.partition)
-        print("Comparaison aux indices de type:")
-        print(variables[[object@name_y]]) # 1  = CCK, 0 = CHC
     }
     ## Attention à 46 et 22 chez les CCK
 
@@ -49,7 +45,10 @@ setMethod("analyse_data", "apply_model", function(object) {
     pca_data <- data.frame(PC1 = data_pca[, 1], PC2 = data_pca[, 2], Classe = variables[[object@name_y]])
     pca_data$number <- paste(rownames(variables), unname(li_clust$Best.partition))
     # print(pca_data$number)
+    print("Meilleure partition")
     print(li_clust$Best.partition)
+    print("Comparaison aux indices de type:")
+    print(variables[[object@name_y]]) # 1  = CCK, 0 = CHC
     # Visualiser les deux premières composantes principales avec ggplot2
     # Détermination des limites des axes
     x_limits <- range(pca_data$PC1) * 1.1 # Ajout de marge

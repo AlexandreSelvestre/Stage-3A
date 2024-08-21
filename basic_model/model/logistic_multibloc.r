@@ -22,12 +22,12 @@ better_create_grid_multibloc <- function(x, y, len = NULL, search = "grid", L, l
     ### Attention, si li_R est renseigné et same_R est TRUE alors il faut avoir autant de rangs proposés par bloc (ils seront sur 1 même ligne)
     ## tune_R est ignoré si on fournit li_R
     if (search == "grid") {
-        lambda <- seq(lambda_min, lambda_max, length.out = len)[1:len]
+        lambda <- exp(log(10) * seq(log10(lambda_min), log10(lambda_max), length.out = len))
     } else {
-        lambda <- runif(len, min = lambda_min, max = lambda_max)
+        lambda <- exp(log(10) * runif(len, min = log10(lambda_min), max = log10(lambda_max)))
     }
     if (is.null(li_R)) {
-        li_R_data_frame <- lapply(1:L, round(seq(R_min, R_max, length.out = tune_R)))
+        li_R_data_frame <- lapply(1:L, function(l) round(seq(R_min, R_max, length.out = tune_R)))
     } else {
         li_R_data_frame <- li_R
     }
@@ -510,17 +510,22 @@ setMethod("train_method", "apply_model", function(object) {
     # file.remove(fichiers)
 
 
-    if (object@do_parallel) {
+    if (object@parallel$do) {
         numCores <- detectCores()
-        cl <- makePSOCKcluster(numCores - 1)
-        registerDoParallel(cl)
-        clusterEvalQ(cl, {
-            files <- list.files("./utils", full.names = TRUE, pattern = "\\.r$")
-            for (file in files) {
-                source(file)
-            }
-        })
-        clusterExport(cl, varlist = c("get_beta_full", "get_beta_bloc", "find_modes"))
+        if (object@parallel$forking) {
+            cl <- makeForkCluster(object@parallel$n_process)
+            registerDoParallel(cl)
+        } else {
+            cl <- makePSOCKcluster(object@parallel$n_process)
+            registerDoParallel(cl)
+            clusterEvalQ(cl, {
+                files <- list.files("./utils", full.names = TRUE, pattern = "\\.r$")
+                for (file in files) {
+                    source(file)
+                }
+            })
+            clusterExport(cl, varlist = c("get_beta_full", "get_beta_bloc", "find_modes"))
+        }
     }
 
 
@@ -530,7 +535,7 @@ setMethod("train_method", "apply_model", function(object) {
         tuneLength = object@tuneLength, weights_dict = object@weights, tuneGrid = grid, eps = object@eps, ite_max = object@ite_max, n_iter_per_reg = object@n_iter_per_reg,
         index_bloc = object@index_bloc, k_smote = object@k_smote, do_smote = object@do_smote, index_variable = object@index_variable, is_binary = object@is_binary, classe_1 = object@classe_1
     )
-    if (object@do_parallel) {
+    if (object@parallel$do) {
         stopCluster(cl)
     }
     return(object)
@@ -662,4 +667,23 @@ setMethod("get_df_imp", "apply_model", function(object) {
 })
 
 
-# lambda opti pour n = 1000: 0.00135
+# R_1 R_2 lambda
+# 6   5   1  1e-04
+# Setting levels: control = Classe_0, case = Classe_1
+# Setting direction: controls > cases
+# [1] "La valeur de l'AUC de test est de 1"
+# [1] "La valeur de l'AUC de validation sur chaque fold est de 1"
+# [2] "La valeur de l'AUC de validation sur chaque fold est de 1"
+# [3] "La valeur de l'AUC de validation sur chaque fold est de 1"
+# [4] "La valeur de l'AUC de validation sur chaque fold est de 1"
+# [5] "La valeur de l'AUC de validation sur chaque fold est de 1"
+# [1] "Ce qui donne une moyenne d'AUC de 1"
+# Setting levels: control = Classe_0, case = Classe_1
+# Setting direction: controls > cases
+# [1] "La valeur de l'AUC de train est de 1"
+# [1] "End of analysis phase"
+# [1] "L'erreur moyenne de reconstruction du pictogramme est de 0.185689089440778"
+# [1] "actuelle moyenne AUC test 1 ite: 1"
+# [1] "actuelle moyenne AUC val 1 ite: 1"
+# [1] "moyenne AUC test 1"
+# [1] "moyenne AUC val 1"

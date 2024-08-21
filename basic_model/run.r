@@ -16,12 +16,15 @@ library(NbClust)
 library(EMCluster)
 library(magrittr)
 library(parallel)
+library(pracma)
+library(mvnfast)
+library(Rfast)
 
 
 sysname <- Sys.info()["sysname"]
-set.seed(8) ## seed maîtresse: celle des modèles
+set.seed(9) ## seed maîtresse: celle des modèles
 seed_model <- .Random.seed
-set.seed(1)
+set.seed(2)
 seed_cv <- .Random.seed
 .Random.seed <- seed_model
 
@@ -38,8 +41,6 @@ if (config_run$simulated_data) {
         name_config <- "simu"
         source("extrac/join_picto.r")
     }
-    # config_extrac <- read_json("configs/extrac/config_extrac_simul_old.json", simplifyVector = TRUE, simplifyMatrix = FALSE)
-    # source("extrac/extrac_simul_old.r")
 } else {
     config_model <- config::get(file = "configs/config_model.yml", config = "radio")
     config_extrac <- config::get(file = "configs/extrac/config_extrac.yml", config = "my_config")
@@ -107,9 +108,8 @@ if (config_run$extrac_first) {
 }
 data_used_local <- as.data.frame(read.csv(path))
 
-# if (config_run$analyse_data) {
-#     analyse_data(data_used_local)
-# }
+
+
 # variables <- data_used_local[, setdiff(colnames(data_used_local), c("patient_num", "keys"))] ###### To change!!!!!
 # index_CCK <- rownames(variables[variables$classe_name == "CCK", ])
 # df_danger <- data.frame(is_bad = rep(0, length(index_CCK)), score_bad = rep(0, length(index_CCK)), is_good = rep(0, length(index_CCK)), score_good = rep(0, length(index_CCK)))
@@ -168,5 +168,3 @@ if (config$minimal_information) {
 
     run_imp_extra(imp_li, performance, li_confus, is_null, length(id_li), path_plot, inference)
 }
-
-# avec dist sepa = 0.1 et dist non sepa = 10, n = 1000, logistic simple donne:

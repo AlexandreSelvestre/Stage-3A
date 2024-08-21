@@ -43,39 +43,48 @@ extract_all <- function(config_extrac, sysname) {
         return(beta_matrix)
     })
 
-    # Générer les matrices X pour chaque pictogramme
-    li_X <- mclapply(1:length(name_picto), function(n) {
-        good_dir <- name_picto[n]
+    # Créer les noms de variables
+    li_names <- lapply(1:length(name_picto), function(n) {
         beta_matrix <- li_beta_matrix[[n]]
-        path <- paste0("../data/beta_picto/", good_dir, "/X.csv")
-        X <- gene_x_scalar(config_extrac, beta_matrix)
-        write.csv(X, path, row.names = FALSE)
-        X <- as.matrix(read.csv(path))
         vec_names <- c()
         for (i in 1:nrow(beta_matrix)) {
             vec_names <- c(vec_names, sapply(1:ncol(beta_matrix), function(j) {
                 paste0("bloc_", n, "_row_", i, "_col_", j)
             }))
         }
-        colnames(X) <- vec_names
-        return(X)
-    }, mc.cores = detectCores() - 1)
+        return(vec_names)
+    })
+    # Mettre les noms de vecteurs en variables
+    vec_names <- do.call(c, li_names)
 
-    # Coller les X et déplier les beta
-    X <- do.call(cbind, li_X)
+    # Déplier beta
     li_beta_vec <- lapply(1:length(li_beta_matrix), function(n) {
         beta_matrix <- li_beta_matrix[[n]]
         beta_vec <- c(t(beta_matrix))
         return(beta_vec)
     })
-
-    # renommer beta_vec
-    lapply(1:length(li_beta_vec), function(n) {
-        names(li_beta_vec[[n]]) <- colnames(li_X[[n]])
-    })
-
-    # Coller les beta dépliés
     beta_vec <- do.call(c, li_beta_vec)
+
+    # Nommer beta
+    names(beta_vec) <- vec_names
+
+    # Générer les données complexes
+    print("start gene")
+    X <- gene_x_scalar(config_extrac, beta_vec)
+    print("end gene")
+
+    colnames(X) <- vec_names
+
+
+
+
+
+    # # renommer beta_vec
+    # lapply(1:length(li_beta_vec), function(n) {
+    #     names(li_beta_vec[[n]]) <- colnames(li_X[[n]])
+    # })
+
+
 
     # coller les matrices beta
     beta_matrix <- glue_mats(li_beta_matrix)
@@ -123,7 +132,7 @@ extract_all <- function(config_extrac, sysname) {
 
     name_bloc <- unname(unlist(lapply(1:length(li_beta_matrix), function(l) {
         beta_matrix <- li_beta_matrix[[l]]
-        return(rep("bloc l", nrow(beta_matrix) * ncol(beta_matrix)))
+        return(rep(paste0("bloc_", l), nrow(beta_matrix) * ncol(beta_matrix)))
     })))
 
     name_mode <- unname(unlist(lapply(1:length(li_beta_matrix), function(l) {

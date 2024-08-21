@@ -14,8 +14,8 @@ radio:
 
 simu:
   lambda: 0.1
-  lambda_min: 0.000000001
-  lambda_max: 0.00005
+  lambda_min: 0.0000000000001
+  lambda_max: 0.00001
   tuneLength: 10
 
   weights:
