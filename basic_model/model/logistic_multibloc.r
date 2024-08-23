@@ -566,13 +566,6 @@ setMethod("train_method", "apply_model", function(object) {
     return(object)
 })
 
-setMethod("get_results", "apply_model", function(object) {
-    object@predictions <- as.vector(predict(object@model, newdata = as.matrix(object@test_set[, object@col_x])))
-    object@predictions_proba <- predict(object@model, newdata = as.matrix(object@test_set[, object@col_x]), type = "prob")
-    object@predictions_train_proba <- predict(object@model, newdata = as.matrix(object@train_cols[, object@col_x]), type = "prob")
-    object@beta_final <- object@model$finalModel$beta_unfolded
-    return(object)
-})
 
 setMethod("importance_method", "apply_model", function(object) {
     ###### VIEUX ET NON UTILISE: un seul rang########

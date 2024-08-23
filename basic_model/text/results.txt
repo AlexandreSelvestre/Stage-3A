@@ -77,3 +77,7 @@ CHC 0.5875 0.809722222222
 le f1 score CCK sur l'échantillon entier vaut: 0.363636363636 
 le f1 score CHC sur l'échantillon entier vaut: 0.834645669291 
 [1] "Le f1 macro sur l'échantillon total vaut: 0.599141016463851"
+
+Multibloc:
+
+0.635 +- 0.063

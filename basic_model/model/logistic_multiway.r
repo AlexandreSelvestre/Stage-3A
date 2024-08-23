@@ -470,7 +470,6 @@ setMethod("train_method", "apply_model", function(object) {
     li <- reorder_in_modes(object@data_used[, object@col_x], index_mode = object@index_mode, index_variable = object@index_variable, index_bloc = object@index_bloc, is_binary = object@is_binary, name_mode = object@name_mode, name_variable = object@name_variable, name_bloc = object@name_bloc)
     object@data_used[, object@col_x] <- li$x ### suite...
     colnames(object@data_used)[colnames(object@data_used) %in% object@col_x] <- colnames(li$x)
-    write_xlsx(object@data_used, "..\\data\\no.xlsx")
 
     object@col_x <- setdiff(names(object@data_used), c(object@info_cols$exclude_cols, object@name_y))
 
@@ -511,14 +510,6 @@ setMethod("train_method", "apply_model", function(object) {
     if (object@parallel$do) {
         stopCluster(cl)
     }
-    return(object)
-})
-
-setMethod("get_results", "apply_model", function(object) {
-    object@predictions <- as.vector(predict(object@model, newdata = as.matrix(object@test_set[, object@col_x])))
-    object@predictions_proba <- predict(object@model, newdata = as.matrix(object@test_set[, object@col_x]), type = "prob")
-    object@predictions_train_proba <- predict(object@model, newdata = as.matrix(object@train_cols[, object@col_x]), type = "prob")
-    object@beta_final <- object@model$finalModel$beta_unfolded
     return(object)
 })
 

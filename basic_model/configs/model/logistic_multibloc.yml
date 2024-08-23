@@ -6,13 +6,13 @@ default:
 
 
 radio:
-  lambda_min: 0.00005
-  lambda_max: 0.01
+  lambda_min: 0.00000001
+  lambda_max: 0.1
   R_min: 1
   R_max: 2 
-  tuneLength: 1
+  tuneLength: 8
   tune_R: 2
-  same_R: TRUE
+  same_R: FALSE
 
   weights:
     "CCK": 1

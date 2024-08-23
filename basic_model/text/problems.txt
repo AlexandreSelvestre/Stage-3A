@@ -1,0 +1,12 @@
+Erreurs:
+
+
+Warnings:
+
+
+To do:
+
+-En multiblocs, autoriser plusieurs nombres de modes
+
+
+
