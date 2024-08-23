@@ -5,6 +5,7 @@ library(writexl)
 library(glue)
 library(data.table)
 library(caret)
+library(randomForest)
 library(ggplot2)
 library(glmnet)
 library(SGL)
@@ -19,6 +20,9 @@ library(parallel)
 library(pracma)
 library(mvnfast)
 library(Rfast)
+library(DMwR)
+library(themis)
+library(reshape2)
 
 
 sysname <- Sys.info()["sysname"]
@@ -119,6 +123,7 @@ data_used_local <- as.data.frame(read.csv(path))
 
 
 if (config$minimal_information) {
+    # Attention, en minimal info, on ne récupère pas la moyenne des résultats des pictos...
     for (id_term in id_li) {
         ite <- ite + 1
         list_execute <- execute(config, config_run, as.character(id_term), seed_cv, sysname)
@@ -145,6 +150,7 @@ if (config$minimal_information) {
         performance <- li_intermediaire$performance
         li_confus <- li_intermediaire$li_confus
         is_null <- li_intermediaire$is_null
+
 
         # inference <- compare(inference)
         # df_danger_loc <- inference@df_danger

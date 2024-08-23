@@ -1,5 +1,27 @@
 source("model/logistic_manuel.r")
 
+
+
+setClass("logistic_multiway",
+    contains = "apply_model",
+    slots = representation(
+        lambda_min = "numeric",
+        lambda_max = "numeric",
+        ite_max = "integer",
+        eps = "numeric",
+        tuneLength = "numeric",
+        index_type = "character",
+        tune_R = "integer",
+        R_min = "integer",
+        R_max = "integer",
+        weights = "list",
+        n_iter_per_reg = "integer",
+        regression = "logical",
+        lambda = "numeric"
+    )
+)
+
+
 li_caret_multiway <- list()
 
 li_caret_multiway$library <- "glmnet"
@@ -36,17 +58,19 @@ better_create_grid_multiway <- function(x, y, len = NULL, search = "grid", lambd
 li_caret_multiway$grid <- create_grid_multiway
 
 
-fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, index, eps, ite_max, n_iter_per_reg, k_smote, do_smote, index_variable, index_bloc, is_binary, classe_1 = NULL) {
+fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, index, eps, ite_max, n_iter_per_reg, k_smote, sampling_choice, index_variable, index_bloc, is_binary, classe_1 = NULL) {
     li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, index_bloc, is_binary)
     x <- li_norm$new_x
     classe_min <- names(which.min(table(y)))
     classe_maj <- setdiff(levels(y), classe_min)
 
-    if (do_smote) {
+
+    if (sampling_choice == "smote") {
         li <- apply_smote(x, y, k_smote)
         x <- li$x
         y <- li$y
-    } else {
+    }
+    if (sampling_choice == "up") {
         li <- apply_boot(x, y)
         x <- li$x
         y <- li$y
@@ -482,7 +506,7 @@ setMethod("train_method", "apply_model", function(object) {
         method = li_caret_multiway, trControl = object@cv, metric = "AUC",
         tuneLength = object@tuneLength, weights_dict = object@weights, tuneGrid = grid,
         eps = object@eps, ite_max = object@ite_max, n_iter_per_reg = object@n_iter_per_reg,
-        k_smote = object@k_smote, do_smote = object@do_smote, index_variable = object@index_variable, index_bloc = object@index_bloc, is_binary = object@is_binary, classe_1 = object@classe_1
+        k_smote = object@k_smote, sampling_choice = object@sampling, index_variable = object@index_variable, index_bloc = object@index_bloc, is_binary = object@is_binary, classe_1 = object@classe_1
     )
     if (object@parallel$do) {
         stopCluster(cl)

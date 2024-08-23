@@ -1,3 +1,17 @@
+setClass("logistic_grp",
+    contains = "apply_model",
+    slots = representation(
+        lambda_min = "numeric",
+        tuneLength = "numeric",
+        index_type = "character",
+        regression = "logical",
+        lambda = "numeric",
+        tuneGrid = "data.frame"
+    )
+)
+
+
+
 li_caret_sgl <- list()
 
 li_caret_sgl$library <- "gglasso"
@@ -20,21 +34,24 @@ create_grid_sgl <- function(x, y, len = NULL, search = "grid") {
 
 li_caret_sgl$grid <- create_grid_sgl
 
-fit_sgl <- function(x, y, wts, param, lev, last, weights, classProbs, index, k_smote, do_smote, index_variable, is_binary) {
+fit_sgl <- function(x, y, wts, param, lev, last, weights, classProbs, index, k_smote, sampling_choice, index_variable, is_binary, index_bloc) {
     li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, index_bloc, is_binary)
     x <- li_norm$new_x
     classe_min <- names(which.min(table(y)))
     classe_maj <- setdiff(levels(y), classe_min)
 
-    if (do_smote) {
+
+    if (sampling_choice == "smote") {
         li <- apply_smote(x, y, k_smote)
         x <- li$x
         y <- li$y
-    } else {
+    }
+    if (sampling_choice == "up") {
         li <- apply_boot(x, y)
         x <- li$x
         y <- li$y
     }
+
     lambda <- param$lambda
     y_numeric <- ifelse(y == classe_min, 1, -1)
     fited <- gglasso::gglasso(
@@ -95,17 +112,17 @@ setMethod("train_method", "apply_model", function(object) {
     # Créer la liste index utilisée pour les groupes (petits groupes)
     vec_names <- colnames(object@train_cols[, object@col_x])
     df_names <- data.frame(name_cov = vec_names)
-    if (object@include_products == FALSE) {
-        if (object@index_type == "var") {
-            index <- object@index_variable
-        }
-        if (object@index_type == "mode") {
-            index <- object@index_mode
-        }
-        if (object@index_type == "bloc") {
-            index <- object@index_bloc
-        }
+
+    if (object@index_type == "var") {
+        index <- object@index_variable
     }
+    if (object@index_type == "mode") {
+        index <- object@index_mode
+    }
+    if (object@index_type == "bloc") {
+        index <- object@index_bloc
+    }
+
 
     for (i in 1:length(index)) {
         if (index[i] < -0.5) {
@@ -123,19 +140,19 @@ setMethod("train_method", "apply_model", function(object) {
     classe_maj <- setdiff(levels(y), classe_min)
 
 
-    if (object@do_smote) {
-        li <- apply_smote(x, y, object@k_smote)
+
+    if (object@sampling == "smote") {
+        li <- apply_smote(x, y, k_smote)
         x <- li$x
         y <- li$y
-    } else {
+    }
+    if (object@sampling == "up") {
         li <- apply_boot(x, y)
         x <- li$x
         y <- li$y
     }
 
     ### Générer les alphas suboptimaux (vis-à-vis de la liste des lambda) de manière aléatoire ou non
-    print(length(y))
-    print(dim(x))
     y_numeric <- ifelse(y == classe_min, 1, -1)
     seq_lambda <- gglasso::gglasso(
         as.matrix(x), y_numeric,
@@ -146,7 +163,6 @@ setMethod("train_method", "apply_model", function(object) {
 
     print("tuneGrid created")
     object@tuneGrid <- tuneGrid
-    ### Evaluer le modèle (pour l'instant on fait sans PCA)
     start_time <- Sys.time()
     if (object@parallel$do) {
         numCores <- detectCores()
@@ -161,28 +177,20 @@ setMethod("train_method", "apply_model", function(object) {
     }
     object@model <- caret::train(
         y = object@y_train, x = as.matrix(object@train_cols[, object@col_x]),
-        method = li_caret_sgl, trControl = object@cv, metric = "AUC", tuneGrid = tuneGrid, index = index, k_smote = object@k_smote, do_smote = object@do_smote,
-        index_variable = object@index_variable, is_binary = object@is_binary
+        method = li_caret_sgl, trControl = object@cv, metric = "AUC", tuneGrid = tuneGrid, index = index, k_smote = object@k_smote, sampling_choice = object@sampling,
+        index_variable = object@index_variable, is_binary = object@is_binary, index_bloc = object@index_bloc
     )
     if (object@parallel$do) {
         stopCluster(cl)
     }
-    cat("time", Sys.time() - start_time)
     return(object)
 })
 
 setMethod("get_results", "apply_model", function(object) {
-    if (object@do_PCA) {
-        test_explic_pca <- predict(object@model$preProcess, object@test_set[, object@col_x]) # SANS DOUTE USELESS si on degage le $finalModel !!!
-        train_explic_pca <- predict(object@model$preProcess, object@train_cols[, object@col_x])
-        object@predictions <- as.vector(predict(object@model$finalModel, newdata = as.matrix(test_explic_pca)))
-        object@predictions_proba <- predict(object@model$finalModel, newdata = as.matrix(test_explic_pca), type = "prob")
-        object@predictions_train_proba <- predict(object@model$finalModel, newdata = as.matrix(train_explic_pca), type = "prob")
-    } else {
-        object@predictions <- as.vector(predict(object@model, newdata = as.matrix(object@test_set[, object@col_x])))
-        object@predictions_proba <- predict(object@model, newdata = as.matrix(object@test_set[, object@col_x]), type = "prob")
-        object@predictions_train_proba <- predict(object@model, newdata = as.matrix(object@train_cols[, object@col_x]), type = "prob")
-    }
+    object@predictions <- as.vector(predict(object@model, newdata = as.matrix(object@test_set[, object@col_x])))
+    object@predictions_proba <- predict(object@model, newdata = as.matrix(object@test_set[, object@col_x]), type = "prob")
+    object@predictions_train_proba <- predict(object@model, newdata = as.matrix(object@train_cols[, object@col_x]), type = "prob")
+
     return(object)
 })
 
@@ -238,7 +246,6 @@ setMethod("importance_method", "apply_model", function(object) {
     df_cv <- object@model$resample
     df_cv <- df_cv[, setdiff(names(df_cv), "Resample")]
     df_long <- melt(df_cv)
-    object@li_box_plots[[object@id_term]] <- df_long
 
     box_plots_stats <- ggplot(df_long, aes(x = variable, y = value)) +
         geom_boxplot() +

@@ -129,7 +129,7 @@ get_mode_vec_liver <- function(x) {
         classified <- FALSE
         if (substr(name_col, nchar(name_col) - 3, nchar(name_col)) == "ART_") {
             index_mode[j] <- 1
-            index_name <- "ART_"
+            index_name[j] <- "ART_"
             classified <- TRUE
         }
         if (substr(name_col, nchar(name_col) - 3, nchar(name_col)) == "PORT") {

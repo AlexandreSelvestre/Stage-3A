@@ -15,7 +15,7 @@ extract_all <- function(config_extrac, sysname) {
     #### Garder seulement les colonnes pertinentes pour la prédiction #######
 
     data_patients <- data_patients[config_extrac$patients_col]
-    data_radio <- data_radio[, setdiff(names(data_radio), config_extrac$radio_col)]
+    data_radio <- data_radio[, setdiff(names(data_radio), config_extrac$kill_col)]
 
     col_names_diagnos <- c()
     for (col_name in names(data_radio)) {
@@ -103,7 +103,6 @@ extract_all <- function(config_extrac, sysname) {
     data_patients$Gender <- unname(sapply(data_patients$Gender, change_genre))
     # data_patients$classe_name <- unname(sapply(data_patients$classe_name, change_class))
     # data_radio$classe_name <- unname(sapply(data_radio$classe_name, change_class))
-    write_xlsx(data_radio, "..\\data\\data_test.xlsx")
 
     #### Passer les radios en lignes et écrire les colonnes de la nouvelle table ####################
 
@@ -176,7 +175,7 @@ extract_all <- function(config_extrac, sysname) {
     }
 
 
-    write_xlsx(data_radio_in_lines, "..\\data\\radio_in_lines.xlsx")
+    # write_xlsx(data_radio_in_lines, "..\\data\\radio_in_lines.xlsx")
     data_used <- merge(data_radio_in_lines, data_patients, by = c("patient_num", "classe_name"))
 
 
@@ -185,29 +184,7 @@ extract_all <- function(config_extrac, sysname) {
     }
 
     # unique_col_names <- c("keys", "patient_num", "classe_name")
-    if (config_extrac$include_products == TRUE) {
-        data_with_cross <- copy(data_used)
-        for (j_1 in 4:(dim(data_used)[2] - 2)) {
-            for (j_2 in (j_1:(dim(data_used)[2] - 2))) {
-                if (j_1 == j_2) {
-                    type_term <- "self"
-                } else {
-                    type_term <- "crossed"
-                }
-                col_name_1 <- substr(names(data_used)[j_1], 1, (nchar(names(data_used)[j_1]) - 5))
-                col_name_2 <- substr(names(data_used)[j_2], 1, (nchar(names(data_used)[j_2]) - 5))
-                extension_1 <- substr(names(data_used)[j_1], (nchar(names(data_used)[j_1]) - 3), nchar(names(data_used)[j_1]))
-                extension_2 <- substr(names(data_used)[j_2], (nchar(names(data_used)[j_2]) - 3), nchar(names(data_used)[j_2]))
-                name_prod <- paste(type_term, col_name_1, col_name_2, extension_1, extension_2, sep = "_")
-                col_cross <- data_used[[colnames(data_used)[j_1]]] * data_used[[colnames(data_used)[j_2]]]
-                # print(paste("c'est ça", names(data_used)[j_1]))
-                data_with_cross[name_prod] <- col_cross
-                print(j_1)
-            }
-        }
 
-        data_used <- data_with_cross
-    }
 
     if (sysname == "Linux") {
         write_xlsx(data_used, "..//data//data_used.xlsx")

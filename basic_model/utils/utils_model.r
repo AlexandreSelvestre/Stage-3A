@@ -289,18 +289,12 @@ plot_global <- function(imp_average, path_plot, ending_name, inference) {
         )
     ggsave(paste0(path_plot, "/global_blocs", "_", ending_name, ".png"), image) # bloc par bloc
 
-    variable_importance <- variable_importance[inference@index_bloc > -0.5, ]
-    ##### A refaire
     variable_importance$Group <- inference@name_mode
     variable_importance$small_Group <- inference@name_variable
-    renorm <- TRUE # Ajoute les pourcentages et tient compte de l'imbalance potentiel entre les groupes... (même s'il n'y en avait pas jusqu'à présent)
-    if (renorm) {
-        variable_importance_grouped <- aggregate_prop(Overall ~ Group, data = variable_importance, FUN = mean)
-        variable_importance_small_grouped <- aggregate_prop(Overall ~ small_Group, data = variable_importance, FUN = mean)
-    } else {
-        variable_importance_grouped <- aggregate(Overall ~ Group, data = variable_importance, FUN = mean)
-        variable_importance_small_grouped <- aggregate(Overall ~ small_Group, data = variable_importance, FUN = mean)
-    }
+    variable_importance_small_grouped <- aggregate_prop(Overall ~ small_Group, data = variable_importance, FUN = mean)
+    variable_importance <- variable_importance[inference@index_bloc > -0.5, ]
+    variable_importance_grouped <- aggregate_prop(Overall ~ Group, data = variable_importance, FUN = mean)
+
 
     image <- ggplot(variable_importance_grouped, aes(x = reorder(Group, Overall), y = Overall)) +
         geom_bar(stat = "identity") +

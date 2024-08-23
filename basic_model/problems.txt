@@ -5,9 +5,11 @@ Warnings:
 
 
 To do:
+- Checker derniers commenting que tout marche encore ET checker multibloc (non vérifié): check: dégager ce qui est comment
 
+- Degogmmer la pca
 
-- Cleaner les classes avec de l'héritage
+- Degager l'horrible idée des produits
 
 - Cleaner le get result: c'est toujours la même chose 
 

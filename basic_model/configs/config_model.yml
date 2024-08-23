@@ -1,7 +1,5 @@
 default:
-  do_PCA: FALSE
   kill_mixtes_col:
-  n_trees: 5000
   show_logs: TRUE
   calc_probs: TRUE
 
@@ -9,28 +7,29 @@ default:
   p: 0.75 #Séparation entre train et test
   rep: 1
   k_smote: 3
-  sampling: "up" # "up", NULL ou  "smote"
+  sampling: "up" # "up","smote", NULL
   search: "grid" #grid ou random
   parallel: 
-    do: FALSE
-    n_process: 8
+    do: TRUE
+    n_process: 5
     forking: FALSE #useless
   analyse_data: 
     do: FALSE
     EM: FALSE
   
 
-
-  #name_model: "random_forest"  #To norm et à refaire en mode li_caret
+  name_model: "logistique_simple"
   #name_model: "logistic_grp"
-  #name_model: "logistique_simple"
   #name_model: "logistic_multiway"
+  #name_model: "logistic_multibloc"
+
+  #2 modèles trop vieux:
   #name_model: "logistic_select"
-  name_model: "logistic_multibloc"
+  #name_model: "random_forest" 
 
 
 radio:
-  minimal_information: TRUE
+  minimal_information: FALSE
   classe_1: "CCK"
 
 

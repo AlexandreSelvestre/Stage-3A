@@ -1,8 +1,6 @@
 default:
   regression: TRUE
 
-##### NB: in this model, weights are discarded if sampling is not NULL
-
 radio:
   lambda_min: 0.001
   tuneLength: 10
@@ -13,5 +11,4 @@ simu:
   tuneLength: 20 
   index_type: "bloc" #"bloc" , "mode" ou "var" : par quoi on groupe
 
-#best tune alpha = 0.72, lambda  = 0.02
-#0.64 en moyenne!! sur un peu plus d'une douzaine de tests.
+

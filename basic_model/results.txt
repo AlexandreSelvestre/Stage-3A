@@ -44,3 +44,36 @@ vs multiblocs :
    6   1  10  1e-06
    [1] "L'erreur moyenne de reconstruction du pictogramme est de 0.168811410037774"
    et picto top
+
+
+Données réelles:
+Baseline logistique simple sur 40 runs et tunelength = 20
+[1] "La valeur de l'AUC de train est de 1"
+[1] "End of analysis phase"
+[1] "actuelle moyenne AUC test 0.698611111111111 ite: 40"
+[1] "actuelle moyenne AUC val 0.776786616161616 ite: 40"
+[1] "actuelle moyenne Accuracy test 0.611111111111111 ite: 40"
+[1] "actuelle somme des confusion matrix ite: 40 :"
+[1] "actuelle moyenne du macro F1 test 0.590575592364095 ite: 40"
+[1] "actuelle moyenne du F1 CCK test 0.348919275169275 ite: 40"
+[1] "actuelle moyenne du F1 CHC test 0.832231909558916 ite: 40"
+          Reference
+Prediction CCK CHC
+       CCK  66 137
+       CHC  94 583
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+[1] "Voilà la matrice de confusion sommée"
+          Reference
+Prediction CCK CHC
+       CCK  66 137
+       CHC  94 583
+[1] "voilà la matrice de confusion en pourcentage: ... % de classe 1 ont été bien classés vs ... % mal classés"
+       CCK            CHC
+CCK 0.4125 0.190277777778
+CHC 0.5875 0.809722222222
+[1] "La balanced accuracy sur l'échantillon total vaut: 0.593137647255714"
+le f1 score CCK sur l'échantillon entier vaut: 0.363636363636 
+le f1 score CHC sur l'échantillon entier vaut: 0.834645669291 
+[1] "Le f1 macro sur l'échantillon total vaut: 0.599141016463851"

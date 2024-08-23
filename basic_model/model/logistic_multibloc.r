@@ -1,3 +1,26 @@
+setClass("logistic_multibloc",
+    contains = "apply_model",
+    slots = representation(
+        lambda_min = "numeric",
+        lambda_max = "numeric",
+        ite_max = "integer",
+        eps = "numeric",
+        tuneLength = "numeric",
+        index_type = "character",
+        tune_R = "integer",
+        R_min = "integer",
+        R_max = "integer",
+        weights = "list",
+        n_iter_per_reg = "integer",
+        regression = "logical",
+        same_R = "logical",
+        li_R = "list",
+        lambda = "numeric"
+    )
+)
+
+
+
 li_caret_multibloc <- list()
 
 li_caret_multibloc$library <- "glmnet"
@@ -26,7 +49,7 @@ better_create_grid_multibloc <- function(x, y, len = NULL, search = "grid", L, l
     } else {
         lambda <- exp(log(10) * runif(len, min = log10(lambda_min), max = log10(lambda_max)))
     }
-    if (is.null(li_R)) {
+    if (length(li_R) == 0) {
         li_R_data_frame <- lapply(1:L, function(l) round(seq(R_min, R_max, length.out = tune_R)))
     } else {
         li_R_data_frame <- li_R
@@ -50,18 +73,20 @@ better_create_grid_multibloc <- function(x, y, len = NULL, search = "grid", L, l
 }
 
 
-fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, index, index_bloc, eps, ite_max, n_iter_per_reg, k_smote, do_smote, index_variable, is_binary, classe_1 = NULL) {
+fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, index, index_bloc, eps, ite_max, n_iter_per_reg, k_smote, sampling_choice, index_variable, is_binary, classe_1 = NULL) {
     # ici, index est bien sûr index_mode
     li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, index_bloc, is_binary)
     x <- li_norm$new_x
     classe_min <- names(which.min(table(y)))
     classe_maj <- setdiff(levels(y), classe_min)
 
-    if (do_smote) {
+
+    if (sampling_choice == "smote") {
         li <- apply_smote(x, y, k_smote)
         x <- li$x
         y <- li$y
-    } else {
+    }
+    if (sampling_choice == "up") {
         li <- apply_boot(x, y)
         x <- li$x
         y <- li$y
@@ -533,7 +558,7 @@ setMethod("train_method", "apply_model", function(object) {
         y = object@y_train, x = object@train_cols[, object@col_x], index = object@index_mode,
         method = li_caret_multibloc, trControl = object@cv, metric = "AUC",
         tuneLength = object@tuneLength, weights_dict = object@weights, tuneGrid = grid, eps = object@eps, ite_max = object@ite_max, n_iter_per_reg = object@n_iter_per_reg,
-        index_bloc = object@index_bloc, k_smote = object@k_smote, do_smote = object@do_smote, index_variable = object@index_variable, is_binary = object@is_binary, classe_1 = object@classe_1
+        index_bloc = object@index_bloc, k_smote = object@k_smote, sampling_choice = object@sampling, index_variable = object@index_variable, is_binary = object@is_binary, classe_1 = object@classe_1
     )
     if (object@parallel$do) {
         stopCluster(cl)

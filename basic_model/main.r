@@ -13,11 +13,11 @@ execute <- function(config, config_run, id_term, seed_cv, sysname) {
     info_cols <- readRDS(file = "../data/RDS/info_cols.rds")
     config$data_used <- data_used
     config$info_cols <- info_cols
-    slot_names <- slotNames(getClass("apply_model"))
+    name_model <- config$name_model
+    slot_names <- slotNames(getClass(name_model))
     config_names <- names(config)
     arguments <- config[intersect(slot_names, config_names)]
-    inference <- do.call("new", args = c("apply_model", arguments))
-
+    inference <- do.call("new", args = c(name_model, arguments))
     inference <- init(inference)
     if (config$analyse_data$do & as.numeric(id_term) == 1) {
         analyse_data(inference)
@@ -52,7 +52,7 @@ execute <- function(config, config_run, id_term, seed_cv, sysname) {
 
     print("End of analysis phase")
 
-    if (config_run$do_picto) {
+    if (config_run$simulated_data) {
         source("./analyse_data/reform_plots.r")
         inference <- reform_beta(inference)
     }

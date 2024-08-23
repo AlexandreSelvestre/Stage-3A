@@ -10,9 +10,9 @@ radio:
   lambda_max: 0.01
   R_min: 1
   R_max: 2 
-  tuneLength: 4
+  tuneLength: 1
   tune_R: 2
-  same_R: FALSE
+  same_R: TRUE
 
   weights:
     "CCK": 1

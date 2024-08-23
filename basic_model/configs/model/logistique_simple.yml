@@ -3,8 +3,8 @@ default:
 
 
 radio:
-  lambda: 0.1
-  lambda_min: 0.001
+  #lambda: 0.1
+  lambda_min: 0.00001
   lambda_max: 0.2
   tuneLength: 20
 
@@ -13,7 +13,7 @@ radio:
     "CHC": 1
 
 simu:
-  lambda: 0.1
+  #lambda: 0.1
   lambda_min: 0.0000000000001
   lambda_max: 0.00001
   tuneLength: 10
