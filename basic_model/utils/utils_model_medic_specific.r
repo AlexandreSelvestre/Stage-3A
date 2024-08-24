@@ -264,34 +264,3 @@ get_beta_bloc <- function(beta_J, beta_K, R, J, K) {
 }
 
 
-get_beta_full <- function(modelFit) {
-    li_x_multi_bloc <- modelFit$li_x_multi_bloc
-    li_dim <- modelFit$li_dim
-    index <- modelFit$index
-    index_bloc <- modelFit$index_bloc
-    li_beta_J <- modelFit$li_beta_J
-    li_beta_K <- modelFit$li_beta_K
-    beta_autre <- modelFit$beta_autre
-    L <- length(li_x_multi_bloc)
-    vec_R <- modelFit$vec_R
-    size_beta_modes <- sum(unlist(lapply(li_dim, function(x) {
-        return(x[1] * x[2])
-    }))) # taille de beta sans beta_autre
-    beta_modes <- rep(NA, size_beta_modes)
-    for (l in 1:L) {
-        R <- vec_R[l]
-        beta_K <- li_beta_K[[l]]
-        beta_J <- li_beta_J[[l]]
-        J <- li_dim[[l]][1]
-        K <- li_dim[[l]][2]
-        beta_bloc <- get_beta_bloc(beta_J, beta_K, R, J, K)
-        beta_modes[index_bloc[index_bloc != -1] == l] <- beta_bloc
-        # Attention ordre temps
-    }
-    beta_final <- c(beta_modes, beta_autre)
-    if (any(is.na(beta_final))) {
-        print(beta_final)
-        stop("Beta final est NA")
-    }
-    return(beta_final)
-}

@@ -73,9 +73,11 @@ better_create_grid_multibloc <- function(x, y, len = NULL, search = "grid", L, l
 }
 
 
-fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, index, index_bloc, eps, ite_max, n_iter_per_reg, k_smote, sampling_choice, index_variable, is_binary, classe_1 = NULL) {
-    # ici, index est bien sûr index_mode
+fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, index_mode, index_bloc, eps, ite_max, n_iter_per_reg, k_smote, sampling_choice, index_variable, is_binary, classe_1 = NULL) {
     li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, index_bloc, is_binary)
+    different_modes <- sort(unique(index_mode[index_mode != -1]))
+    different_blocs <- sort(unique(index_bloc[index_bloc != -1]))
+    different_variables <- sort(unique(index_variable[index_variable != -1]))
     x <- li_norm$new_x
     classe_min <- names(which.min(table(y)))
     classe_maj <- setdiff(levels(y), classe_min)
@@ -91,10 +93,8 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         x <- li$x
         y <- li$y
     }
-    # On prend en entrée un dataframe
-    # Formalisme pour les indices: il faut indiquer qui est dans quel mode dans index. On met -1 pour les variables cliniques
-    # On supposera que l'ordre est la même pour toutes les variables: pas de décalage. Le tester au début: checker que c'est bien le même nom de colonne
-    # L'index_bloc associe à chaque variable multimodale le numéro de son bloc (shape, texture, first order). Il vaut -1 sur les variables cliniques
+
+
     weights <- numeric(length(y))
     weights[y == classe_maj] <- weights_dict[[classe_maj]]
     weights[y == classe_min] <- weights_dict[[classe_min]]
@@ -124,9 +124,10 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
 
     li_x_multi_bloc <- list()
     col_num <- 0
-    for (l in 1:L) {
-        li_x_multi_bloc[[l]] <- as.matrix(x)[, index_bloc == l]
-        col_num <- col_num + ncol(li_x_multi_bloc[[l]])
+    for (l_num in different_blocs) {
+        l_char <- as.character(l_num)
+        li_x_multi_bloc[[l_char]] <- as.matrix(x)[, index_bloc == l_num]
+        col_num <- col_num + ncol(li_x_multi_bloc[[l_char]]) # Sert seulement pour le test
     }
     if (col_num != ncol(mat_x_modes)) {
         print(col_num)
@@ -135,15 +136,15 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
 
     ###### On passe aux modes
     li_dim <- list()
-    for (l in 1:L) {
-        x_bloc <- li_x_multi_bloc[[l]]
-        index_bloc_local <- index[index_bloc == l]
-        dim_modes <- unlist(find_modes(x_bloc, index_bloc_local))
-        li_dim[[l]] <- dim_modes
+    for (l_num in different_blocs) {
+        l_char <- as.character(l_num)
+        x_bloc <- li_x_multi_bloc[[l_char]]
+        index_mode_local <- index_mode[index_bloc == l_num]
+        index_variable_local <- index_variable[index_bloc == l_num]
+        K <- length(unique(index_mode_local))
+        J <- length(unique(index_variable_local))
+        li_dim[[l]] <- list(J = J, K = K)
     }
-
-    ### Formalisme utilisé pour les matrices : celui du papier
-
 
     ####### Petite boucle de l'algorithme: utile dans la grande #########
     petite_boucle <- function(Z_init, vec_Q) {
@@ -165,7 +166,7 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
 
 
         logistic_classic <- glmnet:::glmnet.fit(
-            x = t(Q %*% Z), y = y_numeric, family = binomial(), alpha = 1,
+            x = Z %*%Q, y = y_numeric, family = binomial(), alpha = 1,
             weights = weights / dim(Z)[2], lambda = param$lambda, intercept = TRUE, maxit = 1e8,
             thresh = 1e-8
         )
@@ -175,7 +176,7 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
 
 
 
-        # logistic_classic <- penalized::penalized(response = y_numeric, penalized = t(Q %*% Z), lambda1 = param$lambda, lambda2 = 0, model = "logistic", epsilon = 10^(-8), maxiter = 1000, standardize = FALSE, trace = FALSE)
+        # logistic_classic <- penalized::penalized(response = y_numeric, penalized = Z %*%Q, lambda1 = param$lambda, lambda2 = 0, model = "logistic", epsilon = 10^(-8), maxiter = 1000, standardize = FALSE, trace = FALSE)
         # faux_beta <- logistic_classic@penalized
         # intercept <- logistic_classic@unpenalized
         # print(logistic_classic@converged)
@@ -185,7 +186,6 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         beta <- Q %*% faux_beta
         return(list(beta = beta, intercept = intercept, Z = Z, Q = Q, Q_inv = Q_inv))
     }
-
 
 
     ####### Grande boucle de l'algorithme à itérer autant que nécessaire ##########
@@ -199,7 +199,7 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
             R <- vec_R[l]
             li_Z_J_init_bloc <- list() # init car sans clinique
             for (r in seq_len(R)) {
-                Z_J_init_bloc <- matrix(0, nrow = dim(mat_x_bloc)[1], ncol = J)
+                Z_J_init_bloc <- matrix(0, nrow = nrow(mat_x_bloc), ncol = J)
                 for (k in 1:K) {
                     bloc_k <- mat_x_bloc[, ((k - 1) * J + 1):(k * J)]
                     Z_J_init_bloc <- Z_J_init_bloc + beta_K[(r - 1) * K + k] * bloc_k
@@ -442,7 +442,7 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
     }
     futur_fit <- list(
         li_beta_J = li_beta_J, li_beta_K = li_beta_K, beta_autre = beta_autre, intercept = intercept_K, vec_R = vec_R, li_x_multi_bloc = li_x_multi_bloc,
-        li_dim = li_dim, lev = lev, index = index, index_bloc = index_bloc, li_norm = li_norm, classe_maj = classe_maj, classe_min = classe_min, classe_1 = classe_1, classe_0 = classe_0
+        li_dim = li_dim, lev = lev, index_mode = index_mode, index_bloc = index_bloc, li_norm = li_norm, classe_maj = classe_maj, classe_min = classe_min, classe_1 = classe_1, classe_0 = classe_0
     )
 
     futur_fit$beta_unfolded <- get_beta_full(futur_fit)
@@ -495,6 +495,8 @@ li_caret_multibloc$loop <- NULL
 
 
 setMethod("train_method", "apply_model", function(object) {
+    ######### !!!!! Begin Degager !!!!!
+
     li <- reorder_in_modes(object@train_cols[, object@col_x], index_mode = object@index_mode, index_variable = object@index_variable, index_bloc = object@index_bloc, is_binary = object@is_binary, name_mode = object@name_mode, name_variable = object@name_variable, name_bloc = object@name_bloc)
     object@train_cols[, object@col_x] <- li$x
     colnames(object@train_cols)[colnames(object@train_cols) %in% object@col_x] <- colnames(li$x)
@@ -518,6 +520,8 @@ setMethod("train_method", "apply_model", function(object) {
     object@name_bloc <- li$name_bloc
     object@is_binary <- li$is_binary
 
+    ##### !!!!! End Degager !!!!!
+
     # Créer la liste de paramètres de rang
     L <- length(unique(object@index_bloc[object@index_bloc > -0.5]))
     li_caret_multibloc$parameters <- create_param_for_caret_bloc(L)
@@ -530,9 +534,6 @@ setMethod("train_method", "apply_model", function(object) {
         x = object@train_cols[, object@col_x], y = object@y_train, len = object@tuneLength,
         search = object@search, L = L, lambda_min = object@lambda_min, lambda_max = object@lambda_max, R_min = object@R_min, R_max = object@R_max, tune_R = object@tune_R, li_R = object@li_R, same_R = object@same_R
     )
-    # dossier <- "logs"
-    # fichiers <- list.files(dossier, full.names = TRUE)
-    # file.remove(fichiers)
 
 
     if (object@parallel$do) {
@@ -549,13 +550,13 @@ setMethod("train_method", "apply_model", function(object) {
                     source(file)
                 }
             })
-            clusterExport(cl, varlist = c("get_beta_full", "get_beta_bloc", "find_modes"))
+            clusterExport(cl, varlist = c("get_beta_full", "get_beta_bloc"))
         }
     }
 
 
     object@model <- caret::train(
-        y = object@y_train, x = object@train_cols[, object@col_x], index = object@index_mode,
+        y = object@y_train, x = object@train_cols[, object@col_x], index_mode = object@index_mode,
         method = li_caret_multibloc, trControl = object@cv, metric = "AUC",
         tuneLength = object@tuneLength, weights_dict = object@weights, tuneGrid = grid, eps = object@eps, ite_max = object@ite_max, n_iter_per_reg = object@n_iter_per_reg,
         index_bloc = object@index_bloc, k_smote = object@k_smote, sampling_choice = object@sampling, index_variable = object@index_variable, is_binary = object@is_binary, classe_1 = object@classe_1
@@ -563,6 +564,7 @@ setMethod("train_method", "apply_model", function(object) {
     if (object@parallel$do) {
         stopCluster(cl)
     }
+    object@beta_final <- object@model$finalModel$beta_unfolded
     return(object)
 })
 

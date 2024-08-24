@@ -13,6 +13,7 @@ radio:
   tuneLength: 8
   tune_R: 2
   same_R: FALSE
+  #vec_modes: [3,3,3]
 
   weights:
     "CCK": 1
@@ -29,6 +30,7 @@ simu:
     block_2: [1]
     block_3: [10]
   tuneLength: 3
+  #vec_modes: [66,66,66]
 
   weights:
     "Classe_0": 1

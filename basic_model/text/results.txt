@@ -80,4 +80,57 @@ le f1 score CHC sur l'échantillon entier vaut: 0.834645669291
 
 Multibloc:
 
-0.635 +- 0.063
+radio:
+  lambda_min: 0.00000001
+  lambda_max: 0.1
+  R_min: 1
+  R_max: 2 
+  tuneLength: 8
+  tune_R: 2
+  same_R: FALSE
+
+[1] "Le nombre de données est 90 dont 22 dans le testing dataset et le jeu de donné de la grid search: "
+   R_1 R_2 R_3 lambda
+29   1   2   2  1e-04
+Setting levels: control = CCK, case = CHC
+Setting direction: controls < cases
+[1] "La valeur de l'AUC de test est de 0.680555555555556"
+[1] "La valeur de l'AUC de validation sur chaque fold est de 1"                
+[2] "La valeur de l'AUC de validation sur chaque fold est de 0.818181818181818"
+[3] "La valeur de l'AUC de validation sur chaque fold est de 0.727272727272727"
+[4] "La valeur de l'AUC de validation sur chaque fold est de 0.954545454545455"
+[5] "La valeur de l'AUC de validation sur chaque fold est de 0.909090909090909"
+[1] "Ce qui donne une moyenne d'AUC de 0.881818181818182"
+Setting levels: control = CCK, case = CHC
+Setting direction: controls > cases
+[1] "La valeur de l'AUC de train est de 1"
+[1] "End of analysis phase"
+[1] "actuelle moyenne AUC test 0.664409722222222 ite: 40"
+[1] "actuel ecart type AUC test 0.118441295190396 ite: 40"
+[1] "actuelle moyenne AUC val 0.820498737373737 ite: 40"
+[1] "actuelle moyenne Accuracy test 0.605208333333333 ite: 40"
+[1] "actuelle somme des confusion matrix ite: 40 :"
+[1] "actuelle moyenne du macro F1 test 0.589378167197065 ite: 40"
+[1] "actuelle moyenne du F1 CCK test 0.344182067932068 ite: 40"
+[1] "actuelle moyenne du F1 CHC test 0.834574266462062 ite: 40"
+          Reference
+Prediction CCK CHC
+       CCK  63 132
+       CHC  97 588
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+[1] "Voilà la matrice de confusion sommée"
+          Reference
+Prediction CCK CHC
+       CCK  63 132
+       CHC  97 588
+[1] "voilà la matrice de confusion en pourcentage: ... % de classe 1 ont été bien classés vs ... % mal classés"
+        CCK            CHC
+CCK 0.39375 0.183333333333
+CHC 0.60625 0.816666666667
+[1] "La balanced accuracy sur l'échantillon total vaut: 0.590735541830432"
+le f1 score CCK sur l'échantillon entier vaut: 0.354929577465 
+le f1 score CHC sur l'échantillon entier vaut: 0.837010676157 
+[1] "Le f1 macro sur l'échantillon total vaut: 0.595970126810686"
+There were 50 or more warnings (use warnings() to see the first 50)

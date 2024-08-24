@@ -32,7 +32,8 @@ setClass(
     predictions_train_proba = "ANY", # variable: vecteur des probas prédites sur le train
     y_tot = "ANY", #                  variable: vecteur expliqué
     y_train = "ANY", #                variable: partie train de y_tot
-    y_test = "ANY" #                  variable: partie test de y_tot
+    y_test = "ANY", #                 variable: partie test de y_tot
+    beta_final = "numeric" #          variable : le beta obtenu à la fin du modèle
   )
 )
 
@@ -59,7 +60,6 @@ setClass(
     li_df_var_imp = "ANY", #        variable: dataframe imp variables (pas tous les modèles)
     confus_mat = "ANY", #           variable: matrice de confusion
     df_danger = "ANY", #            variable: to refit: df scores sur lignes mauvaises en radio
-    beta_final = "numeric", #       variable: vecteur beta final (sans intercept)
     score_recons = "numeric" #      variable: erreur L1 de reconstruction du picto
   ),
   prototype(

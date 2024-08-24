@@ -145,9 +145,6 @@ renormalize_in_model_fit_index_mode <- function(x, index_variable, index_bloc, i
     df_mu <- li$mu
     df_sigma <- li$sigma
     new_x <- data.table::copy(x)
-    # log_file <- paste0("./log/fit_log_", Sys.getpid(), ".txt")
-    # cat("Début de fit_simple\n", file = log_file, append = TRUE)
-    # cat("Valeur de beta: ", dim(x), dim(df_mu), dim(df_sigma), "\n", file = log_file, append = TRUE)
     new_x <- (new_x - df_mu) / df_sigma
     return(list(new_x = new_x, df_mu = df_mu, df_sigma = df_sigma))
 }
@@ -160,11 +157,11 @@ renormalize_in_model_pred_index_mode <- function(newdata, df_mu, df_sigma) {
     return(newdata)
 }
 
+
+
+
 reorder_in_modes <- function(x, index_mode, index_variable, index_bloc, name_mode, name_variable, name_bloc, is_binary) {
-    ## !!!Attention si K varie!!!
-    # Seule nécessité avant cetet fonction: variables tabulaires à la fin
-    # L'application de cette fonction assure que les indices de sortie sont tous bien jolis et contigus... Ca sauve certains modèles un peu mal construits. Et on arrange tout sur le modèle du data used des radiomiques (par mode mais pas par bloc).
-    # different_variables <- order(unique(index_variable[index_variable > -0.5]))
+    # Indispensable au multiway pour réordonner par mode avec un index variable différent par bloc. Attention si K varie entre les blocs le modèle multiway est par définition incapable de fonctionner.
 
     different_blocs <- sort(unique(index_bloc[index_bloc > -0.5]))
     li_different_variables <- lapply(1:length(different_blocs), function(l) {
@@ -175,7 +172,7 @@ reorder_in_modes <- function(x, index_mode, index_variable, index_bloc, name_mod
     count_tab <- 1
     # Calculer les indices de départ des variables de chaque bloc
     vec_offset_var_bloc <- c(0)
-    if (length(different_blocs > 1)) {
+    if (length(different_blocs) > 1) {
         for (l in 1:(length(different_blocs) - 1)) {
             previous_offset <- vec_offset_var_bloc[l]
             n_variables <- length(li_different_variables[[l]])
@@ -193,10 +190,12 @@ reorder_in_modes <- function(x, index_mode, index_variable, index_bloc, name_mod
     new_name_mode <- rep("", length(index_mode))
     new_name_variable <- rep("", length(index_variable))
     new_name_bloc <- rep("", length(index_bloc))
+    #### Poursuivre ici
     K <- length(unique(index_mode[index_mode > -0.5]))
     J <- sum(sapply(1:length(different_blocs), function(l) {
         return(length(li_different_variables[[l]]))
     }))
+    # Problème index mode: on mélange les modes différents entre blocs si même nom: ajouter une distinction entre blocs!
     for (i in 1:length(index_mode)) {
         if (!as.character(index_mode[i]) %in% names(li_modes)) {
             li_modes[[as.character(index_mode[i])]] <- as.data.frame(matrix(0, ncol = length(index_mode[index_mode == index_mode[i]]), nrow = nrow(x)))
@@ -346,6 +345,38 @@ convert_y <- function(y, classe_1) {
         y_numeric <- ifelse(y == classe_1, 1, 0)
     }
     return(y_numeric)
+}
+
+get_beta_full <- function(modelFit) {
+    li_x_multi_bloc <- modelFit$li_x_multi_bloc
+    li_dim <- modelFit$li_dim
+    index <- modelFit$index
+    index_bloc <- modelFit$index_bloc
+    li_beta_J <- modelFit$li_beta_J
+    li_beta_K <- modelFit$li_beta_K
+    beta_autre <- modelFit$beta_autre
+    L <- length(li_x_multi_bloc)
+    vec_R <- modelFit$vec_R
+    size_beta_modes <- sum(unlist(lapply(li_dim, function(x) {
+        return(x[1] * x[2])
+    }))) # taille de beta sans beta_autre
+    beta_modes <- rep(NA, size_beta_modes)
+    for (l in 1:L) {
+        R <- vec_R[l]
+        beta_K <- li_beta_K[[l]]
+        beta_J <- li_beta_J[[l]]
+        J <- li_dim[[l]][1]
+        K <- li_dim[[l]][2]
+        beta_bloc <- get_beta_bloc(beta_J, beta_K, R, J, K)
+        beta_modes[index_bloc[index_bloc != -1] == l] <- beta_bloc
+        # Attention ordre temps doit être croissant des indices (dans x)
+    }
+    beta_final <- c(beta_modes, beta_autre)
+    if (any(is.na(beta_final))) {
+        print(beta_final)
+        stop("Beta final est NA")
+    }
+    return(beta_final)
 }
 
 

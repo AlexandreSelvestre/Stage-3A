@@ -11,7 +11,7 @@ radio:
   lambda_max: 0.05
   R_min: 1
   R_max: 2
-  tuneLength: 20 #used for number of lambda inside the SGL function
+  tuneLength: 20
 
   weights:
     "CCK": 1
@@ -19,10 +19,10 @@ radio:
 
 simu:
   lambda_min: 0.000001
-  lambda_max: 0.005
+  lambda_max: 0.01
   R_min: 1
   R_max: 15
-  tuneLength: 4
+  tuneLength: 5
   
   weights:
     "Classe_0": 1

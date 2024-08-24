@@ -26,7 +26,7 @@ library(reshape2)
 
 
 sysname <- Sys.info()["sysname"]
-set.seed(9) ## seed maîtresse: celle des modèles
+set.seed(10) ## seed maîtresse: celle des modèles
 seed_model <- .Random.seed
 set.seed(2)
 seed_cv <- .Random.seed
