@@ -248,19 +248,3 @@ better_create_grid_multibloc <- function(x, y, len = NULL, search = "grid", L, l
     data_frame_grid <- setNames(data_frame_grid, vecnames)
     return(as.data.frame(data_frame_grid))
 }
-
-get_beta_bloc <- function(beta_J, beta_K, R, J, K) {
-    beta <- rep(0, J * K)
-    for (r in 1:R) {
-        beta_r <- rep(0, J * K)
-        for (j in 1:J) {
-            for (k in 1:K) {
-                beta_r[(k - 1) * J + j] <- beta_J[(r - 1) * J + j] * beta_K[(r - 1) * K + k]
-            }
-        }
-        beta[1:(J * K)] <- beta[1:(J * K)] + beta_r
-    }
-    return(beta)
-}
-
-

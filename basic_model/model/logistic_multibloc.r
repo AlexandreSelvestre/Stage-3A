@@ -75,9 +75,20 @@ better_create_grid_multibloc <- function(x, y, len = NULL, search = "grid", L, l
 
 fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, index_mode, index_bloc, eps, ite_max, n_iter_per_reg, k_smote, sampling_choice, index_variable, is_binary, classe_1 = NULL) {
     li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, index_bloc, is_binary)
-    different_modes <- sort(unique(index_mode[index_mode != -1]))
+
     different_blocs <- sort(unique(index_bloc[index_bloc != -1]))
-    different_variables <- sort(unique(index_variable[index_variable != -1]))
+    li_different_variables <- lapply(different_blocs, function(l_num) {
+        index_variable_local <- index_variable[index_bloc == l_num]
+        different_variables <- sort(unique(index_variable_local))
+        return(different_variables)
+    })
+    names(li_different_variables) <- as.character(different_blocs)
+    li_different_modes <- lapply(different_blocs, function(l_num) {
+        index_mode_local <- index_mode[index_bloc == l_num]
+        different_modes <- sort(unique(index_mode_local))
+        return(different_modes)
+    })
+    names(li_different_modes) <- as.character(different_blocs)
     x <- li_norm$new_x
     classe_min <- names(which.min(table(y)))
     classe_maj <- setdiff(levels(y), classe_min)
@@ -106,7 +117,7 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
     classe_0 <- setdiff(levels(y), classe_1)
 
     ## Commencer par définir Z_J en sommant sur les modes. Attention au problème lignes colonnes inversées.
-    mat_x_modes <- as.matrix(x)[, index_bloc > -0.5]
+    mat_x_tens <- as.matrix(x)[, index_bloc > -0.5]
     mat_x_restant <- as.matrix(x)[, index_bloc == -1]
     n_restant <- ncol(mat_x_restant)
 
@@ -117,10 +128,11 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         L <- length(unique(index_bloc)) - 1
     }
 
-    vec_R <- sapply(seq_len(L), function(l) {
+    current_li_R <- lapply(seq_len(L), function(l) {
         R <- param[[paste0("R_", l)]]
         return(R)
-    })
+    }) # Liste des rang R de chaque bloc à cette étape de la cv
+    names(current_li_R) <- as.character(different_blocs)
 
     li_x_multi_bloc <- list()
     col_num <- 0
@@ -129,7 +141,7 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         li_x_multi_bloc[[l_char]] <- as.matrix(x)[, index_bloc == l_num]
         col_num <- col_num + ncol(li_x_multi_bloc[[l_char]]) # Sert seulement pour le test
     }
-    if (col_num != ncol(mat_x_modes)) {
+    if (col_num != ncol(mat_x_tens)) {
         print(col_num)
         stop("Problème de correspondance des colonnes des blocs!")
     }
@@ -138,12 +150,11 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
     li_dim <- list()
     for (l_num in different_blocs) {
         l_char <- as.character(l_num)
-        x_bloc <- li_x_multi_bloc[[l_char]]
         index_mode_local <- index_mode[index_bloc == l_num]
         index_variable_local <- index_variable[index_bloc == l_num]
         K <- length(unique(index_mode_local))
         J <- length(unique(index_variable_local))
-        li_dim[[l]] <- list(J = J, K = K)
+        li_dim[[l_char]] <- list(J = J, K = K)
     }
 
     ####### Petite boucle de l'algorithme: utile dans la grande #########
@@ -166,7 +177,7 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
 
 
         logistic_classic <- glmnet:::glmnet.fit(
-            x = Z %*%Q, y = y_numeric, family = binomial(), alpha = 1,
+            x = Z %*% Q, y = y_numeric, family = binomial(), alpha = 1,
             weights = weights / dim(Z)[2], lambda = param$lambda, intercept = TRUE, maxit = 1e8,
             thresh = 1e-8
         )
@@ -191,75 +202,64 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
     ####### Grande boucle de l'algorithme à itérer autant que nécessaire ##########
     grande_boucle <- function(li_beta_K) {
         #   Définir Z_J_init (sans les variables cliniques)
-        create_Z_J_init <- function(l) {
-            mat_x_bloc <- li_x_multi_bloc[[l]]
-            beta_K <- li_beta_K[[l]]
-            K <- li_dim[[l]][2]
-            J <- li_dim[[l]][1]
-            R <- vec_R[l]
-            li_Z_J_init_bloc <- list() # init car sans clinique
+        li_Z_J_init <- lapply(different_blocs, function(l_num) {
+            l_char <- as.character(l_num)
+            mat_x_bloc <- li_x_multi_bloc[[l_char]]
+            beta_K <- li_beta_K[[l_char]]
+            K <- li_dim[[l_char]]$K
+            J <- li_dim[[l_char]]$J
+            R <- current_li_R[[l_char]]
+            li_Z_J_init_bloc <- list() # init car sans clinique du bloc l_num
             for (r in seq_len(R)) {
                 Z_J_init_bloc <- matrix(0, nrow = nrow(mat_x_bloc), ncol = J)
-                for (k in 1:K) {
-                    bloc_k <- mat_x_bloc[, ((k - 1) * J + 1):(k * J)]
-                    Z_J_init_bloc <- Z_J_init_bloc + beta_K[(r - 1) * K + k] * bloc_k
+                for (k in li_different_modes[[l_char]]) {
+                    bloc_k <- mat_x_bloc[, index_mode[index_bloc == l_num] == k]
+                    bloc_k
+                    index_k <- which(li_different_modes[[l_char]] == k)
+                    Z_J_init_bloc <- Z_J_init_bloc + beta_K[(r - 1) * K + index_k] * bloc_k
                     li_Z_J_init_bloc[[r]] <- Z_J_init_bloc
                 }
             }
-            Z_J_init_bloc <- li_Z_J_init_bloc[[1]]
-            if (R >= 2) {
-                for (r in 2:R) {
-                    Z_J_init_bloc <- cbind(Z_J_init_bloc, li_Z_J_init_bloc[[r]])
-                }
-            }
-            ##### !!On renverse les matrices pour correspondre au formalisme du papier!!
-            Z_J_init_bloc <- t(Z_J_init_bloc)
+
+            Z_J_init_bloc <- do.call(cbind, li_Z_J_init_bloc)
             if (any(is.na(Z_J_init_bloc))) {
                 stop(" Z_J_init contient des NA")
             }
             return(Z_J_init_bloc)
-        }
+        })
 
         ## Assembler les Z_J_l en un grand Z_J_init
-        Z_J_init <- create_Z_J_init(1)
-        if (L > 1) {
-            for (l in 2:L) {
-                Z_J_init <- rbind(Z_J_init, create_Z_J_init(l))
-            }
-        }
+        Z_J_init <- do.call(cbind, li_Z_J_init)
 
 
         ## Définir Q_J de transformation pour la régularisation (attention aux colonnes inversées)
-        create_vec_diag_J <- function(l) {
-            beta_K <- li_beta_K[[l]]
-            K <- li_dim[[l]][2]
-            J <- li_dim[[l]][1]
+        li_vec_diag <- lapply(different_blocs, function(l_num) {
+            l_char <- as.character(l_num)
+            beta_K <- li_beta_K[[l_char]]
+            K <- li_dim[[l_char]]$K
+            J <- li_dim[[l_char]]$J
             vec_diag_bloc <- c()
-            R <- vec_R[l]
+            R <- current_li_R[[l_char]]
             for (r in 1:R) {
                 norme_1_r <- norm(as.matrix(beta_K[((r - 1) * K + 1):(r * K)]), type = "1")
                 diag_elem_r <- rep(norme_1_r, J)
                 vec_diag_bloc <- append(vec_diag_bloc, diag_elem_r)
             }
             return(vec_diag_bloc)
-        }
+        })
 
-        vec_diag <- create_vec_diag_J(1)
-        if (L > 1) {
-            for (l in 2:L) {
-                vec_diag <- append(vec_diag, create_vec_diag_J(l))
-            }
-        }
+        vec_diag <- do.call(c, li_vec_diag) # Pas certain que R comprenne...
 
         li_petite_boucle <- petite_boucle(Z_init = Z_J_init, vec_Q = vec_diag)
         beta_J_complet <- li_petite_boucle$beta
         beta_J_full <- li_petite_boucle$beta[1:(length(li_petite_boucle$beta) - n_restant)]
         li_beta_J <- list()
         precedent <- 0
-        for (l in 1:L) {
-            R <- vec_R[l]
-            li_beta_J[[l]] <- beta_J_full[(precedent + 1):(precedent + li_dim[[l]][1] * R)]
-            precedent <- precedent + li_dim[[l]][1] * R
+        for (l_num in different_blocs) {
+            l_char <- as.character(l_num)
+            R <- current_li_R[[l_char]]
+            li_beta_J[[l_char]] <- beta_J_full[(precedent + 1):(precedent + li_dim[[l_char]]$J * R)]
+            precedent <- precedent + li_dim[[l_char]]$J * R
         }
         if (n_restant > 0) {
             beta_autre_J <- li_petite_boucle$beta[(length(li_petite_boucle$beta) - n_restant + 1):length(li_petite_boucle$beta)]
@@ -273,69 +273,55 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         # print(beta_J_complet)
 
 
-
         #########################    Opérer maintenant sur Z_K et Q_K
 
-        create_Z_K_init <- function(l) {
-            mat_x_bloc <- li_x_multi_bloc[[l]]
-            beta_J <- li_beta_J[[l]]
-            # print(beta_J)
-            J <- li_dim[[l]][1]
-            K <- li_dim[[l]][2]
-            R <- vec_R[l]
+        li_Z_K_init <- lapply(different_blocs, function(l_num) {
+            l_char <- as.character(l_num)
+            mat_x_bloc <- li_x_multi_bloc[[l_char]]
+            beta_J <- li_beta_J[[l_char]]
+            J <- li_dim[[l_char]]$J
+            K <- li_dim[[l_char]]$K
+            R <- current_li_R[[l_char]]
             li_Z_K_init_bloc <- list() # init car sans clinique
+            different_variables <- li_different_variables[[l_char]]
             for (r in 1:R) {
-                Z_K_init_bloc_r <- matrix(0, nrow = dim(mat_x_bloc)[1], ncol = K)
-                for (j in 1:J) {
-                    col_to_extract <- seq(j, by = J, length.out = K)
+                Z_K_init_bloc_r <- matrix(0, nrow = nrow(mat_x_bloc), ncol = K)
+                for (j in different_variables) {
+                    col_to_extract <- which(index_variable == j)
+                    index_j <- which(different_variables == j)
                     bloc_j <- mat_x_bloc[, col_to_extract]
-                    Z_K_init_bloc_r <- Z_K_init_bloc_r + beta_J[(r - 1) * J + j] * bloc_j
+                    Z_K_init_bloc_r <- Z_K_init_bloc_r + beta_J[(r - 1) * J + index_j] * bloc_j
                     li_Z_K_init_bloc[[r]] <- Z_K_init_bloc_r
                 }
             }
+            Z_K_init_bloc <- do.call(cbind, li_Z_K_init_bloc)
             Z_K_init_bloc <- li_Z_K_init_bloc[[1]]
-            if (R >= 2) {
-                for (r in 2:R) {
-                    Z_K_init_bloc <- cbind(Z_K_init_bloc, li_Z_K_init_bloc[[r]])
-                }
-            }
-            Z_K_init_bloc <- t(Z_K_init_bloc)
             if (all(abs(Z_K_init_bloc) < 1e-10)) {
                 print("Z_K est nul : tout sera écrasé à 0")
             }
             return(Z_K_init_bloc)
-        }
+        })
 
-        Z_K_init <- create_Z_K_init(1)
-        if (L > 1) {
-            for (l in 2:L) {
-                Z_K_init <- rbind(Z_K_init, create_Z_K_init(l))
-            }
-        }
+        Z_K_init <- do.call(cbind, li_Z_K_init)
 
-        ## Définir Q_K de transformation pour la régularisation (attention aux colonnes inversées)
 
-        create_vec_diag_K <- function(l) {
-            beta_J <- li_beta_J[[l]]
-            J <- li_dim[[l]][1]
-            K <- li_dim[[l]][2]
+        li_vec_diag_K <- lapply(different_blocs, function(l_num) {
+            l_char <- as.character(l_num)
+            beta_J <- li_beta_J[[l_char]]
+            J <- li_dim[[l_char]]$J
+            K <- li_dim[[l_char]]$K
             vec_diag_bloc <- c()
-            R <- vec_R[l]
+            R <- current_li_R[[l_char]]
             for (r in 1:R) {
                 norme_1_r <- norm(as.matrix(beta_J[((r - 1) * J + 1):(r * J)]), type = "1")
                 diag_elem_r <- rep(norme_1_r, K)
                 vec_diag_bloc <- append(vec_diag_bloc, diag_elem_r)
             }
             return(vec_diag_bloc)
-        }
+        })
 
 
-        vec_diag <- create_vec_diag_K(1)
-        if (L > 1) {
-            for (l in 2:L) {
-                vec_diag <- append(vec_diag, create_vec_diag_K(l))
-            }
-        }
+        vec_diag <- do.call(c, li_vec_diag_K)
 
 
         ### Appliquer à nouveau la petite boucle
@@ -345,23 +331,25 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         beta_K_full <- li_petite_boucle$beta[1:(length(li_petite_boucle$beta) - n_restant)]
         li_beta_K <- list()
         precedent <- 0
-        for (l in 1:L) {
-            R <- vec_R[l]
-            li_beta_K[[l]] <- beta_K_full[(precedent + 1):(precedent + li_dim[[l]][2] * R)]
-            precedent <- precedent + li_dim[[l]][2] * R
+        for (l_num in different_blocs) {
+            l_char <- as.character(l_num)
+            R <- current_li_R[[l_char]]
+            li_beta_K[[l_char]] <- beta_K_full[(precedent + 1):(precedent + li_dim[[l_char]]$K * R)]
+            precedent <- precedent + li_dim[[l_char]]$K * R
         }
 
         ## Renormaliser
-        for (l in 1:L) {
-            beta_K <- li_beta_K[[l]]
-            K <- li_dim[[l]][2]
-            R <- vec_R[l]
+        for (l_num in different_blocs) {
+            l_char <- as.character(l_num)
+            beta_K <- li_beta_K[[l_char]]
+            K <- li_dim[[l_char]]$K
+            R <- current_li_R[[l_char]]
             for (r in 1:R) {
                 norm_beta_K_r <- norm(as.matrix(beta_K[((r - 1) * K + 1):(r * K)]), type = "2")
                 if (norm_beta_K_r > 0) {
                     beta_K[((r - 1) * K + 1):(r * K)] <- beta_K[((r - 1) * K + 1):(r * K)] / norm_beta_K_r
                 }
-                li_beta_K[[l]] <- beta_K
+                li_beta_K[[l_char]] <- beta_K
             }
         }
         intercept_K <- li_petite_boucle$intercept
@@ -375,8 +363,8 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         beta_K_complet <- li_petite_boucle$beta
 
         # Calculer les deux critères
-        crit_log_J <- crit_logistic(t(Q_J_full %*% Z_J), y_numeric, Q_J_inv %*% beta_J_complet, intercept_J, param$lambda)
-        crit_log_K <- crit_logistic(t(Q_K_full %*% Z_K), y_numeric, Q_K_inv %*% beta_K_complet, intercept_K, param$lambda)
+        crit_log_J <- crit_logistic(Z_J %*% Q_J_full, y_numeric, Q_J_inv %*% beta_J_complet, intercept_J, param$lambda)
+        crit_log_K <- crit_logistic(Z_K %*% Q_K_full, y_numeric, Q_K_inv %*% beta_K_complet, intercept_K, param$lambda)
         rapport <- abs(crit_log_J - crit_log_K) / abs(crit_log_J)
         return(list(
             li_beta_J = li_beta_J, li_beta_K = li_beta_K, beta_autre = beta_autre_K, intercept_J = intercept_J, intercept_K = intercept_K,
@@ -388,9 +376,10 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
     continue <- TRUE
     ###### Attention beta_J et beta_K n'existent plus, ce sont des listes!! (plus simple à manipuler avec les dimensions variables)
     li_beta_K <- list()
-    for (l in 1:L) {
-        R <- vec_R[l]
-        li_beta_K[[l]] <- rnorm(li_dim[[l]][2] * R, mean = 0, sd = 1)
+    for (l_num in different_blocs) {
+        l_char <- as.character(l_num)
+        R <- current_li_R[[l_char]]
+        li_beta_K[[l_char]] <- rnorm(li_dim[[l_char]]$K * R, mean = 0, sd = 1)
     }
     iteration <- 1
     memoire_crit_J <- 1
@@ -401,7 +390,6 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         li_beta_J <- li_grande_boucle$li_beta_J
         li_beta_K <- li_grande_boucle$li_beta_K
         beta_autre <- li_grande_boucle$beta_autre
-        intercept_J <- li_grande_boucle$intercept_J
         intercept_K <- li_grande_boucle$intercept_K
 
         rapport <- li_grande_boucle$rapport
@@ -441,7 +429,7 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         }
     }
     futur_fit <- list(
-        li_beta_J = li_beta_J, li_beta_K = li_beta_K, beta_autre = beta_autre, intercept = intercept_K, vec_R = vec_R, li_x_multi_bloc = li_x_multi_bloc,
+        li_beta_J = li_beta_J, li_beta_K = li_beta_K, beta_autre = beta_autre, intercept = intercept_K, current_li_R = current_li_R, li_x_multi_bloc = li_x_multi_bloc,
         li_dim = li_dim, lev = lev, index_mode = index_mode, index_bloc = index_bloc, li_norm = li_norm, classe_maj = classe_maj, classe_min = classe_min, classe_1 = classe_1, classe_0 = classe_0
     )
 
@@ -495,33 +483,6 @@ li_caret_multibloc$loop <- NULL
 
 
 setMethod("train_method", "apply_model", function(object) {
-    ######### !!!!! Begin Degager !!!!!
-
-    li <- reorder_in_modes(object@train_cols[, object@col_x], index_mode = object@index_mode, index_variable = object@index_variable, index_bloc = object@index_bloc, is_binary = object@is_binary, name_mode = object@name_mode, name_variable = object@name_variable, name_bloc = object@name_bloc)
-    object@train_cols[, object@col_x] <- li$x
-    colnames(object@train_cols)[colnames(object@train_cols) %in% object@col_x] <- colnames(li$x)
-
-    li <- reorder_in_modes(object@test_set[, object@col_x], index_mode = object@index_mode, index_variable = object@index_variable, index_bloc = object@index_bloc, is_binary = object@is_binary, name_mode = object@name_mode, name_variable = object@name_variable, name_bloc = object@name_bloc)
-    object@test_set[, object@col_x] <- li$x ### suite...
-    colnames(object@test_set)[colnames(object@test_set) %in% object@col_x] <- colnames(li$x)
-
-    li <- reorder_in_modes(object@data_used[, object@col_x], index_mode = object@index_mode, index_variable = object@index_variable, index_bloc = object@index_bloc, is_binary = object@is_binary, name_mode = object@name_mode, name_variable = object@name_variable, name_bloc = object@name_bloc)
-    object@data_used[, object@col_x] <- li$x ### suite...
-    colnames(object@data_used)[colnames(object@data_used) %in% object@col_x] <- colnames(li$x)
-
-    object@col_x <- setdiff(names(object@data_used), c(object@info_cols$exclude_cols, object@name_y))
-
-
-    object@index_variable <- li$index_variable
-    object@name_variable <- li$name_variable
-    object@index_mode <- li$index_mode
-    object@name_mode <- li$name_mode
-    object@index_bloc <- li$index_bloc
-    object@name_bloc <- li$name_bloc
-    object@is_binary <- li$is_binary
-
-    ##### !!!!! End Degager !!!!!
-
     # Créer la liste de paramètres de rang
     L <- length(unique(object@index_bloc[object@index_bloc > -0.5]))
     li_caret_multibloc$parameters <- create_param_for_caret_bloc(L)

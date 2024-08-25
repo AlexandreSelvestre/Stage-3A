@@ -347,29 +347,54 @@ convert_y <- function(y, classe_1) {
     return(y_numeric)
 }
 
+get_beta_bloc <- function(beta_J, beta_K, R, J, K, index_mode_local, index_variable_local) {
+    beta <- rep(0, J * K)
+    for (r in 1:R) {
+        beta_r <- rep(0, J * K)
+        for (j in 1:J) {
+            for (k in 1:K) {
+                mode_k <- sort(unique(index_mode_local))[k]
+                mode_j <- sort(unique(index_variable_local))[j]
+                where_k <- which(index_mode_local == mode_k)
+                where_j <- which(index_variable_local == mode_j)
+                indice <- intersect(where_k, where_j)
+                if (length(indice != 1)) {
+                    stop("Erreur de reconstruction de beta_bloc_local")
+                }
+                beta_r[indice] <- beta_J[(r - 1) * J + j] * beta_K[(r - 1) * K + k]
+            }
+        }
+        beta <- beta + beta_r
+    }
+    return(beta)
+}
+
+
 get_beta_full <- function(modelFit) {
-    li_x_multi_bloc <- modelFit$li_x_multi_bloc
     li_dim <- modelFit$li_dim
-    index <- modelFit$index
     index_bloc <- modelFit$index_bloc
+    index_mode <- modelFit$index_mode
+    index_variable <- modelFit$index_variable
+    different_blocs <- sort(unique(index_bloc[index_bloc != -1]))
     li_beta_J <- modelFit$li_beta_J
     li_beta_K <- modelFit$li_beta_K
     beta_autre <- modelFit$beta_autre
-    L <- length(li_x_multi_bloc)
-    vec_R <- modelFit$vec_R
+    current_li_R <- modelFit$current_li_R
     size_beta_modes <- sum(unlist(lapply(li_dim, function(x) {
-        return(x[1] * x[2])
+        return(x$J * x$K)
     }))) # taille de beta sans beta_autre
     beta_modes <- rep(NA, size_beta_modes)
-    for (l in 1:L) {
-        R <- vec_R[l]
-        beta_K <- li_beta_K[[l]]
-        beta_J <- li_beta_J[[l]]
-        J <- li_dim[[l]][1]
-        K <- li_dim[[l]][2]
-        beta_bloc <- get_beta_bloc(beta_J, beta_K, R, J, K)
-        beta_modes[index_bloc[index_bloc != -1] == l] <- beta_bloc
-        # Attention ordre temps doit être croissant des indices (dans x)
+    for (l_num in different_blocs) {
+        l_char <- as.character(l_num)
+        R <- current_li_R[[l_char]]
+        beta_K <- li_beta_K[[l_char]]
+        beta_J <- li_beta_J[[l_char]]
+        J <- li_dim[[l_char]]$J
+        K <- li_dim[[l_char]]$K
+        index_mode_local <- index_mode[index_bloc == l_num]
+        index_variable_local <- index_variable[index_bloc == l_num]
+        beta_bloc <- get_beta_bloc(beta_J, beta_K, R, J, K, index_mode_local, index_variable_local)
+        beta_modes[index_bloc[index_bloc != -1] == l_num] <- beta_bloc
     }
     beta_final <- c(beta_modes, beta_autre)
     if (any(is.na(beta_final))) {
