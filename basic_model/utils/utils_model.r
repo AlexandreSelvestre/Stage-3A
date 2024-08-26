@@ -358,13 +358,14 @@ get_beta_bloc <- function(beta_J, beta_K, R, J, K, index_mode_local, index_varia
                 where_k <- which(index_mode_local == mode_k)
                 where_j <- which(index_variable_local == mode_j)
                 indice <- intersect(where_k, where_j)
-                if (length(indice != 1)) {
+                if (length(indice) != 1) {
+                    print(indice)
                     stop("Erreur de reconstruction de beta_bloc_local")
                 }
                 beta_r[indice] <- beta_J[(r - 1) * J + j] * beta_K[(r - 1) * K + k]
             }
         }
-        beta <- beta + beta_r
+        beta[] <- beta + beta_r
     }
     return(beta)
 }

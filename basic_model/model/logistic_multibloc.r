@@ -69,6 +69,7 @@ better_create_grid_multibloc <- function(x, y, len = NULL, search = "grid", L, l
     })
     vecnames <- c(vec_names, "lambda")
     data_frame_grid <- setNames(data_frame_grid, vecnames)
+    # print(as.data.frame(data_frame_grid))
     return(as.data.frame(data_frame_grid))
 }
 
@@ -159,7 +160,7 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
 
     ####### Petite boucle de l'algorithme: utile dans la grande #########
     petite_boucle <- function(Z_init, vec_Q) {
-        Z <- rbind(Z_init, t(mat_x_restant))
+        Z <- cbind(Z_init, mat_x_restant)
         vec_Q <- append(vec_Q, rep(1, n_restant))
         # print("taille vec:")
         # print(length(vec_Q))
@@ -175,10 +176,9 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         }
         Z <- as.matrix(Z)
 
-
         logistic_classic <- glmnet:::glmnet.fit(
             x = Z %*% Q, y = y_numeric, family = binomial(), alpha = 1,
-            weights = weights / dim(Z)[2], lambda = param$lambda, intercept = TRUE, maxit = 1e8,
+            weights = weights / dim(Z)[1], lambda = param$lambda, intercept = TRUE, maxit = 1e8,
             thresh = 1e-8
         )
         faux_beta <- as.numeric(logistic_classic$beta)
@@ -214,7 +214,6 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
                 Z_J_init_bloc <- matrix(0, nrow = nrow(mat_x_bloc), ncol = J)
                 for (k in li_different_modes[[l_char]]) {
                     bloc_k <- mat_x_bloc[, index_mode[index_bloc == l_num] == k]
-                    bloc_k
                     index_k <- which(li_different_modes[[l_char]] == k)
                     Z_J_init_bloc <- Z_J_init_bloc + beta_K[(r - 1) * K + index_k] * bloc_k
                     li_Z_J_init_bloc[[r]] <- Z_J_init_bloc
@@ -248,7 +247,7 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
             return(vec_diag_bloc)
         })
 
-        vec_diag <- do.call(c, li_vec_diag) # Pas certain que R comprenne...
+        vec_diag <- do.call(c, li_vec_diag)
 
         li_petite_boucle <- petite_boucle(Z_init = Z_J_init, vec_Q = vec_diag)
         beta_J_complet <- li_petite_boucle$beta
@@ -284,18 +283,18 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
             R <- current_li_R[[l_char]]
             li_Z_K_init_bloc <- list() # init car sans clinique
             different_variables <- li_different_variables[[l_char]]
+            index_variable_local <- index_variable[index_bloc == l_num]
             for (r in 1:R) {
                 Z_K_init_bloc_r <- matrix(0, nrow = nrow(mat_x_bloc), ncol = K)
                 for (j in different_variables) {
-                    col_to_extract <- which(index_variable == j)
+                    col_to_extract <- which(index_variable_local == j)
                     index_j <- which(different_variables == j)
                     bloc_j <- mat_x_bloc[, col_to_extract]
                     Z_K_init_bloc_r <- Z_K_init_bloc_r + beta_J[(r - 1) * J + index_j] * bloc_j
-                    li_Z_K_init_bloc[[r]] <- Z_K_init_bloc_r
                 }
+                li_Z_K_init_bloc[[r]] <- Z_K_init_bloc_r
             }
             Z_K_init_bloc <- do.call(cbind, li_Z_K_init_bloc)
-            Z_K_init_bloc <- li_Z_K_init_bloc[[1]]
             if (all(abs(Z_K_init_bloc) < 1e-10)) {
                 print("Z_K est nul : tout sera écrasé à 0")
             }
@@ -395,8 +394,8 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         rapport <- li_grande_boucle$rapport
         crit_log_J <- li_grande_boucle$crit_log_J
         crit_log_K <- li_grande_boucle$crit_log_K
-        # print(crit_log_J)
-        # print(crit_log_K)
+        print(crit_log_J)
+        print(crit_log_K)
 
         if (crit_log_J != -Inf & crit_log_K != -Inf) {
             if (rapport < eps) {
@@ -430,10 +429,12 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
     }
     futur_fit <- list(
         li_beta_J = li_beta_J, li_beta_K = li_beta_K, beta_autre = beta_autre, intercept = intercept_K, current_li_R = current_li_R, li_x_multi_bloc = li_x_multi_bloc,
-        li_dim = li_dim, lev = lev, index_mode = index_mode, index_bloc = index_bloc, li_norm = li_norm, classe_maj = classe_maj, classe_min = classe_min, classe_1 = classe_1, classe_0 = classe_0
+        li_dim = li_dim, lev = lev, index_mode = index_mode, index_bloc = index_bloc, index_variable = index_variable, li_norm = li_norm, classe_maj = classe_maj, classe_min = classe_min, classe_1 = classe_1, classe_0 = classe_0
     )
-
+    # print(li_beta_K)
+    # print(li_beta_J)
     futur_fit$beta_unfolded <- get_beta_full(futur_fit)
+    # print(futur_fit$beta_unfolded)
     return(futur_fit)
 }
 
