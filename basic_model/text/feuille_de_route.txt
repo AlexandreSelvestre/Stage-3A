@@ -1,18 +1,12 @@
 To do:
 
--En multiblocs, autoriser plusieurs nombres de modes en réorganisant complètement (sans besoin d'ordre dans les données de départ)
+-Comparer sur des petits échantillons les perfs des algos simple et multibloc (là où l'AUC n'est pas 1)...
 
--Dans les plots, rajouter un plot qui sépare par mode ET par bloc (pour le cas avec plusieurs blocs différents malgré un même nom de mode)
+-Transformer le multibloc pour permettre d'analyser avec davantage de dimensions. 
 
 Erreurs:
 
-
 Warnings:
-- Penser à si on devait avoir une liste de vecteurs (s'il y avait plusieurs modalités à gérer...): ne pas utiliser des syntaxes incompatibles avec ce cas
-
-- On revient au formalisme des matrices de diseign en ligne!!!! Attention aux produits matriciels!!! L'accélérer? (avec la super méthode rapide)
-
-- En multibloc, quand on regarde un bloc, les variables doivent être placées dans le même ordre à chaque mode... Bilan: on réorganise chaque bloc en mode puis variable dans le même ordre de chaque et en recréant les indices accordingly. Info: dans multibloc, beta_J et beta_K sont construits das l'ordre de index_mode et index_variable. On pourrait aussi sort par numero de variable
 
 
 

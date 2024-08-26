@@ -16,7 +16,7 @@ simu:
   #lambda: 0.1
   lambda_min: 0.0000000000001
   lambda_max: 0.00001
-  tuneLength: 10
+  tuneLength: 20
 
   weights:
     "Classe_0": 1

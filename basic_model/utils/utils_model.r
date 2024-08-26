@@ -291,14 +291,16 @@ plot_global <- function(imp_average, path_plot, ending_name, inference) {
     variable_importance$Group <- inference@name_mode
     variable_importance$small_Group <- inference@name_variable
     variable_importance_small_grouped <- aggregate_prop(Overall ~ small_Group, data = variable_importance, FUN = mean)
+    variable_importance$bloc_and_mode <- paste0(variable_importance$bloc, "_", variable_importance$Group)
     variable_importance <- variable_importance[inference@index_bloc > -0.5, ]
     variable_importance_grouped <- aggregate_prop(Overall ~ Group, data = variable_importance, FUN = mean)
+    variable_importance_bloc_and_mode <- aggregate_prop(Overall ~ bloc_and_mode, data = variable_importance, FUN = mean)
 
 
     image <- ggplot(variable_importance_grouped, aes(x = reorder(Group, Overall), y = Overall)) +
         geom_bar(stat = "identity") +
         geom_text(aes(label = paste0(round(Percentage, 1), "%"), y = 0), hjust = -0.5, color = "green") +
-        geom_point(data = data.frame(x = Inf, y = Inf), aes(x = x, y = y, color = "Percentage of non zero beta coefficient for this variable"), size = 5) + # point invisible pour légende
+        geom_point(data = data.frame(x = Inf, y = Inf), aes(x = x, y = y, color = "Percentage of non zero beta coefficient for this mode"), size = 5) + # point invisible pour légende
         scale_color_manual(name = "", values = c("Percentage of non zero beta coefficient for this variable" = "green")) +
         coord_flip() +
         theme_light() +
@@ -310,6 +312,22 @@ plot_global <- function(imp_average, path_plot, ending_name, inference) {
             legend.text = element_text(size = 12)
         )
     ggsave(paste0(path_plot, "/global_big_groups", "_", ending_name, ".png"), image) # temps par temps
+
+    image <- ggplot(variable_importance_bloc_and_mode, aes(x = reorder(bloc_and_mode, Overall), y = Overall)) +
+        geom_bar(stat = "identity") +
+        geom_text(aes(label = paste0(round(Percentage, 1), "%"), y = 0), hjust = -0.5, color = "green") +
+        geom_point(data = data.frame(x = Inf, y = Inf), aes(x = x, y = y, color = "Percentage of non zero beta coefficient for this variable"), size = 5) + # point invisible pour légende
+        scale_color_manual(name = "", values = c("Percentage of non zero beta coefficient for this bloc_and_mode" = "green")) +
+        coord_flip() +
+        theme_light() +
+        xlab("Variable") +
+        ylab("Importance") +
+        ggtitle("Grouped relative variable importance of each time for each bloc") +
+        theme(
+            axis.text.y = element_text(size = 6), legend.position = "bottom",
+            legend.text = element_text(size = 12)
+        )
+    ggsave(paste0(path_plot, "/global_bloc_and_mode", "_", ending_name, ".png"), image) # temps par temps
 
 
     image <- ggplot(variable_importance_small_grouped, aes(x = reorder(small_Group, Overall), y = Overall)) +

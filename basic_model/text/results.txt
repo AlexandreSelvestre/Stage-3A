@@ -134,3 +134,4 @@ le f1 score CCK sur l'échantillon entier vaut: 0.354929577465
 le f1 score CHC sur l'échantillon entier vaut: 0.837010676157 
 [1] "Le f1 macro sur l'échantillon total vaut: 0.595970126810686"
 There were 50 or more warnings (use warnings() to see the first 50)
+

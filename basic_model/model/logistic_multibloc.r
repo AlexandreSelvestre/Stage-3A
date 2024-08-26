@@ -15,7 +15,11 @@ setClass("logistic_multibloc",
         regression = "logical",
         same_R = "logical",
         li_R = "list",
-        lambda = "numeric"
+        lambda = "numeric",
+        li_index_modes = "list"
+    ),
+    prototype = prototype(
+        li_index_modes = list()
     )
 )
 
@@ -74,7 +78,7 @@ better_create_grid_multibloc <- function(x, y, len = NULL, search = "grid", L, l
 }
 
 
-fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, index_mode, index_bloc, eps, ite_max, n_iter_per_reg, k_smote, sampling_choice, index_variable, is_binary, classe_1 = NULL) {
+fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, index_mode, li_index_mode, index_bloc, eps, ite_max, n_iter_per_reg, k_smote, sampling_choice, index_variable, is_binary, classe_1 = NULL) {
     li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, index_bloc, is_binary)
 
     different_blocs <- sort(unique(index_bloc[index_bloc != -1]))
@@ -89,6 +93,11 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         different_modes <- sort(unique(index_mode_local))
         return(different_modes)
     })
+
+    if (length(li_index_mode) == 0) {
+        li_index_mode[[1]] <- index_mode
+    }
+
     names(li_different_modes) <- as.character(different_blocs)
     x <- li_norm$new_x
     classe_min <- names(which.min(table(y)))
@@ -214,6 +223,8 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
                 Z_J_init_bloc <- matrix(0, nrow = nrow(mat_x_bloc), ncol = J)
                 for (k in li_different_modes[[l_char]]) {
                     bloc_k <- mat_x_bloc[, index_mode[index_bloc == l_num] == k]
+                    ordre_variables_k <- order(index_variable[index_bloc == l_num][index_mode[index_bloc == l_num] == k])
+                    bloc_k <- bloc_k[, ordre_variables_k]
                     index_k <- which(li_different_modes[[l_char]] == k)
                     Z_J_init_bloc <- Z_J_init_bloc + beta_K[(r - 1) * K + index_k] * bloc_k
                     li_Z_J_init_bloc[[r]] <- Z_J_init_bloc
@@ -290,6 +301,8 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
                     col_to_extract <- which(index_variable_local == j)
                     index_j <- which(different_variables == j)
                     bloc_j <- mat_x_bloc[, col_to_extract]
+                    ordre_mode_j <- order(index_mode[index_bloc == l_num][index_variable_local == j])
+                    bloc_j <- bloc_j[, ordre_mode_j]
                     Z_K_init_bloc_r <- Z_K_init_bloc_r + beta_J[(r - 1) * J + index_j] * bloc_j
                 }
                 li_Z_K_init_bloc[[r]] <- Z_K_init_bloc_r
@@ -394,8 +407,8 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         rapport <- li_grande_boucle$rapport
         crit_log_J <- li_grande_boucle$crit_log_J
         crit_log_K <- li_grande_boucle$crit_log_K
-        print(crit_log_J)
-        print(crit_log_K)
+        # print(crit_log_J)
+        # print(crit_log_K)
 
         if (crit_log_J != -Inf & crit_log_K != -Inf) {
             if (rapport < eps) {
@@ -518,7 +531,7 @@ setMethod("train_method", "apply_model", function(object) {
 
 
     object@model <- caret::train(
-        y = object@y_train, x = object@train_cols[, object@col_x], index_mode = object@index_mode,
+        y = object@y_train, x = object@train_cols[, object@col_x], li_index_mode = object@li_index_mode, index_mode = object@index_mode,
         method = li_caret_multibloc, trControl = object@cv, metric = "AUC",
         tuneLength = object@tuneLength, weights_dict = object@weights, tuneGrid = grid, eps = object@eps, ite_max = object@ite_max, n_iter_per_reg = object@n_iter_per_reg,
         index_bloc = object@index_bloc, k_smote = object@k_smote, sampling_choice = object@sampling, index_variable = object@index_variable, is_binary = object@is_binary, classe_1 = object@classe_1
