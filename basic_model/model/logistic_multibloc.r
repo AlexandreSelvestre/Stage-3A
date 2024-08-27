@@ -19,7 +19,8 @@ setClass("logistic_multibloc",
         li_index_modes = "list"
     ),
     prototype = prototype(
-        li_index_modes = list()
+        li_index_modes = list(),
+        index_mode = list()
     )
 )
 
@@ -78,31 +79,12 @@ better_create_grid_multibloc <- function(x, y, len = NULL, search = "grid", L, l
 }
 
 
-fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, index_mode, li_index_mode, index_bloc, eps, ite_max, n_iter_per_reg, k_smote, sampling_choice, index_variable, is_binary, classe_1 = NULL) {
+fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, index_mode, li_index_modes, index_bloc, eps, ite_max, n_iter_per_reg, k_smote, sampling_choice, index_variable, is_binary, classe_1 = NULL) {
     li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, index_bloc, is_binary)
 
-    different_blocs <- sort(unique(index_bloc[index_bloc != -1]))
-    li_different_variables <- lapply(different_blocs, function(l_num) {
-        index_variable_local <- index_variable[index_bloc == l_num]
-        different_variables <- sort(unique(index_variable_local))
-        return(different_variables)
-    })
-    names(li_different_variables) <- as.character(different_blocs)
-    li_different_modes <- lapply(different_blocs, function(l_num) {
-        index_mode_local <- index_mode[index_bloc == l_num]
-        different_modes <- sort(unique(index_mode_local))
-        return(different_modes)
-    })
-
-    if (length(li_index_mode) == 0) {
-        li_index_mode[[1]] <- index_mode
-    }
-
-    names(li_different_modes) <- as.character(different_blocs)
     x <- li_norm$new_x
     classe_min <- names(which.min(table(y)))
     classe_maj <- setdiff(levels(y), classe_min)
-
 
     if (sampling_choice == "smote") {
         li <- apply_smote(x, y, k_smote)
@@ -126,17 +108,46 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
     }
     classe_0 <- setdiff(levels(y), classe_1)
 
-    ## Commencer par définir Z_J en sommant sur les modes. Attention au problème lignes colonnes inversées.
+    # on signalera par un -1 dans chaque index_mode, l'absence de lien de la variable avec le mode en question (soit car numéro de mode trop élevé, soit car variable tabulaire)
+    # Index bloc est fiable pour indiquer les variables tabulaires. index_variable aussi. Attention: index_variable a le droit d'être local (propre à chaque bloc) aussi bien que global (commun à toute la liste de tenseurs)
+
+
+    ## On changera ici la terminologie: slice pour l'indexation au sein d'un mode. Désormais, on désignera par mode une voie entière, i.e. une direction de parcours des tenseurs. Certains tenseurs en ont plus que d'autres. (tout comme, pour un même numéro de mode, certains tenseurs auront plus de slices que d'autres: pas de réelle continuité physique pour un même numéro de mode entre plusieurs tenseurs)
+
+    # li_index_modes contient tous les index_modes les uns à la suite des autres (un index_mode par mode). Au cours de la fonction, on lui adjoindra index_variable à la fin. Attention, ne pas le faire soi-même, c'est fait automatiquement
+
+    ######### Initialisation spécifique au modèle multibloc
+
+
+    different_blocs <- sort(unique(index_bloc[index_bloc != -1]))
+    L <- length(different_blocs)
+
+    if (length(li_index_modes) == 0) {
+        li_index_modes$single_mode <- index_mode
+    }
+
+    li_index_modes$variable <- index_variable # le numéro de variable est une slice comme une autre... et ce sera le dernier. On fera une passe du dernier au premier mode pour la fonction boucle_mode
+
+    M_max <- length(li_index_modes)
+
+    li_different_slices_per_mode <- lapply(seq_len(M_max), function(m) {
+        li_different_slices <- lapply(different_blocs, function(l_num) {
+            index_mode <- li_index_modes[[m]]
+            index_slice_local <- index_mode[index_bloc == l_num]
+            index_slice_local <- index_slice_local[index_slice_local > -0.5]
+            different_slices <- sort(unique(index_slice_local))
+            return(different_slices)
+        })
+        return(li_different_slices)
+    }) # Liste par mode de liste par bloc indiquant les numéros de slices pour ce mode et ce bloc. Si le bloc n'est pas concerné par le mode, la case vaut c()
+
+    for (li_different_slices in li_different_slices_per_mode) {
+        names(li_different_slices) <- as.character(different_blocs)
+    }
+
     mat_x_tens <- as.matrix(x)[, index_bloc > -0.5]
     mat_x_restant <- as.matrix(x)[, index_bloc == -1]
     n_restant <- ncol(mat_x_restant)
-
-    # Il y a L blocs
-    if (all(index_bloc > -0.5)) {
-        L <- length(unique(index_bloc))
-    } else {
-        L <- length(unique(index_bloc)) - 1
-    }
 
     current_li_R <- lapply(seq_len(L), function(l) {
         R <- param[[paste0("R_", l)]]
@@ -144,30 +155,32 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
     }) # Liste des rang R de chaque bloc à cette étape de la cv
     names(current_li_R) <- as.character(different_blocs)
 
-    li_x_multi_bloc <- list()
+    li_dim <- lapply(different_blocs, function(l_num) {
+        l_char <- as.character(l_num)
+        vec_dim <- sapply(seq_len(M_max), function(m) {
+            li_different_slices <- li_different_slices_per_mode[[m]][[l_char]]
+            return(length(li_different_slices))
+        })
+        return(vec_dim)
+    })
+    names(li_dim) <- as.character(different_blocs)
+
+    li_x_multi_bloc_pos <- list()
     col_num <- 0
     for (l_num in different_blocs) {
         l_char <- as.character(l_num)
-        li_x_multi_bloc[[l_char]] <- as.matrix(x)[, index_bloc == l_num]
+        li_x_multi_bloc_pos[[l_char]] <- reorder_local(as.matrix(x)[, index_bloc == l_num], li_index_modes, li_dim[[l_char]], which(index_bloc == l_num))
         col_num <- col_num + ncol(li_x_multi_bloc[[l_char]]) # Sert seulement pour le test
     }
     if (col_num != ncol(mat_x_tens)) {
         print(col_num)
         stop("Problème de correspondance des colonnes des blocs!")
     }
+    # Rappel: les variables sont à la fin de li_dim: l'ordre des dimensions est celui des modes dans li_index_modes
 
-    ###### On passe aux modes
-    li_dim <- list()
-    for (l_num in different_blocs) {
-        l_char <- as.character(l_num)
-        index_mode_local <- index_mode[index_bloc == l_num]
-        index_variable_local <- index_variable[index_bloc == l_num]
-        K <- length(unique(index_mode_local))
-        J <- length(unique(index_variable_local))
-        li_dim[[l_char]] <- list(J = J, K = K)
-    }
 
-    ####### Petite boucle de l'algorithme: utile dans la grande #########
+    ### Boucle qui appelle glmnet.fit quand on lui donne les bonnes matrices Z et Q (Q est donné sous forme de vecteur diagonal). Cette fonction se charge de remultiplier par Q pour obtenir le beta final. Attention, elle ne rétablit PAS les changements d'intercept!
+
     petite_boucle <- function(Z_init, vec_Q) {
         Z <- cbind(Z_init, mat_x_restant)
         vec_Q <- append(vec_Q, rep(1, n_restant))
@@ -207,8 +220,56 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         return(list(beta = beta, intercept = intercept, Z = Z, Q = Q, Q_inv = Q_inv))
     }
 
+    boucle_mode <- function(m, li_beta_modes) {
+        # Cette boucle effectue tout le travail de création de Z et Q pour un mode donné.
+        # Puis elle recrée le bon intercept et rend le beta final
+        # Elle sera itérée autant que nécessaire dans la grande boucle (qui elle calculera à chaque étape le critère de régularisation)
+
+        # Construisons Z_m_tens
+        li_Z_m_tens <- lapply(different_blocs, function(l_num) {
+            l_char <- as.character(l_num)
+            R <- current_li_R[[l_char]]
+            different_slices <- li_different_slices_per_mode[[m]][[l_char]]
+            if (length(different_slices) == 0) {
+                return(matrix(0, nrow = nrow(mat_x_tens), ncol = 0)) # Le mode est absent du bloc
+            } else {
+                potential_zeros <- li_dim[[l_char]][1:m]
+                num_zeros <- length(potential_zeros[potential_zeros == 0])
+                m_local <- m - num_zeros # position du mode m parmi les vrais modes du bloc l
+                vec_dim_l <- li_dim[[l_char]]
+                vec_dim_l_contracted <- vec_dim_l[vec_dim_l > 0] # sans les zéros
+                M_l <- length(vec_dim_l_contracted)
+                li_index_sum <- lapply(setdiff(seq_len(M_l), m_local), function(m_prime) {
+                    return(seq_len(vec_dim_l_contracted[m_prime]))
+                })
+                cart_prod_index_sum <- as.matrix(expand.grid(li_index_sum))
+                vec_base_mode <- li_x_multi_bloc_pos[[l_char]]$vec_base_mode
+                x_l_ordered <- li_x_multi_bloc_pos[[l_char]]$mat
+                li_Z_m_tens_l #### TO DEFINE!!!!!! (une instance par rang R)
+                for (a in 1:nrow(cart_prod_index_sum)) {
+                    index_col_normal_format <- sapply(
+                        seq_len(vec_dim_l_contracted[m_local]),
+                        function(k_m) {
+                            num_col_tens_format <- append(as.vector(cart_prod_index_sum[a, ]), k_m, after = m_local - 1)
+                            num_col_normal_format <- sum(vec_base_mode * num_col_tens_format)
+                            return(num_col_normal_format)
+                        }
+                    )
+                    bloc_m <- x_l_ordered[, index_col_normal_format]
+                    # On dispose des indices de colonne pour le bloc x
+                }
+            }
+            Z_m_tens_l <- do.call(cbind, li_Z_m_tens_l)
+            return(Z_m_tens_l)
+        })
+        Z_m_tens <- do.call(cbind, li_Z_m_tens)
+
+
+        return(list(li_beta_modes = li_beta_modes, intercept = intercept, Z = Z, Q = Q, Q_inv = Q_inv))
+    }
 
     ####### Grande boucle de l'algorithme à itérer autant que nécessaire ##########
+    # Elle sera itérée jusqu'à ce que le changement entre le premier et le dernier critère soit inférieur à un epsilon... (+ condit de loop et de temps d'attente)
     grande_boucle <- function(li_beta_K) {
         #   Définir Z_J_init (sans les variables cliniques)
         li_Z_J_init <- lapply(different_blocs, function(l_num) {
@@ -531,7 +592,7 @@ setMethod("train_method", "apply_model", function(object) {
 
 
     object@model <- caret::train(
-        y = object@y_train, x = object@train_cols[, object@col_x], li_index_mode = object@li_index_mode, index_mode = object@index_mode,
+        y = object@y_train, x = object@train_cols[, object@col_x], li_index_modes = object@li_index_modes, index_mode = object@index_mode,
         method = li_caret_multibloc, trControl = object@cv, metric = "AUC",
         tuneLength = object@tuneLength, weights_dict = object@weights, tuneGrid = grid, eps = object@eps, ite_max = object@ite_max, n_iter_per_reg = object@n_iter_per_reg,
         index_bloc = object@index_bloc, k_smote = object@k_smote, sampling_choice = object@sampling, index_variable = object@index_variable, is_binary = object@is_binary, classe_1 = object@classe_1

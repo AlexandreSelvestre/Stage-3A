@@ -18,10 +18,10 @@ default:
     EM: FALSE
   
 
-  #name_model: "logistique_simple"
+  name_model: "logistique_simple"
   #name_model: "logistic_grp"
   #name_model: "logistic_multiway"
-  name_model: "logistic_multibloc"
+  #name_model: "logistic_multibloc"
 
   #2 modèles trop vieux:
   #name_model: "logistic_select"

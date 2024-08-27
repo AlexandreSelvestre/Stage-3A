@@ -46,7 +46,86 @@ vs multiblocs :
    et picto top
 
 
+
+Même chose MAIS avec n_samples = 1000, sur 10 runs avec regénération de données
+
+
+[1] "actuelle moyenne AUC test 0.6828672 ite: 10" ic 5% +/- 0.03016
+[1] "actuel ecart type AUC test 0.040140658503152 ite: 10"
+[1] "actuelle moyenne AUC val 0.632378666666667 ite: 10"
+[1] "actuelle moyenne Accuracy test 0.6332 ite: 10"
+[1] "actuelle somme des confusion matrix ite: 10 :"
+[1] "actuelle moyenne du macro F1 test 0.632777396108761 ite: 10"
+[1] "actuelle moyenne du F1 Classe_0 test 0.632536422366859 ite: 10"
+[1] "actuelle moyenne du F1 Classe_1 test 0.633018369850664 ite: 10"
+          Reference
+Prediction Classe_0 Classe_1
+  Classe_0      790      457
+  Classe_1      460      793
+[1] "actuelle moyenne score_recons 0.226045858564253 ite: 10"
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+[1] "Voilà la matrice de confusion sommée"
+          Reference
+Prediction Classe_0 Classe_1
+  Classe_0      790      457
+  Classe_1      460      793
+[1] "voilà la matrice de confusion en pourcentage: ... % de classe 1 ont été bien classés vs ... % mal classés"
+         Classe_0 Classe_1
+Classe_0    0.632   0.3656
+Classe_1    0.368   0.6344
+[1] "La balanced accuracy sur l'échantillon total vaut: 0.633200767236419"
+le f1 score Classe_0 sur l'échantillon entier vaut: 0.632759311173 
+le f1 score Classe_1 sur l'échantillon entier vaut: 0.633639632441 
+[1] "Le f1 macro sur l'échantillon total vaut: 0.633199471807239"
+[1] "La moyenne des scores de reconstruction vaut 0.226045858564253"
+
+Comparons au logistique simple, toujours avec n_sample = 1000 et 10 runs avec regénération de données
+
+[1] "actuelle moyenne AUC test 0.6105856 ite: 10" ic 5% +/- 0.025: cela semble significatif!!!!
+[1] "actuel ecart type AUC test 0.0317106089615307 ite: 10"
+[1] "actuelle moyenne AUC val 0.583651555555556 ite: 10"
+[1] "actuelle moyenne Accuracy test 0.5816 ite: 10"
+[1] "actuelle somme des confusion matrix ite: 10 :"
+[1] "actuelle moyenne du macro F1 test 0.581196890909287 ite: 10"
+[1] "actuelle moyenne du F1 Classe_0 test 0.571280900028846 ite: 10"
+[1] "actuelle moyenne du F1 Classe_1 test 0.591112881789727 ite: 10"
+          Reference
+Prediction Classe_0 Classe_1
+  Classe_0      698      494
+  Classe_1      552      756
+[1] "actuelle moyenne score_recons 0.232915517209695 ite: 10"
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+[1] "Voilà la matrice de confusion sommée"
+          Reference
+Prediction Classe_0 Classe_1
+  Classe_0      698      494
+  Classe_1      552      756
+[1] "voilà la matrice de confusion en pourcentage: ... % de classe 1 ont été bien classés vs ... % mal classés"
+         Classe_0 Classe_1
+Classe_0   0.5584   0.3952
+Classe_1   0.4416   0.6048
+[1] "La balanced accuracy sur l'échantillon total vaut: 0.581776060587402"
+le f1 score Classe_0 sur l'échantillon entier vaut: 0.571662571663 
+le f1 score Classe_1 sur l'échantillon entier vaut: 0.591086786552 
+[1] "Le f1 macro sur l'échantillon total vaut: 0.581374679107283"
+[1] "La moyenne des scores de reconstruction vaut 0.232915517209695"
+
+
+
+
+
+
+
+
+
 Données réelles:
+
 Baseline logistique simple sur 40 runs et tunelength = 20
 [1] "La valeur de l'AUC de train est de 1"
 [1] "End of analysis phase"

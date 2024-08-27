@@ -424,6 +424,35 @@ get_beta_full <- function(modelFit) {
 }
 
 
+reorder_local <- function(matrix_bloc, li_index_mode_global, vec_dim_bloc, index_l) {
+    new_mat_bloc <- matrix(NA_real_, nrow = nrow(matrix_bloc), ncol = ncol(matrix_bloc))
+    vec_dim_bloc_compact <- vec_dim_bloc[vec_dim_bloc > 0]
+    vec_base_mode <- rep(1, length(vec_base_mode))
+    for (a in seq_along(vec_dim_bloc_compact)) {
+        if (a < length(vec_dim_bloc_compact)) {
+            value <- prod(vec_base_mode[(a + 1):length(vec_base_mode)])
+        } else {
+            value <- 1
+        }
+        vec_base_mode[a] <- value
+    }
+    for (j in seq_len(ncol(matrix_bloc))) {
+        col <- matrix_bloc[, j]
+        vec_modes_col <- sapply(li_index_mode_global, function(index_mode) {
+            return(index_mode[index_l][j])
+        })
+        vec_modes_col <- vec_modes_col[vec_modes_col > -0.5]
+        position <- sum(vec_modes_col * vec_base_mode)
+        new_mat_bloc[, position] <- col
+    }
+    if (any(is.na(matrix_bloc))) {
+        print(matrix_bloc)
+        stop("matrix_bloc contient des NA")
+    }
+    return(list(mat = new_mat_bloc, vec_base_mode = vec_base_mode))
+}
+
+
 
 
 
