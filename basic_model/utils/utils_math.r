@@ -208,6 +208,13 @@ complete_orthonormal_basis <- function(vec) {
     return(Q)
 }
 
+contiguous_ranks <- function(x) {
+    unique_vals <- unique(x)
+    sorted_unique_vals <- sort(unique_vals)
+    ranks <- match(x, sorted_unique_vals)
+    return(ranks)
+}
+
 # vec <- c(1, 1, 2, 3)
 # vec <- vec / sqrt(sum(vec^2))
 # Q <- complete_orthonormal_basis(vec)

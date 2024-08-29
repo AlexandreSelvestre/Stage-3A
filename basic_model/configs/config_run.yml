@@ -7,6 +7,6 @@ default:
 
 my_config:
   do_extract: FALSE #réextraire ou non après la première fois
-  extrac_first: TRUE #extraire ou non la toute première fois
+  extrac_first: FALSE #extraire ou non la toute première fois
   simulated_data: TRUE
-  num_runs: 10
+  num_runs: 1

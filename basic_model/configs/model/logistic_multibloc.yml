@@ -1,7 +1,7 @@
 default:
   regression: TRUE
   eps: 0.00000001 #10^-8
-  ite_max: 1000
+  #ite_max: 1000
   n_iter_per_reg: 50
 
 

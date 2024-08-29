@@ -29,7 +29,7 @@ default:
 
 
 radio:
-  minimal_information: FALSE
+  minimal_information: TRUE #pour tester
   classe_1: "CCK"
 
 

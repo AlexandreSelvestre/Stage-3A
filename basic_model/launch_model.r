@@ -5,7 +5,7 @@ setClass(
     data_used = "data.frame", #   input: dataframe complet des données (extraites)
     info_cols = "ANY", #          input: liste indiquant col expliqué et cols est à exclure
     index_bloc = "numeric", #     input: vecteur d'indices des blocs des explicatives
-    index_mode = "numeric", #     input: vecteur d'indices des modes des explicatives
+    index_mode = "ANY", #     input: vecteur d'indices des modes des explicatives
     index_variable = "numeric", # input: vecteur d'indices des variables des explicatives
     name_bloc = "character", #    input: vecteur des noms des blocs des explicatives
     name_mode = "character", #    input: vecteur des noms des modes des explicatives

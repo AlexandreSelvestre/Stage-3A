@@ -425,30 +425,41 @@ get_beta_full <- function(modelFit) {
 
 
 reorder_local <- function(matrix_bloc, li_index_mode_global, vec_dim_bloc, index_l) {
+    # Objectif: réordonner le bloc en argument par ordre lexicographique des modes
+    # On récupère l'index bloc global: attention à bien le recalibrer sur le bloc qui nous intéresse à chazque fois qu'on récupère un index_mode
+
     new_mat_bloc <- matrix(NA_real_, nrow = nrow(matrix_bloc), ncol = ncol(matrix_bloc))
-    vec_dim_bloc_compact <- vec_dim_bloc[vec_dim_bloc > 0]
-    vec_base_mode <- rep(1, length(vec_base_mode))
+    vec_dim_bloc_compact <- vec_dim_bloc[vec_dim_bloc > -0.5]
+    vec_base_mode <- rep(1, length(vec_dim_bloc_compact))
+    # print(vec_dim_bloc)
     for (a in seq_along(vec_dim_bloc_compact)) {
         if (a < length(vec_dim_bloc_compact)) {
-            value <- prod(vec_base_mode[(a + 1):length(vec_base_mode)])
+            value <- prod(vec_dim_bloc_compact[(a + 1):length(vec_base_mode)])
         } else {
             value <- 1
         }
         vec_base_mode[a] <- value
     }
+
     for (j in seq_len(ncol(matrix_bloc))) {
         col <- matrix_bloc[, j]
-        vec_modes_col <- sapply(li_index_mode_global, function(index_mode) {
-            return(index_mode[index_l][j])
+        vec_modes_col <- sapply(seq_along(li_index_mode_global), function(m) {
+            index_mode <- li_index_mode_global[[m]]
+            value <- index_mode[index_l][j]
+            return(value)
         })
-        vec_modes_col <- vec_modes_col[vec_modes_col > -0.5]
-        position <- sum(vec_modes_col * vec_base_mode)
+        vec_modes_col <- vec_modes_col[vec_modes_col > -0.5] - 1 # Hyper important ce -1 sinon out of bounds
+        position <- sum(vec_modes_col * vec_base_mode) + 1
+        # print(paste("colonne", j))
+        # print(vec_modes_col)
+        # print(position)
         new_mat_bloc[, position] <- col
     }
     if (any(is.na(matrix_bloc))) {
         print(matrix_bloc)
         stop("matrix_bloc contient des NA")
     }
+    # print(all(new_mat_bloc == matrix_bloc))
     return(list(mat = new_mat_bloc, vec_base_mode = vec_base_mode))
 }
 

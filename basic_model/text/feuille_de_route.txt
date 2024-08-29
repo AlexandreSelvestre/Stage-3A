@@ -8,13 +8,17 @@ Erreurs:
 
 Warnings:
 
--Pour l'instant on supprime la normalisation selon les modes différent de la variable. On le rajoutera si nécessaire! 
+-Pour l'instant dans multibloc on supprime la normalisation de beta selon les modes différent de la variable. On le rajoutera si nécessaire! 
 
--Problème si un mode s'appelle déjà "variable": corriger cela à la fin...
+-Problème dans multibloc si un mode s'appelle déjà "variable", on aura des surprises: corriger cela à la fin...
+
+- Dans multibloc, on a ordonné la liste li_different_slices_per_mode par modes, ce qui est naze (crée des complications inutiles! Autant cet ordonnancement marche pour li_index_mode, autant il est mauvais ici). Changer cela pour plus de lisibilité
 
 -Dans les plots : No shared levels found between `names(values)` of the manual scale and the data's colour values
 
--Checker le temps pris par le réordonnancement. Si c'est beaucoup, créer une table de rappel
+-En multibloc, les tabulaires sont à la fin!
+
+
 
 
 
