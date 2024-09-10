@@ -1,0 +1,9 @@
+little_warnings
+
+-Problème dans multibloc si un mode s'appelle déjà "variable", on aura des surprises: corriger cela à la fin...
+
+- Dans multibloc, on a ordonné la liste li_different_slices_per_mode par modes, ce qui est naze (crée des complications inutiles! Autant cet ordonnancement marche pour li_index_mode, autant il est mauvais ici). Changer cela pour plus de lisibilité
+
+-En multibloc, les tabulaires sont à la fin!
+
+- Il faut mettre dans le même ordre les noms et indices de variables dans li_modes.

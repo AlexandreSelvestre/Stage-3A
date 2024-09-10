@@ -17,16 +17,21 @@ gene_x_scalar <- function(config_extrac, beta_vec) {
     } else {
         P <- as.matrix(read_xlsx("..//data//beta_picto//P.xlsx"))
     }
-    vec_diag <- c(sigma_sepa^2, rep(sigma_non_sepa^2, length(beta_vec) - 1))
-    D <- diag(vec_diag)
     print("QR done")
-    start_time <- Sys.time()
-    numCores <- detectCores()
-    inside <- mat.mult(P, D)
-    print(Sys.time() - start_time)
-    print("intermidiate")
-    Sigma <- Tcrossprod(inside, P)
-    print(Sys.time() - start_time)
+    if (config_extrac$do_product | config_extrac$do_QR) {
+        vec_diag <- c(sigma_sepa^2, rep(sigma_non_sepa^2, length(beta_vec) - 1))
+        D <- diag(vec_diag)
+        start_time <- Sys.time()
+        numCores <- detectCores()
+        inside <- mat.mult(P, D)
+        print(Sys.time() - start_time)
+        print("intermidiate")
+        Sigma <- Tcrossprod(inside, P)
+        print(Sys.time() - start_time)
+        saveRDS(Sigma, file = "../data/RDS/Sigma_simu.rds")
+    } else {
+        Sigma <- readRDS("../data/RDS/Sigma_simu.rds")
+    }
     print("first batch")
     X_1 <- rmvn(round(prop * n_sample), mu_1, Sigma, ncores = numCores - 1)
     # X_1 <- mvrnorm(n = round(prop * n_sample), mu_1, Sigma, tol = 1e-06, empirical = FALSE)

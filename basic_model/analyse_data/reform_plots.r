@@ -22,7 +22,7 @@ setMethod("reform_beta", "apply_model", function(object) {
     path_heat <- paste0("../data/beta_picto/heatmap_", object@name_model, ".png")
     write_xlsx(as.data.frame(mat_tot), path_xlsx)
     create_heatmap(path_xlsx, path_heat)
-    compare_mat_beta(object, path_xlsx, path_heat)
+    object <- compare_mat_beta(object, path_xlsx, path_heat)
     return(object)
 })
 
@@ -33,7 +33,9 @@ setGeneric("compare_mat_beta", function(object, ...) {
 setMethod("compare_mat_beta", "apply_model", function(object, path_xlsx, path_heat) {
     mat_reconstructed <- as.matrix(read_excel(path_xlsx))
     mat_origin <- as.matrix(silent_run(read_excel, "..//data//beta_picto//big_picto.xlsx"))
-    mat_diff <- unname(mat_reconstructed) - unname(mat_origin)
+    mat_diff <- unname(mat_reconstructed) - unname(mat_origin) # OUILLE en données réelles
     erreur <- mean(abs(mat_diff))
+    object@score_recons <- erreur
     print(paste("L'erreur moyenne de reconstruction du pictogramme est de", erreur))
+    return(object)
 })

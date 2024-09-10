@@ -97,8 +97,8 @@ aggregate_prop <- function(formula, data, ...) {
     # On moyenne les pourcentages de non nullité mais on somme les importances
     # On rescale ensuite les importances (elles sont relatives)
     df_grouped <- aggregate(formula, data = data, FUN = sum)
-    col_grp <- as.character(formula)[3]
-    col_values <- as.character(formula)[2]
+    col_grp <- as.character(formula)[3] # Sur quoi on groupe
+    col_values <- as.character(formula)[2] # Overall
     formula_str <- paste("Percentage ~", col_grp)
     formula_obj <- as.formula(formula_str)
     df_grouped_perc <- aggregate(formula_obj, data = data, FUN = mean)
@@ -206,6 +206,13 @@ complete_orthonormal_basis <- function(vec) {
     Q <- qr.Q(qr_decomp)
 
     return(Q)
+}
+
+contiguous_ranks <- function(x) {
+    unique_vals <- unique(x)
+    sorted_unique_vals <- sort(unique_vals)
+    ranks <- match(x, sorted_unique_vals)
+    return(ranks)
 }
 
 # vec <- c(1, 1, 2, 3)

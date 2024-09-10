@@ -1,18 +1,35 @@
 default:
   regression: TRUE
-  eps: 0.00000001 #10^-8
-  ite_max: 1000
+  eps: 0.001 #10^-3
+  #ite_max: 1000
   n_iter_per_reg: 50
+  max_temps: 30 #secondes
+  ## C'est TROP PEU (passer à 30)
 
 
 radio:
-  lambda_min: 0.00005
-  lambda_max: 0.01
+  lambda_min: 0.00000001
+  lambda_max: 0.1
   R_min: 1
   R_max: 2 
-  tuneLength: 4
+  tuneLength: 8
   tune_R: 2
   same_R: FALSE
+  #vec_modes: [3,3,3]
+
+  weights:
+    "CCK": 1
+    "CHC": 1
+
+radio_big:
+  lambda_min: 0.00000001
+  lambda_max: 0.1
+  R_min: 1
+  R_max: 20
+  tuneLength: 10
+  tune_R: 4
+  same_R: FALSE
+  #vec_modes: [3,3,3]
 
   weights:
     "CCK": 1
@@ -25,10 +42,12 @@ simu:
   R_max: 12
   same_R: FALSE
   li_R:
+    #block_1: [1]
     block_1: [1,6,10]
     block_2: [1]
     block_3: [10]
-  tuneLength: 3
+  tuneLength: 4
+  #vec_modes: [66,66,66]
 
   weights:
     "Classe_0": 1

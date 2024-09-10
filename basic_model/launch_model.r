@@ -1,118 +1,81 @@
-library(readxl)
-library(writexl)
-library(glue)
-library(data.table)
-library(caret)
-library(randomForest)
-library(ggplot2)
-library(DMwR)
-library(themis)
-library(reshape2)
-library(SGL)
+## Classe relative à l'importation des données du modèle
+setClass(
+  "import_data",
+  representation(
+    data_used = "data.frame", #   input: dataframe complet des données (extraites)
+    info_cols = "ANY", #          input: liste indiquant col expliqué et cols est à exclure
+    index_bloc = "numeric", #     input: vecteur d'indices des blocs des explicatives
+    index_mode = "ANY", #     input: vecteur d'indices des modes des explicatives
+    index_variable = "numeric", # input: vecteur d'indices des variables des explicatives
+    name_bloc = "character", #    input: vecteur des noms des blocs des explicatives
+    name_mode = "character", #    input: vecteur des noms des modes des explicatives
+    name_variable = "character", # input: vecteur des noms des variables des explicatives
+    is_binary = "logical", #      input: vecteur logique des variables explicatives binaires
+    name_y = "character", #       variable: nom de la variable expliquée
+    class_maj_min = "character", # variable: c(nom_class_maj, nom_class_min)
+    col_x = "character", #        variable: noms de colonnes de variables explicatives
+    train_cols = "data.frame", #  variable: partie de data_used utilisée pour train
+    test_set = "data.frame", #     variable: partie de data_used utilisée pour test,
+    li_index_modes = "list",
+    li_name_modes = "list",
+    use_li_index_modes = "logical" # variable: indique si on utilise li_index_modes
+  ),
+  prototype(
+    li_index_modes = list(),
+    li_name_modes = list()
+  )
+)
 
-
-
+## Classe relative à la structuration des variables contenant les données dans le modèle
+# (hérite de la classe "import_data")
+setClass(
+  "data_structuration",
+  contains = "import_data",
+  representation(
+    training_index = "numeric", #     input: vecteur des indices des lignes du train
+    cv = "ANY", #                     variable: argument train_control dans caret
+    predictions = "ANY", #            variable: vecteur des facteurs prédits sue le test
+    predictions_proba = "ANY", #      variable: vecteur des probas prédites sur le test
+    predictions_train_proba = "ANY", # variable: vecteur des probas prédites sur le train
+    y_tot = "ANY", #                  variable: vecteur expliqué
+    y_train = "ANY", #                variable: partie train de y_tot
+    y_test = "ANY", #                 variable: partie test de y_tot
+    beta_final = "numeric" #          variable : le beta obtenu à la fin du modèle
+  )
+)
 
 
 setClass(
   "apply_model",
+  contains = "data_structuration",
   representation(
-    data_used = "data.frame", # OBLIGATOIRE     dataframe complet des données
-    kill_mixtes = "logical", # OBLIGATOIRE        tuer les mixtes
-    kill_mixtes_col = "ANY", # OBLIGATOIRE  colonnes à tuer
-    weights = "list", # OBLIGATOIRE     poids des classes
-    name_model = "character", # OBLIGATOIRE     nom du modèle
-    k = "numeric", # OPTIONNEL                  nombre de folds
-    p = "numeric", # OPTIONNEL                  proportion de données pour le training set
-    calc_probs = "logical", # OPTIONNEL         calculer les probabilités dans la random forest
-    show_logs = "logical", # OPTIONNEL         afficher les logs durant l'entraînement
-    n_trees = "numeric", # OPTIONNEL           nombre d'arbres
-    mtry = "numeric", # OPTIONNEL            nombre de variables à tester pour chaque split
-    rep = "numeric", # OPTIONNEL             nombre de répétitions
-    do_PCA = "logical", # OPTIONNEL      faire le preProcess ou non
-    sampling = "ANY", # OPTIONNEL    faire le SMOTE/ bootstrap ou rien
-    k_smote = "numeric", # OPTIONNEL         nombre de voisins pour le SMOTE
-    include_products = "logical", # OPTIONNEL  inclure les produits des variables
-    R = "numeric", # OPTIONNEL                Rang multiway
-    eps = "numeric", # OPTIONNEL              epsilon proportion convergence multiway
-    ite_max = "numeric", # OPTIONNEL          nombre d'itérations max multiway
-    search = "character", # OPTIONNEL         type de recherche,
-    index = "numeric", # OPTIONNEL            index des données
-    pas = "numeric", # OPTIONNEL              pas pour la descente de gradient
-    id_term = "character", # OPTIONNEL        nombre d'identifiants
-    parallel = "ANY",
-    time_inj = "character",
-    train_set = "data.frame",
-    test_set = "data.frame",
-    cv = "ANY",
-    model = "ANY",
-    col_x = "character",
-    tuneGrid = "data.frame",
-    tuneLength = "numeric",
-    predictions = "ANY",
-    predictions_proba = "ANY",
-    train_cols = "data.frame",
-    predictions_train_proba = "ANY",
-    training_index = "numeric",
-    lambda_min = "ANY",
-    lambda_max = "numeric",
-    lambda = "numeric",
-    coeffi = "ANY",
-    alpha_values = "numeric",
-    n_inner_folds = "numeric",
-    alpha_origin = "numeric",
-    lambdas = "numeric",
-    tuneGrid_type = "character",
-    vec_alphas = "ANY",
-    index_type = "character",
-    dict_temps = "ANY",
-    n_iter_per_reg = "numeric",
-    li_df_var_imp = "ANY",
-    li_box_plots = "ANY",
-    df_measures = "ANY",
-    index_bloc = "numeric",
-    index_mode = "numeric",
-    index_variable = "numeric",
-    name_bloc = "character",
-    name_mode = "character",
-    name_variable = "character",
-    is_binary = "logical",
-    li_imp = "ANY",
-    n_centro_min = "numeric",
-    n_centro_max = "numeric",
-    n_centro = "numeric",
-    do_smote = "logical",
-    do_boot = "logical",
-    dim_max = "numeric",
-    n_lambda = "numeric",
-    confus_mat = "ANY",
-    R_min = "integer",
-    R_max = "integer",
-    df_danger = "ANY",
-    info_cols = "ANY",
-    y_tot = "ANY",
-    y_train = "ANY",
-    y_test = "ANY",
-    name_y = "character",
-    class_maj_min = "character",
-    analyse_data = "ANY",
-    beta_final = "numeric",
-    tune_R = "numeric",
-    classe_1 = "character",
-    li_R = "ANY",
-    same_R = "logical"
+    name_model = "character", #     input: nom du modèle
+    k = "numeric", #                input: nombre de folds en cross valid
+    p = "numeric", #                input: proportion de données dans le training set
+    show_logs = "logical", #        input: afficher les logs durant l'entraînement
+    rep = "numeric", #              input: nombre de répétitions des folds dans la cv
+    sampling = "ANY", #             input: indique si faire smote / bootstrap (up)/rien
+    k_smote = "numeric", #          input: nombre de voisins dans smote
+    search = "character", #         input: espacer régulièrement ou aléat dans gridSearch
+    id_term = "character", #        input: Identifiant du run
+    parallel = "ANY", #             input: liste indiquant si oui et comment paralléliser
+    model = "ANY", #                input: nom du modèle utilisé
+    classe_1 = "character", #       input: Définit qui est la classe 1
+    analyse_data = "list", #        input: liste sur post analyse data (faire clusters?)
+    do_product = "logical", #       input: indique si réutiliser ou non le Sigma picto
+    df_measures = "ANY", #          variable: dataframe des perfoemances
+    li_df_var_imp = "ANY", #        variable: dataframe imp variables (pas tous les modèles)
+    confus_mat = "ANY", #           variable: matrice de confusion
+    df_danger = "ANY", #            variable: to refit: df scores sur lignes mauvaises en radio
+    score_recons = "numeric", #      variable: erreur L1 de reconstruction du picto,
+    penalty_adapt = "logical" #     variable: penalty adaptatif pour le modèle
   ),
   prototype(
     k = 5,
     p = 0.75,
     rep = 1,
-    n_trees = 500,
-    mtry = c(10, 12, 15), # Pour l'instant pas de limite à la croissance des arbres : maxnodes non donné
-    calc_probs = TRUE,
     show_logs = TRUE,
-    do_PCA = FALSE,
-    sampling = NULL,
-    name_model = "random_forest",
+    name_model = "logistique_simple",
     id_term = "1"
   )
 )
@@ -140,20 +103,16 @@ setMethod("init", "apply_model", function(object) {
   object@name_bloc <- readRDS(file = "../data/RDS/name_bloc.rds")
   object@name_variable <- readRDS(file = "../data/RDS/name_variable.rds")
 
-  object@li_df_var_imp <- list()
-  object@li_box_plots <- list()
+  if (object@use_li_index_modes) {
+    object@li_index_modes <- readRDS(file = "../data/RDS/li_index_modes.rds")
+    object@li_name_modes <- readRDS(file = "../data/RDS/li_name_modes.rds")
+  } else {
+    object@li_index_modes <- list()
+    object@li_name_modes <- list()
+  }
+
   object@df_measures <- as.data.frame(matrix(ncol = 5, nrow = 0))
-  # print(object@col_x)
-  if (object@sampling == "smote") {
-    object@do_smote <- TRUE
-  } else {
-    object@do_smote <- FALSE
-  }
-  if (object@sampling == "up") {
-    object@do_boot <- TRUE
-  } else {
-    object@do_boot <- FALSE
-  }
+
 
   return(object)
 })
@@ -167,7 +126,7 @@ setGeneric("split_met", function(object, training_index, folds) {
 setMethod("split_met", "apply_model", function(object, training_index, folds) {
   liste <- sepa_data_set(
     data = object@data_used, training_index = training_index, folds = folds,
-    show = object@show_logs, calc_probs = object@calc_probs,
+    show = object@show_logs, calc_probs = TRUE,
     summary = super, sampling = object@sampling, k_smote = object@k_smote, search = object@search, rep = object@rep, y_tot = object@y_tot
   )
   object@train_cols <- liste[[1]]
@@ -176,7 +135,6 @@ setMethod("split_met", "apply_model", function(object, training_index, folds) {
   object@training_index <- liste[[4]]
   object@y_train <- liste$y_train
   object@y_test <- liste$y_test
-  # object@train_cols <- object@train_set
   cat("nombre de la classe majoritaire dans train", length(object@y_train[object@y_train == object@class_maj_min[1]]), "\n")
   cat("nombre de la classe minoritaire dans train", length(object@y_train[object@y_train == object@class_maj_min[2]]), "\n")
   cat("nombre de la classe majoritaire dans test", length(object@y_test[object@y_test == object@class_maj_min[1]]), "\n")
@@ -201,6 +159,15 @@ setGeneric("train_method", function(object) {
 
 setGeneric("get_results", function(object) {
   standardGeneric("get_results")
+})
+
+setMethod("get_results", "apply_model", function(object) {
+  object@predictions <- as.vector(predict(object@model, newdata = as.matrix(object@test_set[, object@col_x])))
+  object@predictions_proba <- predict(object@model, newdata = as.matrix(object@test_set[, object@col_x]), type = "prob")
+  object@predictions_train_proba <- predict(object@model, newdata = as.matrix(object@train_cols[, object@col_x]), type = "prob")
+  print("GOGOGOGOGOG")
+  print(as.matrix(object@test_set[, object@col_x])[1, 5])
+  return(object)
 })
 
 setGeneric("compare", function(object) {
@@ -264,14 +231,12 @@ setMethod("analyse_results", "apply_model", function(object) {
   best_params <- object@model$bestTune
 
   importance_list <- list(
-    random_forest = TRUE, logistique_simple = TRUE, logistic_grp = TRUE, logistic_multiway = FALSE, logistic_multibloc = FALSE,
+    random_forest = TRUE, logistique_simple = FALSE, logistic_grp = TRUE, logistic_multiway = FALSE, logistic_multibloc = FALSE,
     logistic_select = TRUE
   )
   do_importance <- importance_list[[object@name_model]]
-  # object@predictions <- as.factor(object@predictions)
   object@predictions <- factor(object@predictions, levels = levels(object@test_set[[object@name_y]]))
   object@confus_mat <- confusionMatrix(object@predictions, object@test_set[[object@name_y]])
-  # print(object@confus_mat$table)
 
 
 
@@ -281,9 +246,6 @@ setMethod("analyse_results", "apply_model", function(object) {
 
   print(paste(paste("Le nombre de données est", dim(object@data_used)[1], "dont", length(object@test_set[[object@name_y]]), "dans le testing dataset"), "et le jeu de donné de la grid search: "))
   print(best_params)
-  if (object@do_PCA) {
-    print(paste("La PCA a conservé le nombre suivant de composantes:", dim(predict(object@model$preProcess, object@test_set[, object@col_x]))[2]))
-  }
   vec_roc_res <- c(0, 0, 0, 0, 0)
 
   pdf("plots/ROC_curves.pdf")
@@ -316,24 +278,3 @@ setMethod("analyse_results", "apply_model", function(object) {
   colnames(object@df_measures) <- c("AUC_train", "AUC_val", "AUC_test", "F1", "Acc")
   return(object)
 })
-
-# Degager les négatifs: d'où ils viennent
-
-# [1] "Les stats des individus CCK sont"
-#    is_bad   score_bad is_good score_good
-# 2       0  0.00000000      10  9.4736842
-# 8       1 -0.05263158       7  4.1052632
-# 14      0  0.00000000       7  4.6315789
-# 17     10  3.15789474       3  0.7631579
-# 18      4  1.36842105       5  2.6315789
-# 19      0  0.00000000      11  9.5526316
-# 20      0  0.00000000       8  5.3684211
-# 22      0  0.00000000      11 10.6052632
-# 29      1  0.21052632       7  5.8157895
-# 41      1 -0.05263158       4  2.6842105
-# 43      1  0.47368421       3  0.8947368
-# 46      0  0.00000000       6  5.0789474
-# 57      3 -0.02631579       6  4.5526316
-# 64      3  1.02631579       1  0.6052632
-# 77      9  3.34210526       0  0.0000000
-# 84      0  0.00000000      14 11.1052632

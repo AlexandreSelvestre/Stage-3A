@@ -1,0 +1,216 @@
+default:
+  include_products: FALSE
+  num_picto:
+    - 6
+    - 1
+    - 2
+  n_sample: 4000
+  resample: FALSE #ignoré pour l'instant
+  ecart_class: 1  #ecart entre les moyennes des classes
+  dist_sepa: 0.1
+  dist_non_sepa: 0.5 
+  prop_class_1: 0.5
+  do_QR: FALSE
+
+
+multiway
+  R_min: 1
+  R_max: 15
+  tune_R: 4
+  lambda_min: 0.000001
+  lambda_max: 0.005
+  tuneLength: 4
+
+donne
+        lambda    R
+0.000292401773821 6
+[1] "L'erreur moyenne de reconstruction du pictogramme est de 0.202374633307099"
+et picto raté
+
+vs multiblocs :
+  lambda_min: 0.000001
+  lambda_max: 0.001
+  R_min: 12
+  R_max: 12
+  same_R: FALSE
+  li_R:
+    block_1: [1,6,10]
+    block_2: [1]
+    block_3: [10]
+  tuneLength: 3
+
+  donne
+  R_1 R_2 R_3 lambda
+   6   1  10  1e-06
+   [1] "L'erreur moyenne de reconstruction du pictogramme est de 0.168811410037774"
+   et picto top
+
+
+
+Même chose MAIS avec n_samples = 1000, sur 10 runs avec regénération de données
+
+
+[1] "actuelle moyenne AUC test 0.6828672 ite: 10" ic 5% +/- 0.03016
+[1] "actuel ecart type AUC test 0.040140658503152 ite: 10"
+[1] "actuelle moyenne AUC val 0.632378666666667 ite: 10"
+[1] "actuelle moyenne Accuracy test 0.6332 ite: 10"
+[1] "actuelle somme des confusion matrix ite: 10 :"
+[1] "actuelle moyenne du macro F1 test 0.632777396108761 ite: 10"
+[1] "actuelle moyenne du F1 Classe_0 test 0.632536422366859 ite: 10"
+[1] "actuelle moyenne du F1 Classe_1 test 0.633018369850664 ite: 10"
+          Reference
+Prediction Classe_0 Classe_1
+  Classe_0      790      457
+  Classe_1      460      793
+[1] "actuelle moyenne score_recons 0.226045858564253 ite: 10"
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+[1] "Voilà la matrice de confusion sommée"
+          Reference
+Prediction Classe_0 Classe_1
+  Classe_0      790      457
+  Classe_1      460      793
+[1] "voilà la matrice de confusion en pourcentage: ... % de classe 1 ont été bien classés vs ... % mal classés"
+         Classe_0 Classe_1
+Classe_0    0.632   0.3656
+Classe_1    0.368   0.6344
+[1] "La balanced accuracy sur l'échantillon total vaut: 0.633200767236419"
+le f1 score Classe_0 sur l'échantillon entier vaut: 0.632759311173 
+le f1 score Classe_1 sur l'échantillon entier vaut: 0.633639632441 
+[1] "Le f1 macro sur l'échantillon total vaut: 0.633199471807239"
+[1] "La moyenne des scores de reconstruction vaut 0.226045858564253"
+
+Comparons au logistique simple, toujours avec n_sample = 1000 et 10 runs avec regénération de données
+
+[1] "actuelle moyenne AUC test 0.6105856 ite: 10" ic 5% +/- 0.025: cela semble significatif!!!!
+[1] "actuel ecart type AUC test 0.0317106089615307 ite: 10"
+[1] "actuelle moyenne AUC val 0.583651555555556 ite: 10"
+[1] "actuelle moyenne Accuracy test 0.5816 ite: 10"
+[1] "actuelle somme des confusion matrix ite: 10 :"
+[1] "actuelle moyenne du macro F1 test 0.581196890909287 ite: 10"
+[1] "actuelle moyenne du F1 Classe_0 test 0.571280900028846 ite: 10"
+[1] "actuelle moyenne du F1 Classe_1 test 0.591112881789727 ite: 10"
+          Reference
+Prediction Classe_0 Classe_1
+  Classe_0      698      494
+  Classe_1      552      756
+[1] "actuelle moyenne score_recons 0.232915517209695 ite: 10"
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+[1] "Voilà la matrice de confusion sommée"
+          Reference
+Prediction Classe_0 Classe_1
+  Classe_0      698      494
+  Classe_1      552      756
+[1] "voilà la matrice de confusion en pourcentage: ... % de classe 1 ont été bien classés vs ... % mal classés"
+         Classe_0 Classe_1
+Classe_0   0.5584   0.3952
+Classe_1   0.4416   0.6048
+[1] "La balanced accuracy sur l'échantillon total vaut: 0.581776060587402"
+le f1 score Classe_0 sur l'échantillon entier vaut: 0.571662571663 
+le f1 score Classe_1 sur l'échantillon entier vaut: 0.591086786552 
+[1] "Le f1 macro sur l'échantillon total vaut: 0.581374679107283"
+[1] "La moyenne des scores de reconstruction vaut 0.232915517209695"
+
+
+
+
+
+
+
+
+
+Données réelles:
+
+Baseline logistique simple sur 40 runs et tunelength = 20
+[1] "La valeur de l'AUC de train est de 1"
+[1] "End of analysis phase"
+[1] "actuelle moyenne AUC test 0.698611111111111 ite: 40"
+[1] "actuelle moyenne AUC val 0.776786616161616 ite: 40"
+[1] "actuelle moyenne Accuracy test 0.611111111111111 ite: 40"
+[1] "actuelle somme des confusion matrix ite: 40 :"
+[1] "actuelle moyenne du macro F1 test 0.590575592364095 ite: 40"
+[1] "actuelle moyenne du F1 CCK test 0.348919275169275 ite: 40"
+[1] "actuelle moyenne du F1 CHC test 0.832231909558916 ite: 40"
+          Reference
+Prediction CCK CHC
+       CCK  66 137
+       CHC  94 583
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+[1] "Voilà la matrice de confusion sommée"
+          Reference
+Prediction CCK CHC
+       CCK  66 137
+       CHC  94 583
+[1] "voilà la matrice de confusion en pourcentage: ... % de classe 1 ont été bien classés vs ... % mal classés"
+       CCK            CHC
+CCK 0.4125 0.190277777778
+CHC 0.5875 0.809722222222
+[1] "La balanced accuracy sur l'échantillon total vaut: 0.593137647255714"
+le f1 score CCK sur l'échantillon entier vaut: 0.363636363636 
+le f1 score CHC sur l'échantillon entier vaut: 0.834645669291 
+[1] "Le f1 macro sur l'échantillon total vaut: 0.599141016463851"
+
+Multibloc:
+
+radio:
+  lambda_min: 0.00000001
+  lambda_max: 0.1
+  R_min: 1
+  R_max: 2 
+  tuneLength: 8
+  tune_R: 2
+  same_R: FALSE
+
+[1] "Le nombre de données est 90 dont 22 dans le testing dataset et le jeu de donné de la grid search: "
+   R_1 R_2 R_3 lambda
+29   1   2   2  1e-04
+Setting levels: control = CCK, case = CHC
+Setting direction: controls < cases
+[1] "La valeur de l'AUC de test est de 0.680555555555556"
+[1] "La valeur de l'AUC de validation sur chaque fold est de 1"                
+[2] "La valeur de l'AUC de validation sur chaque fold est de 0.818181818181818"
+[3] "La valeur de l'AUC de validation sur chaque fold est de 0.727272727272727"
+[4] "La valeur de l'AUC de validation sur chaque fold est de 0.954545454545455"
+[5] "La valeur de l'AUC de validation sur chaque fold est de 0.909090909090909"
+[1] "Ce qui donne une moyenne d'AUC de 0.881818181818182"
+Setting levels: control = CCK, case = CHC
+Setting direction: controls > cases
+[1] "La valeur de l'AUC de train est de 1"
+[1] "End of analysis phase"
+[1] "actuelle moyenne AUC test 0.664409722222222 ite: 40"
+[1] "actuel ecart type AUC test 0.118441295190396 ite: 40"
+[1] "actuelle moyenne AUC val 0.820498737373737 ite: 40"
+[1] "actuelle moyenne Accuracy test 0.605208333333333 ite: 40"
+[1] "actuelle somme des confusion matrix ite: 40 :"
+[1] "actuelle moyenne du macro F1 test 0.589378167197065 ite: 40"
+[1] "actuelle moyenne du F1 CCK test 0.344182067932068 ite: 40"
+[1] "actuelle moyenne du F1 CHC test 0.834574266462062 ite: 40"
+          Reference
+Prediction CCK CHC
+       CCK  63 132
+       CHC  97 588
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+[1] "Voilà la matrice de confusion sommée"
+          Reference
+Prediction CCK CHC
+       CCK  63 132
+       CHC  97 588
+[1] "voilà la matrice de confusion en pourcentage: ... % de classe 1 ont été bien classés vs ... % mal classés"
+        CCK            CHC
+CCK 0.39375 0.183333333333
+CHC 0.60625 0.816666666667
+[1] "La balanced accuracy sur l'échantillon total vaut: 0.590735541830432"
+le f1 score CCK sur l'échantillon entier vaut: 0.354929577465 
+le f1 score CHC sur l'échantillon entier vaut: 0.837010676157 
+[1] "Le f1 macro sur l'échantillon total vaut: 0.595970126810686"
+There were 50 or more warnings (use warnings() to see the first 50)
+

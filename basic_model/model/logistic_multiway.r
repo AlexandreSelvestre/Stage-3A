@@ -1,5 +1,27 @@
 source("model/logistic_manuel.r")
 
+
+
+setClass("logistic_multiway",
+    contains = "apply_model",
+    slots = representation(
+        lambda_min = "numeric",
+        lambda_max = "numeric",
+        ite_max = "integer",
+        eps = "numeric",
+        tuneLength = "numeric",
+        index_type = "character",
+        tune_R = "integer",
+        R_min = "integer",
+        R_max = "integer",
+        weights = "list",
+        n_iter_per_reg = "integer",
+        regression = "logical",
+        lambda = "numeric"
+    )
+)
+
+
 li_caret_multiway <- list()
 
 li_caret_multiway$library <- "glmnet"
@@ -36,17 +58,19 @@ better_create_grid_multiway <- function(x, y, len = NULL, search = "grid", lambd
 li_caret_multiway$grid <- create_grid_multiway
 
 
-fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, index, eps, ite_max, n_iter_per_reg, k_smote, do_smote, index_variable, index_bloc, is_binary, classe_1 = NULL) {
+fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, index, eps, ite_max, n_iter_per_reg, k_smote, sampling_choice, index_variable, index_bloc, is_binary, classe_1 = NULL) {
     li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, index_bloc, is_binary)
     x <- li_norm$new_x
     classe_min <- names(which.min(table(y)))
     classe_maj <- setdiff(levels(y), classe_min)
 
-    if (do_smote) {
+
+    if (sampling_choice == "smote") {
         li <- apply_smote(x, y, k_smote)
         x <- li$x
         y <- li$y
-    } else {
+    }
+    if (sampling_choice == "up") {
         li <- apply_boot(x, y)
         x <- li$x
         y <- li$y
@@ -440,13 +464,12 @@ setMethod("train_method", "apply_model", function(object) {
     colnames(object@train_cols)[colnames(object@train_cols) %in% object@col_x] <- colnames(li$x)
 
     li <- reorder_in_modes(object@test_set[, object@col_x], index_mode = object@index_mode, index_variable = object@index_variable, index_bloc = object@index_bloc, is_binary = object@is_binary, name_mode = object@name_mode, name_variable = object@name_variable, name_bloc = object@name_bloc)
-    object@test_set[, object@col_x] <- li$x ### suite...
+    object@test_set[, object@col_x] <- li$x
     colnames(object@test_set)[colnames(object@test_set) %in% object@col_x] <- colnames(li$x)
 
     li <- reorder_in_modes(object@data_used[, object@col_x], index_mode = object@index_mode, index_variable = object@index_variable, index_bloc = object@index_bloc, is_binary = object@is_binary, name_mode = object@name_mode, name_variable = object@name_variable, name_bloc = object@name_bloc)
-    object@data_used[, object@col_x] <- li$x ### suite...
+    object@data_used[, object@col_x] <- li$x
     colnames(object@data_used)[colnames(object@data_used) %in% object@col_x] <- colnames(li$x)
-    write_xlsx(object@data_used, "..\\data\\no.xlsx")
 
     object@col_x <- setdiff(names(object@data_used), c(object@info_cols$exclude_cols, object@name_y))
 
@@ -482,18 +505,11 @@ setMethod("train_method", "apply_model", function(object) {
         method = li_caret_multiway, trControl = object@cv, metric = "AUC",
         tuneLength = object@tuneLength, weights_dict = object@weights, tuneGrid = grid,
         eps = object@eps, ite_max = object@ite_max, n_iter_per_reg = object@n_iter_per_reg,
-        k_smote = object@k_smote, do_smote = object@do_smote, index_variable = object@index_variable, index_bloc = object@index_bloc, is_binary = object@is_binary, classe_1 = object@classe_1
+        k_smote = object@k_smote, sampling_choice = object@sampling, index_variable = object@index_variable, index_bloc = object@index_bloc, is_binary = object@is_binary, classe_1 = object@classe_1
     )
     if (object@parallel$do) {
         stopCluster(cl)
     }
-    return(object)
-})
-
-setMethod("get_results", "apply_model", function(object) {
-    object@predictions <- as.vector(predict(object@model, newdata = as.matrix(object@test_set[, object@col_x])))
-    object@predictions_proba <- predict(object@model, newdata = as.matrix(object@test_set[, object@col_x]), type = "prob")
-    object@predictions_train_proba <- predict(object@model, newdata = as.matrix(object@train_cols[, object@col_x]), type = "prob")
     object@beta_final <- object@model$finalModel$beta_unfolded
     return(object)
 })

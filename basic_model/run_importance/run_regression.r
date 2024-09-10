@@ -18,6 +18,7 @@ run_imp_intra <- function(inference, imp_li, performance, li_confus, is_null, it
     performance$F1_CHC <- append(performance$F1_CHC, F1_CHC)
 
     print(paste("actuelle moyenne AUC test", mean(performance$AUC_test), "ite:", ite))
+    print(paste("actuel ecart type AUC test", sd(performance$AUC_test), "ite:", ite))
     print(paste("actuelle moyenne AUC val", mean(performance$AUC_val), "ite:", ite))
     print(paste("actuelle moyenne Accuracy test", mean(performance$Acc), "ite:", ite))
     print(paste("actuelle somme des confusion matrix", "ite:", ite, ":"))
@@ -25,7 +26,15 @@ run_imp_intra <- function(inference, imp_li, performance, li_confus, is_null, it
     print(paste("actuelle moyenne du F1", colnames(confus_mat)[1], "test", mean(performance$F1_CCK), "ite:", ite))
     print(paste("actuelle moyenne du F1", colnames(confus_mat)[2], "test", mean(performance$F1_CHC), "ite:", ite))
     print(Reduce("+", li_confus))
-
+    # Si score_recons est rensigné: l'inclure dans les perfs
+    # print(paste("C'est le moment!!", inference@score_recons, length(inference@score_recons)))
+    if (length(inference@score_recons) > 0) {
+        if (!"score_recons" %in% names(performance)) {
+            performance$score_recons <- c()
+        }
+        performance$score_recons <- append(performance$score_recons, inference@score_recons)
+        print(paste("actuelle moyenne score_recons", mean(performance$score_recons), "ite:", ite))
+    }
     li_return <- list(imp_li = imp_li, performance = performance, li_confus = li_confus, is_null = is_null)
     return(li_return)
 }
@@ -54,11 +63,13 @@ run_imp_extra <- function(imp_li, performance, li_confus, is_null, n_samples, pa
     ending_name <- "beta_value"
     ##### Utiliser l'inference pour les index et refaire les plots en général
     plot_global(imp_average, path_plot, ending_name, inference)
-
     performance_long <- melt_mine(as.data.frame(performance)[, setdiff(names(performance), "AUC_val")])
+    # print("maintnow!!")
+    # print(performance_long$score_recons)
     box_plots_stats <- ggplot(performance_long, aes(x = variable, y = value)) +
         stat_summary(fun = median, geom = "point", shape = 20, size = 3, color = "red") +
         geom_boxplot() +
+        ylim(-0.05, 1.05) +
         theme(axis.text.x = element_text(angle = 90, hjust = 1)) # Rotate x-axis labels for readability
     ggsave(paste0(path_plot, "/global_plot_stats.png"), box_plots_stats)
 
@@ -83,4 +94,7 @@ run_imp_extra <- function(imp_li, performance, li_confus, is_null, n_samples, pa
     cat("le f1 score", colnames(mat_sum)[2], "sur l'échantillon entier vaut:", f_1_2, "\n")
     final_f1_macro <- mean(c(f_1_1, f_1_2))
     print(paste("Le f1 macro sur l'échantillon total vaut:", final_f1_macro))
+    if (length(inference@score_recons) > 0) {
+        print(paste("La moyenne des scores de reconstruction vaut", mean(performance$score_recons)))
+    }
 }

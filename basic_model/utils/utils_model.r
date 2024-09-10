@@ -145,9 +145,6 @@ renormalize_in_model_fit_index_mode <- function(x, index_variable, index_bloc, i
     df_mu <- li$mu
     df_sigma <- li$sigma
     new_x <- data.table::copy(x)
-    # log_file <- paste0("./log/fit_log_", Sys.getpid(), ".txt")
-    # cat("Début de fit_simple\n", file = log_file, append = TRUE)
-    # cat("Valeur de beta: ", dim(x), dim(df_mu), dim(df_sigma), "\n", file = log_file, append = TRUE)
     new_x <- (new_x - df_mu) / df_sigma
     return(list(new_x = new_x, df_mu = df_mu, df_sigma = df_sigma))
 }
@@ -160,11 +157,11 @@ renormalize_in_model_pred_index_mode <- function(newdata, df_mu, df_sigma) {
     return(newdata)
 }
 
+
+
+
 reorder_in_modes <- function(x, index_mode, index_variable, index_bloc, name_mode, name_variable, name_bloc, is_binary) {
-    ## !!!Attention si K varie!!!
-    # Seule nécessité avant cetet fonction: variables tabulaires à la fin
-    # L'application de cette fonction assure que les indices de sortie sont tous bien jolis et contigus... Ca sauve certains modèles un peu mal construits. Et on arrange tout sur le modèle du data used des radiomiques (par mode mais pas par bloc).
-    # different_variables <- order(unique(index_variable[index_variable > -0.5]))
+    # Indispensable au multiway pour réordonner par mode avec un index variable différent par bloc. Attention si K varie entre les blocs le modèle multiway est par définition incapable de fonctionner.
 
     different_blocs <- sort(unique(index_bloc[index_bloc > -0.5]))
     li_different_variables <- lapply(1:length(different_blocs), function(l) {
@@ -175,7 +172,7 @@ reorder_in_modes <- function(x, index_mode, index_variable, index_bloc, name_mod
     count_tab <- 1
     # Calculer les indices de départ des variables de chaque bloc
     vec_offset_var_bloc <- c(0)
-    if (length(different_blocs > 1)) {
+    if (length(different_blocs) > 1) {
         for (l in 1:(length(different_blocs) - 1)) {
             previous_offset <- vec_offset_var_bloc[l]
             n_variables <- length(li_different_variables[[l]])
@@ -193,10 +190,12 @@ reorder_in_modes <- function(x, index_mode, index_variable, index_bloc, name_mod
     new_name_mode <- rep("", length(index_mode))
     new_name_variable <- rep("", length(index_variable))
     new_name_bloc <- rep("", length(index_bloc))
+    #### Poursuivre ici
     K <- length(unique(index_mode[index_mode > -0.5]))
     J <- sum(sapply(1:length(different_blocs), function(l) {
         return(length(li_different_variables[[l]]))
     }))
+    # Problème index mode: on mélange les modes différents entre blocs si même nom: ajouter une distinction entre blocs!
     for (i in 1:length(index_mode)) {
         if (!as.character(index_mode[i]) %in% names(li_modes)) {
             li_modes[[as.character(index_mode[i])]] <- as.data.frame(matrix(0, ncol = length(index_mode[index_mode == index_mode[i]]), nrow = nrow(x)))
@@ -289,52 +288,105 @@ plot_global <- function(imp_average, path_plot, ending_name, inference) {
         )
     ggsave(paste0(path_plot, "/global_blocs", "_", ending_name, ".png"), image) # bloc par bloc
 
-    variable_importance <- variable_importance[inference@index_bloc > -0.5, ]
-    ##### A refaire
-    variable_importance$Group <- inference@name_mode
-    variable_importance$small_Group <- inference@name_variable
-    renorm <- TRUE # Ajoute les pourcentages et tient compte de l'imbalance potentiel entre les groupes... (même s'il n'y en avait pas jusqu'à présent)
-    if (renorm) {
-        variable_importance_grouped <- aggregate_prop(Overall ~ Group, data = variable_importance, FUN = mean)
-        variable_importance_small_grouped <- aggregate_prop(Overall ~ small_Group, data = variable_importance, FUN = mean)
+
+
+    if (inference@use_li_index_modes) {
+        print("On va essayer de faire des plots pour les modes")
+        li_name_modes <- inference@li_name_modes
+        li_index_modes <- inference@li_index_modes
+        # On va tout regrouper par mode à chaque fois
+        different_blocs <- sort(unique(inference@index_bloc[inference@index_bloc != -1]))
+        li_variable_importance_groups <- lapply(seq_along(li_index_modes), function(m) {
+            slice_name <- li_name_modes[[m]][inference@index_bloc > -0.5]
+            bloc_name <- as.character(inference@index_bloc)[inference@index_bloc > -0.5]
+            grouping_col <- paste0("Bloc_", bloc_name, "_", slice_name)
+            grouping_name <- paste0("Mode_", m)
+            variable_importance_local <- variable_importance[li_index_modes[[m]] > -1, ]
+            variable_importance_local[[grouping_name]] <- grouping_col
+            formula_string <- paste("Overall ~", grouping_name)
+            formula <- as.formula(formula_string)
+            return(aggregate_prop(formula, data = variable_importance_local, FUN = mean))
+        })
+        for (m in seq_along(li_index_modes)) {
+            name_modality <- names(li_name_modes)[m]
+            grouping_name <- paste0("Mode_", m)
+            grouping_sym <- sym(grouping_name)
+            image <- ggplot(li_variable_importance_groups[[m]], aes(x = reorder(!!grouping_sym, Overall), y = Overall)) +
+                geom_bar(stat = "identity") +
+                geom_text(aes(label = paste0(round(Percentage, 1), "%"), y = 0), hjust = -0.5, color = "green") +
+                geom_point(data = data.frame(x = Inf, y = Inf), aes(x = x, y = y, color = "Percentage of non zero beta coefficient for this variable"), size = 5) + # point invisible pour légende
+                scale_color_manual(name = "", values = c("Percentage of non zero beta coefficient for this bloc_and_mode" = "green")) +
+                coord_flip() +
+                theme_light() +
+                xlab("Variable") +
+                ylab("Importance") +
+                ggtitle(paste("Grouped relative variable importance for each slice of mode:", name_modality)) +
+                theme(
+                    axis.text.y = element_text(size = 6), legend.position = "bottom",
+                    legend.text = element_text(size = 12)
+                )
+            ggsave(paste0(path_plot, "/global_", name_modality, "_", ending_name, ".png"), image)
+        }
     } else {
-        variable_importance_grouped <- aggregate(Overall ~ Group, data = variable_importance, FUN = mean)
-        variable_importance_small_grouped <- aggregate(Overall ~ small_Group, data = variable_importance, FUN = mean)
+        variable_importance$Group <- inference@name_mode
+        variable_importance$small_Group <- inference@name_variable
+        variable_importance_small_grouped <- aggregate_prop(Overall ~ small_Group, data = variable_importance, FUN = mean)
+        variable_importance$bloc_and_mode <- paste0(variable_importance$bloc, "_", variable_importance$Group)
+        variable_importance <- variable_importance[inference@index_bloc > -0.5, ]
+        variable_importance_grouped <- aggregate_prop(Overall ~ Group, data = variable_importance, FUN = mean)
+        variable_importance_bloc_and_mode <- aggregate_prop(Overall ~ bloc_and_mode, data = variable_importance, FUN = mean)
+
+
+        image <- ggplot(variable_importance_grouped, aes(x = reorder(Group, Overall), y = Overall)) +
+            geom_bar(stat = "identity") +
+            geom_text(aes(label = paste0(round(Percentage, 1), "%"), y = 0), hjust = -0.5, color = "green") +
+            geom_point(data = data.frame(x = Inf, y = Inf), aes(x = x, y = y, color = "Percentage of non zero beta coefficient for this mode"), size = 5) + # point invisible pour légende
+            scale_color_manual(name = "", values = c("Percentage of non zero beta coefficient for this variable" = "green")) +
+            coord_flip() +
+            theme_light() +
+            xlab("Variable") +
+            ylab("Importance") +
+            ggtitle("Grouped relative variable importance of each time") +
+            theme(
+                legend.position = "bottom",
+                legend.text = element_text(size = 12)
+            )
+        ggsave(paste0(path_plot, "/global_big_groups", "_", ending_name, ".png"), image) # temps par temps
+
+        image <- ggplot(variable_importance_bloc_and_mode, aes(x = reorder(bloc_and_mode, Overall), y = Overall)) +
+            geom_bar(stat = "identity") +
+            geom_text(aes(label = paste0(round(Percentage, 1), "%"), y = 0), hjust = -0.5, color = "green") +
+            geom_point(data = data.frame(x = Inf, y = Inf), aes(x = x, y = y, color = "Percentage of non zero beta coefficient for this variable"), size = 5) + # point invisible pour légende
+            scale_color_manual(name = "", values = c("Percentage of non zero beta coefficient for this bloc_and_mode" = "green")) +
+            coord_flip() +
+            theme_light() +
+            xlab("Variable") +
+            ylab("Importance") +
+            ggtitle("Grouped relative variable importance of each time for each bloc") +
+            theme(
+                axis.text.y = element_text(size = 6), legend.position = "bottom",
+                legend.text = element_text(size = 12)
+            )
+        ggsave(paste0(path_plot, "/global_bloc_and_mode", "_", ending_name, ".png"), image) # temps par temps
+
+
+        image <- ggplot(variable_importance_small_grouped, aes(x = reorder(small_Group, Overall), y = Overall)) +
+            geom_bar(stat = "identity") +
+            geom_text(aes(label = paste0(round(Percentage, 1), "%"), y = 0), hjust = -0.5, color = "green") +
+            geom_point(data = data.frame(x = Inf, y = Inf), aes(x = x, y = y, color = "Percentage of non zero beta coefficient for this variable"), size = 5) + # point invisible pour légende
+            scale_color_manual(name = "", values = c("Percentage of non zero beta coefficient for this variable" = "green")) +
+            coord_flip() +
+            theme_light() +
+            xlab("Variable") +
+            ylab("Importance") +
+            ggtitle("Grouped relative variable importance of each quantity of interest") +
+            theme(
+                axis.text.y = element_text(size = 6), legend.position = "bottom",
+                legend.text = element_text(size = 12)
+            )
+
+        ggsave(paste0(path_plot, "/global_small_groups", "_", ending_name, ".png"), image, width = 10, height = 20) # variable par variable
     }
-
-    image <- ggplot(variable_importance_grouped, aes(x = reorder(Group, Overall), y = Overall)) +
-        geom_bar(stat = "identity") +
-        geom_text(aes(label = paste0(round(Percentage, 1), "%"), y = 0), hjust = -0.5, color = "green") +
-        geom_point(data = data.frame(x = Inf, y = Inf), aes(x = x, y = y, color = "Percentage of non zero beta coefficient for this variable"), size = 5) + # point invisible pour légende
-        scale_color_manual(name = "", values = c("Percentage of non zero beta coefficient for this variable" = "green")) +
-        coord_flip() +
-        theme_light() +
-        xlab("Variable") +
-        ylab("Importance") +
-        ggtitle("Grouped relative variable importance of each time") +
-        theme(
-            legend.position = "bottom",
-            legend.text = element_text(size = 12)
-        )
-    ggsave(paste0(path_plot, "/global_big_groups", "_", ending_name, ".png"), image) # temps par temps
-
-
-    image <- ggplot(variable_importance_small_grouped, aes(x = reorder(small_Group, Overall), y = Overall)) +
-        geom_bar(stat = "identity") +
-        geom_text(aes(label = paste0(round(Percentage, 1), "%"), y = 0), hjust = -0.5, color = "green") +
-        geom_point(data = data.frame(x = Inf, y = Inf), aes(x = x, y = y, color = "Percentage of non zero beta coefficient for this variable"), size = 5) + # point invisible pour légende
-        scale_color_manual(name = "", values = c("Percentage of non zero beta coefficient for this variable" = "green")) +
-        coord_flip() +
-        theme_light() +
-        xlab("Variable") +
-        ylab("Importance") +
-        ggtitle("Grouped relative variable importance of each quantity of interest") +
-        theme(
-            axis.text.y = element_text(size = 6), legend.position = "bottom",
-            legend.text = element_text(size = 12)
-        )
-
-    ggsave(paste0(path_plot, "/global_small_groups", "_", ending_name, ".png"), image, width = 10, height = 20) # variable par variable
 }
 
 # library(readxl)
@@ -352,6 +404,104 @@ convert_y <- function(y, classe_1) {
         y_numeric <- ifelse(y == classe_1, 1, 0)
     }
     return(y_numeric)
+}
+
+get_beta_bloc <- function(beta_J, beta_K, R, J, K, index_mode_local, index_variable_local) {
+    beta <- rep(0, J * K)
+    for (r in 1:R) {
+        beta_r <- rep(0, J * K)
+        for (j in 1:J) {
+            for (k in 1:K) {
+                mode_k <- sort(unique(index_mode_local))[k]
+                mode_j <- sort(unique(index_variable_local))[j]
+                where_k <- which(index_mode_local == mode_k)
+                where_j <- which(index_variable_local == mode_j)
+                indice <- intersect(where_k, where_j)
+                if (length(indice) != 1) {
+                    print(indice)
+                    stop("Erreur de reconstruction de beta_bloc_local")
+                }
+                beta_r[indice] <- beta_J[(r - 1) * J + j] * beta_K[(r - 1) * K + k]
+            }
+        }
+        beta[] <- beta + beta_r
+    }
+    return(beta)
+}
+
+
+get_beta_full <- function(modelFit) {
+    li_dim <- modelFit$li_dim
+    index_bloc <- modelFit$index_bloc
+    index_mode <- modelFit$index_mode
+    index_variable <- modelFit$index_variable
+    different_blocs <- sort(unique(index_bloc[index_bloc != -1]))
+    li_beta_J <- modelFit$li_beta_J
+    li_beta_K <- modelFit$li_beta_K
+    beta_autre <- modelFit$beta_autre
+    current_li_R <- modelFit$current_li_R
+    size_beta_modes <- sum(unlist(lapply(li_dim, function(x) {
+        return(x$J * x$K)
+    }))) # taille de beta sans beta_autre
+    beta_modes <- rep(NA, size_beta_modes)
+    for (l_num in different_blocs) {
+        l_char <- as.character(l_num)
+        R <- current_li_R[[l_char]]
+        beta_K <- li_beta_K[[l_char]]
+        beta_J <- li_beta_J[[l_char]]
+        J <- li_dim[[l_char]]$J
+        K <- li_dim[[l_char]]$K
+        index_mode_local <- index_mode[index_bloc == l_num]
+        index_variable_local <- index_variable[index_bloc == l_num]
+        beta_bloc <- get_beta_bloc(beta_J, beta_K, R, J, K, index_mode_local, index_variable_local)
+        beta_modes[index_bloc[index_bloc != -1] == l_num] <- beta_bloc
+    }
+    beta_final <- c(beta_modes, beta_autre)
+    if (any(is.na(beta_final))) {
+        print(beta_final)
+        stop("Beta final est NA")
+    }
+    return(beta_final)
+}
+
+
+reorder_local <- function(matrix_bloc, li_index_mode_global, vec_dim_bloc, index_l) {
+    # Objectif: réordonner le bloc en argument par ordre lexicographique des modes
+    # On récupère l'index bloc global: attention à bien le recalibrer sur le bloc qui nous intéresse à chazque fois qu'on récupère un index_mode
+
+    new_mat_bloc <- matrix(NA_real_, nrow = nrow(matrix_bloc), ncol = ncol(matrix_bloc))
+    vec_dim_bloc_compact <- vec_dim_bloc[vec_dim_bloc > -0.5]
+    vec_base_mode <- rep(1, length(vec_dim_bloc_compact))
+    # print(vec_dim_bloc)
+    for (a in seq_along(vec_dim_bloc_compact)) {
+        if (a < length(vec_dim_bloc_compact)) {
+            value <- prod(vec_dim_bloc_compact[(a + 1):length(vec_base_mode)])
+        } else {
+            value <- 1
+        }
+        vec_base_mode[a] <- value
+    }
+
+    for (j in seq_len(ncol(matrix_bloc))) {
+        col <- matrix_bloc[, j]
+        vec_modes_col <- sapply(seq_along(li_index_mode_global), function(m) {
+            index_mode <- li_index_mode_global[[m]]
+            value <- index_mode[index_l][j]
+            return(value)
+        })
+        vec_modes_col <- vec_modes_col[vec_modes_col > -0.5] - 1 # Hyper important ce -1 sinon out of bounds
+        position <- sum(vec_modes_col * vec_base_mode) + 1
+        # print(paste("colonne", j))
+        # print(vec_modes_col)
+        # print(position)
+        new_mat_bloc[, position] <- col
+    }
+    if (any(is.na(matrix_bloc))) {
+        print(matrix_bloc)
+        stop("matrix_bloc contient des NA")
+    }
+    # print(all(new_mat_bloc == matrix_bloc))
+    return(list(mat = new_mat_bloc, vec_base_mode = vec_base_mode))
 }
 
 

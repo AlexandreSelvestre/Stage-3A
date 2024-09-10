@@ -129,7 +129,7 @@ get_mode_vec_liver <- function(x) {
         classified <- FALSE
         if (substr(name_col, nchar(name_col) - 3, nchar(name_col)) == "ART_") {
             index_mode[j] <- 1
-            index_name <- "ART_"
+            index_name[j] <- "ART_"
             classified <- TRUE
         }
         if (substr(name_col, nchar(name_col) - 3, nchar(name_col)) == "PORT") {
@@ -165,6 +165,23 @@ get_variable_vec_liver <- function(x) {
     ordered_levels <- unique(index_name_no_clin)
     index_variable[-index_clin] <- as.integer(factor(index_name_no_clin, levels = ordered_levels))
     index_variable[index_clin] <- -1
+    return(list(index_variable = index_variable, index_name = index_name))
+}
+
+get_variable_vec_liver_big <- function(x) {
+    df_loc <- data.frame(name_cov = colnames(x))
+    index_name <- sapply(df_loc$name_cov, function(name_cov) {
+        true_name_cov <- sub("slice.*", "", name_cov) # avant le mot slice
+        return(true_name_cov)
+    })
+    index_clin <- which(!substr(df_loc$name_cov, nchar(df_loc$name_cov) - 3, nchar(df_loc$name_cov)) %in% c("PORT", "ART_", "VEIN", "TARD"))
+    index_name[index_clin] <- colnames(x)[index_clin]
+    index_name_no_clin <- index_name[-index_clin]
+    index_variable <- rep(0, ncol(x))
+    ordered_levels <- unique(index_name_no_clin)
+    index_variable[-index_clin] <- as.integer(factor(index_name_no_clin, levels = ordered_levels))
+    index_variable[index_clin] <- -1
+    index_name <- unname(index_name)
     return(list(index_variable = index_variable, index_name = index_name))
 }
 
@@ -247,51 +264,4 @@ better_create_grid_multibloc <- function(x, y, len = NULL, search = "grid", L, l
     vecnames <- c(vec_names, "lambda")
     data_frame_grid <- setNames(data_frame_grid, vecnames)
     return(as.data.frame(data_frame_grid))
-}
-
-get_beta_bloc <- function(beta_J, beta_K, R, J, K) {
-    beta <- rep(0, J * K)
-    for (r in 1:R) {
-        beta_r <- rep(0, J * K)
-        for (j in 1:J) {
-            for (k in 1:K) {
-                beta_r[(k - 1) * J + j] <- beta_J[(r - 1) * J + j] * beta_K[(r - 1) * K + k]
-            }
-        }
-        beta[1:(J * K)] <- beta[1:(J * K)] + beta_r
-    }
-    return(beta)
-}
-
-
-get_beta_full <- function(modelFit) {
-    li_x_multi_bloc <- modelFit$li_x_multi_bloc
-    li_dim <- modelFit$li_dim
-    index <- modelFit$index
-    index_bloc <- modelFit$index_bloc
-    li_beta_J <- modelFit$li_beta_J
-    li_beta_K <- modelFit$li_beta_K
-    beta_autre <- modelFit$beta_autre
-    L <- length(li_x_multi_bloc)
-    vec_R <- modelFit$vec_R
-    size_beta_modes <- sum(unlist(lapply(li_dim, function(x) {
-        return(x[1] * x[2])
-    }))) # taille de beta sans beta_autre
-    beta_modes <- rep(NA, size_beta_modes)
-    for (l in 1:L) {
-        R <- vec_R[l]
-        beta_K <- li_beta_K[[l]]
-        beta_J <- li_beta_J[[l]]
-        J <- li_dim[[l]][1]
-        K <- li_dim[[l]][2]
-        beta_bloc <- get_beta_bloc(beta_J, beta_K, R, J, K)
-        beta_modes[index_bloc[index_bloc != -1] == l] <- beta_bloc
-        # Attention ordre temps
-    }
-    beta_final <- c(beta_modes, beta_autre)
-    if (any(is.na(beta_final))) {
-        print(beta_final)
-        stop("Beta final est NA")
-    }
-    return(beta_final)
 }

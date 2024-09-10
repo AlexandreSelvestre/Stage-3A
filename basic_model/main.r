@@ -1,4 +1,4 @@
-execute <- function(config, config_run, id_term, seed_cv, sysname) {
+execute <- function(config, config_run, id_term, seed_cv, seed_partition, sysname) {
     if (config_run$do_extract & as.numeric(id_term) > 1) {
         extract_all(config, sysname)
     }
@@ -8,16 +8,21 @@ execute <- function(config, config_run, id_term, seed_cv, sysname) {
     } else {
         path <- "..\\data\\data_used.csv"
     }
+    use_li_index_modes <- FALSE
+    if (config_run$big_data) {
+        use_li_index_modes <- TRUE
+    }
     data_used <- as.data.frame(read.csv(path, check.names = FALSE))
     print(paste(c("dimensions data used", dim(data_used))))
     info_cols <- readRDS(file = "../data/RDS/info_cols.rds")
     config$data_used <- data_used
     config$info_cols <- info_cols
-    slot_names <- slotNames(getClass("apply_model"))
+    config$use_li_index_modes <- use_li_index_modes
+    name_model <- config$name_model
+    slot_names <- slotNames(getClass(name_model))
     config_names <- names(config)
     arguments <- config[intersect(slot_names, config_names)]
-    inference <- do.call("new", args = c("apply_model", arguments))
-
+    inference <- do.call("new", args = c(name_model, arguments))
     inference <- init(inference)
     if (config$analyse_data$do & as.numeric(id_term) == 1) {
         analyse_data(inference)
@@ -26,8 +31,17 @@ execute <- function(config, config_run, id_term, seed_cv, sysname) {
 
     # Gérer la seed et la séparation train/ test + la séparation en folds
     seed_model <- .Random.seed
+    .Random.seed <<- seed_partition
+    if (!config_run$keep_partition | as.numeric(id_term) == 1) {
+        training_index <- as.vector(createDataPartition(y = data_used[[info_cols$explained_col]], p = config$p, list = FALSE))
+        saveRDS(training_index, file = "../data/RDS/training_index.rds")
+    } else {
+        training_index <- readRDS(file = "../data/RDS/training_index.rds")
+    }
+    seed_partition <- .Random.seed
+
+
     .Random.seed <<- seed_cv
-    training_index <- as.vector(createDataPartition(y = data_used[[info_cols$explained_col]], p = config$p, list = FALSE))
     training_set <- data_used[training_index, ]
     folds <- createMultiFolds(y = data_used[[info_cols$explained_col]][training_index], k = config$k, times = config$rep)
     global_number_folds <- list()
@@ -52,11 +66,11 @@ execute <- function(config, config_run, id_term, seed_cv, sysname) {
 
     print("End of analysis phase")
 
-    if (config_run$do_picto) {
+    if (config_run$simulated_data) {
         source("./analyse_data/reform_plots.r")
         inference <- reform_beta(inference)
     }
-    return(list(inference = inference, seed_cv = seed_cv))
+    return(list(inference = inference, seed_cv = seed_cv, seed_partition = seed_partition))
 }
 
 # 18,19,43,77
