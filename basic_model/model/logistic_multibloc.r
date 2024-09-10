@@ -16,10 +16,9 @@ setClass("logistic_multibloc",
         same_R = "logical",
         li_R = "list",
         lambda = "numeric",
-        li_index_modes = "list"
+        max_temps = "numeric"
     ),
     prototype = prototype(
-        li_index_modes = list(),
         index_mode = c(),
         ite_max = NULL
     )
@@ -79,12 +78,8 @@ better_create_grid_multibloc <- function(x, y, len = NULL, search = "grid", L, l
 }
 
 
-fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, index_mode, li_index_modes, index_bloc, eps, ite_max, n_iter_per_reg, k_smote, sampling_choice, index_variable, is_binary, classe_1 = NULL) {
+fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, li_index_modes, index_bloc, eps, ite_max, n_iter_per_reg, k_smote, sampling_choice, index_variable, is_binary, classe_1 = NULL, max_temps) {
     li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, index_bloc, is_binary)
-
-
-
-
 
 
     x <- li_norm$new_x
@@ -126,11 +121,14 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
     different_blocs <- sort(unique(index_bloc[index_bloc != -1]))
     L <- length(different_blocs)
 
-    if (length(li_index_modes) == 0) {
-        li_index_modes$single_mode <- index_mode
-    }
+    # if (length(li_index_modes) == 0) {
+    #     li_index_modes$single_mode <- index_mode
+    # }
 
-    li_index_modes$variable <- index_variable # le numéro de variable est une slice comme une autre... et ce sera le dernier. On fera une passe du dernier au premier mode pour la fonction boucle_mode
+    # li_index_modes$variable <- index_variable
+
+
+    # le numéro de variable est une slice comme une autre... et ce sera le dernier. On fera une passe du dernier au premier mode pour la fonction boucle_mode
 
     M_max <- length(li_index_modes)
 
@@ -434,13 +432,13 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
             crit <- crit_logistic(as.matrix(x), y_numeric, beta_unfolded, intercept, param$lambda)
             vec_crit[m] <- crit
 
-            # Q <- li_fit$Q
-            # Q_inv <- li_fit$Q_inv
-            # converged <- li_fit$converged
-            # crit_compare <- crit_logistic(Z_m %*% Q, y_numeric, Q_inv %*% new_beta, intercept, param$lambda)
-            # print(converged)
-            # print(crit)
-            # print(paste("crit_compare", crit_compare))
+            Q <- li_fit$Q
+            Q_inv <- li_fit$Q_inv
+            converged <- li_fit$converged
+            crit_compare <- crit_logistic(Z_m %*% Q, y_numeric, Q_inv %*% new_beta, intercept, param$lambda)
+            print(converged)
+            print(crit)
+            print(paste("crit_compare", crit_compare))
         }
         n_ite <- n_ite + 1
         rapport <- abs(vec_crit[M_max] - vec_crit[1]) / abs(vec_crit[1])
@@ -462,7 +460,7 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
             print(paste("Le rapport vaut:", rapport))
         }
         delta_time <- as.numeric(Sys.time() - debut_time, units = "secs")
-        if (delta_time > 30) {
+        if (delta_time > max_temps) {
             print("Warning, temps de calcul trop long")
             print(paste("Le rapport vaut:", rapport))
             continue <- FALSE
@@ -541,6 +539,12 @@ setMethod("train_method", "apply_model", function(object) {
         search = object@search, L = L, lambda_min = object@lambda_min, lambda_max = object@lambda_max, R_min = object@R_min, R_max = object@R_max, tune_R = object@tune_R, li_R = object@li_R, same_R = object@same_R
     )
 
+    if (!object@use_li_index_modes) {
+        object@li_index_modes$single_mode <- object@index_mode
+        object@li_name_modes$single_mode <- object@name_mode
+    }
+    object@li_index_modes$variable <- object@index_variable
+    object@li_name_modes$variable <- object@name_variable
 
     if (object@parallel$do) {
         numCores <- detectCores()
@@ -563,10 +567,10 @@ setMethod("train_method", "apply_model", function(object) {
     }
 
     object@model <- caret::train(
-        y = object@y_train, x = object@train_cols[, object@col_x], li_index_modes = object@li_index_modes, index_mode = object@index_mode,
+        y = object@y_train, x = object@train_cols[, object@col_x], li_index_modes = object@li_index_modes,
         method = li_caret_multibloc, trControl = object@cv, metric = "AUC",
         tuneLength = object@tuneLength, weights_dict = object@weights, tuneGrid = grid, eps = object@eps, ite_max = object@ite_max, n_iter_per_reg = object@n_iter_per_reg,
-        index_bloc = object@index_bloc, k_smote = object@k_smote, sampling_choice = object@sampling, index_variable = object@index_variable, is_binary = object@is_binary, classe_1 = object@classe_1
+        index_bloc = object@index_bloc, k_smote = object@k_smote, sampling_choice = object@sampling, index_variable = object@index_variable, is_binary = object@is_binary, classe_1 = object@classe_1, max_temps = object@max_temps
     )
     if (object@parallel$do) {
         stopCluster(cl)

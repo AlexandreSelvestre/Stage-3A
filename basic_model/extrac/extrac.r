@@ -209,6 +209,7 @@ extract_all <- function(config_extrac, sysname) {
     }
 
     train_cols <- setdiff(names(data_used), c(exclude_cols, explained_col))
+
     li_index_bloc <- get_bloc_vec_liver(names(data_used[, train_cols]), exist_temps = TRUE, different_clin = FALSE)
     index_bloc <- li_index_bloc$index_bloc
     name_bloc <- li_index_bloc$index_name

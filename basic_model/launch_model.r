@@ -15,7 +15,14 @@ setClass(
     class_maj_min = "character", # variable: c(nom_class_maj, nom_class_min)
     col_x = "character", #        variable: noms de colonnes de variables explicatives
     train_cols = "data.frame", #  variable: partie de data_used utilisée pour train
-    test_set = "data.frame" #     variable: partie de data_used utilisée pour test
+    test_set = "data.frame", #     variable: partie de data_used utilisée pour test,
+    li_index_modes = "list",
+    li_name_modes = "list",
+    use_li_index_modes = "logical" # variable: indique si on utilise li_index_modes
+  ),
+  prototype(
+    li_index_modes = list(),
+    li_name_modes = list()
   )
 )
 
@@ -60,7 +67,8 @@ setClass(
     li_df_var_imp = "ANY", #        variable: dataframe imp variables (pas tous les modèles)
     confus_mat = "ANY", #           variable: matrice de confusion
     df_danger = "ANY", #            variable: to refit: df scores sur lignes mauvaises en radio
-    score_recons = "numeric" #      variable: erreur L1 de reconstruction du picto
+    score_recons = "numeric", #      variable: erreur L1 de reconstruction du picto,
+    penalty_adapt = "logical" #     variable: penalty adaptatif pour le modèle
   ),
   prototype(
     k = 5,
@@ -94,6 +102,14 @@ setMethod("init", "apply_model", function(object) {
   object@name_mode <- readRDS(file = "../data/RDS/name_mode.rds")
   object@name_bloc <- readRDS(file = "../data/RDS/name_bloc.rds")
   object@name_variable <- readRDS(file = "../data/RDS/name_variable.rds")
+
+  if (object@use_li_index_modes) {
+    object@li_index_modes <- readRDS(file = "../data/RDS/li_index_modes.rds")
+    object@li_name_modes <- readRDS(file = "../data/RDS/li_name_modes.rds")
+  } else {
+    object@li_index_modes <- list()
+    object@li_name_modes <- list()
+  }
 
   object@df_measures <- as.data.frame(matrix(ncol = 5, nrow = 0))
 
@@ -149,6 +165,8 @@ setMethod("get_results", "apply_model", function(object) {
   object@predictions <- as.vector(predict(object@model, newdata = as.matrix(object@test_set[, object@col_x])))
   object@predictions_proba <- predict(object@model, newdata = as.matrix(object@test_set[, object@col_x]), type = "prob")
   object@predictions_train_proba <- predict(object@model, newdata = as.matrix(object@train_cols[, object@col_x]), type = "prob")
+  print("GOGOGOGOGOG")
+  print(as.matrix(object@test_set[, object@col_x])[1, 5])
   return(object)
 })
 
@@ -213,7 +231,7 @@ setMethod("analyse_results", "apply_model", function(object) {
   best_params <- object@model$bestTune
 
   importance_list <- list(
-    random_forest = TRUE, logistique_simple = TRUE, logistic_grp = TRUE, logistic_multiway = FALSE, logistic_multibloc = FALSE,
+    random_forest = TRUE, logistique_simple = FALSE, logistic_grp = TRUE, logistic_multiway = FALSE, logistic_multibloc = FALSE,
     logistic_select = TRUE
   )
   do_importance <- importance_list[[object@name_model]]

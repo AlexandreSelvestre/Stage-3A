@@ -11,11 +11,13 @@ default:
   search: "grid" #grid ou random
   parallel: 
     do: TRUE
-    n_process: 2
+    n_process: 8
     forking: FALSE #useless
   analyse_data: 
     do: FALSE
     EM: FALSE
+
+  penalty_adapt: FALSE #Seulement sur logistique_simple
   
 
   name_model: "logistique_simple"
@@ -29,9 +31,12 @@ default:
 
 
 radio:
-  minimal_information: TRUE #pour tester
+  minimal_information: FALSE #pour tester
   classe_1: "CCK"
 
+radio_big:
+  minimal_information: FALSE
+  classe_1: "CCK"
 
 simu:
   minimal_information: FALSE

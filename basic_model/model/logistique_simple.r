@@ -45,7 +45,7 @@ create_grid_simple <- function(x, y, len = NULL, search = "grid") {
 
 li_caret_simple$grid <- create_grid_simple
 
-fit_simple <- function(x, y, wts, param, lev, last, weights_dict, classProbs, k_smote, sampling_choice, index_variable, index_bloc, is_binary, classe_1 = NULL) {
+fit_simple <- function(x, y, wts, param, lev, last, weights_dict, classProbs, k_smote, sampling_choice, index_variable, index_bloc, is_binary, classe_1 = NULL, penalty_adapt) {
     li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, index_bloc, is_binary)
     ######## THE GOOD LINE FOR NORMALIZATION
     x <- li_norm$new_x
@@ -78,14 +78,35 @@ fit_simple <- function(x, y, wts, param, lev, last, weights_dict, classProbs, k_
     }
     classe_0 <- setdiff(levels(y), classe_1)
 
+    if (penalty_adapt) {
+        different_blocs <- unique(index_bloc[index_bloc > -0.5])
+        li_pen_per_bloc <- lapply(different_blocs, function(l_num) {
+            nb_var_bloc <- length(which(index_bloc == l_num))
+            penalty_unscaled <- 1 / nb_var_bloc
+            return(penalty_unscaled)
+        })
+        names(li_pen_per_bloc) <- as.character(different_blocs)
+        penalty.factor <- sapply(seq_len(ncol(x)), function(j) {
+            if (index_bloc[j] < -0.5) {
+                return(1)
+            } else {
+                l_char <- as.character(index_bloc[j])
+                return(li_pen_per_bloc[[l_char]])
+            }
+        })
+    } else {
+        penalty.factor <- rep(1, ncol(x))
+    }
+
     regression <- glmnet:::glmnet.fit(
         x = as.matrix(x), y = y_numeric, family = binomial(), alpha = 1,
-        weights = weights / length(y_numeric), lambda = lambda, intercept = TRUE, maxit = 1e8
+        weights = weights / length(y_numeric), lambda = lambda, intercept = TRUE, maxit = 10^7, penalty.factor = penalty.factor
     )
+    print(regression$converged)
 
     beta <- as.numeric(regression$beta)
     intercept <- regression$a0
-    return(list(beta = beta, intercept = intercept, lev = lev, li_norm = li_norm, classe_min = classe_min, classe_maj = classe_maj, classe_1 = classe_1, classe_0 = classe_0))
+    return(list(beta = beta, intercept = intercept, lev = lev, li_norm = li_norm, classe_min = classe_min, classe_maj = classe_maj, classe_1 = classe_1, classe_0 = classe_0, penalty.factor = penalty.factor))
 }
 
 li_caret_simple$fit <- fit_simple
@@ -150,7 +171,7 @@ setMethod("train_method", "logistique_simple", function(object) {
         tuneLength = 8, tuneGrid = tuneGrid,
         weights_dict = object@weights, k_smote = object@k_smote, sampling_choice = object@sampling,
         index_variable = object@index_variable, index_bloc = object@index_bloc, is_binary = object@is_binary,
-        classe_1 = object@classe_1
+        classe_1 = object@classe_1, penalty_adapt = object@penalty_adapt
     )
     if (object@parallel$do) {
         stopCluster(cl)
@@ -225,5 +246,19 @@ setMethod("importance_method", "apply_model", function(object) {
 })
 
 setMethod("get_df_imp", "apply_model", function(object) {
+    object@beta_final <- object@model$finalModel$beta
+    ### afficher les pénalités par bloc
+    # penalty.factor <- object@model$finalModel$penalty.factor
+    # penalty_vec <- abs(object@beta_final) * penalty.factor
+    # penalty_term_per_bloc <- lapply(unique(object@index_bloc), function(l_num) {
+    #     return(sum(penalty_vec[object@index_bloc == l_num]))
+    # })
+    # names(penalty_term_per_bloc) <- as.character(unique(object@index_bloc))
+    # print(penalty_term_per_bloc)
+    ###
+    vec_importance <- abs(object@model$finalModel$beta)
+    variable_importance <- data.frame(Variable = object@col_x, Overall = vec_importance)
+    object@li_df_var_imp <- variable_importance
+    # print(tail(object@beta_final))
     return(object@li_df_var_imp)
 })

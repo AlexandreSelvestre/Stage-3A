@@ -23,13 +23,16 @@ library(Rfast)
 library(DMwR)
 library(themis)
 library(reshape2)
+library(rlang)
 
 
 sysname <- Sys.info()["sysname"]
-set.seed(10) ## seed maîtresse: celle des modèles
+set.seed(11) ## seed du modèle
 seed_model <- .Random.seed
-set.seed(2)
+set.seed(5) # seed pour la cross validation
 seed_cv <- .Random.seed
+set.seed(1) ## seed pour la partition des données
+seed_partition <- .Random.seed
 .Random.seed <- seed_model
 
 config_run <- config::get(file = "configs/config_run.yml", config = "my_config")
@@ -46,10 +49,17 @@ if (config_run$simulated_data) {
         source("extrac/join_picto.r")
     }
 } else {
-    config_model <- config::get(file = "configs/config_model.yml", config = "radio")
-    config_extrac <- config::get(file = "configs/extrac/config_extrac.yml", config = "my_config")
-    name_config <- "radio"
-    source("extrac/extrac.r")
+    if (config_run$big_data) {
+        config_model <- config::get(file = "configs/config_model.yml", config = "radio_big")
+        config_extrac <- config::get(file = "configs/extrac/config_extrac_multi_slice.yml", config = "my_config")
+        name_config <- "radio_big"
+        source("extrac/extrac_multi_slice.r")
+    } else {
+        config_model <- config::get(file = "configs/config_model.yml", config = "radio")
+        config_extrac <- config::get(file = "configs/extrac/config_extrac.yml", config = "my_config")
+        name_config <- "radio"
+        source("extrac/extrac.r")
+    }
 }
 
 model_name <- config_model$name_model
@@ -126,9 +136,10 @@ if (config$minimal_information) {
     # Attention, en minimal info, on ne récupère pas la moyenne des résultats des pictos...
     for (id_term in id_li) {
         ite <- ite + 1
-        list_execute <- execute(config, config_run, as.character(id_term), seed_cv, sysname)
+        list_execute <- execute(config, config_run, as.character(id_term), seed_cv, seed_partition, sysname)
         inference <- list_execute$inference
         seed_cv <- list_execute$seed_cv
+        seed_partition <- list_execute$seed_partition
         test_result <- inference@df_measures[["AUC_test"]]
         sum_test <- test_result + sum_test
         val_result <- inference@df_measures[["AUC_val"]]
@@ -142,9 +153,10 @@ if (config$minimal_information) {
 } else {
     for (id_term in id_li) {
         ite <- ite + 1
-        list_execute <- execute(config, config_run, as.character(id_term), seed_cv, sysname)
+        list_execute <- execute(config, config_run, as.character(id_term), seed_cv, seed_partition, sysname)
         inference <- list_execute$inference
         seed_cv <- list_execute$seed_cv
+        seed_partition <- list_execute$seed_partition
         li_intermediaire <- run_imp_intra(inference, imp_li, performance, li_confus, is_null, ite)
         imp_li <- li_intermediaire$imp_li
         performance <- li_intermediaire$performance

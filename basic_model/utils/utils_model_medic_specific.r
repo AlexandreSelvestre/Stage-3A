@@ -168,6 +168,23 @@ get_variable_vec_liver <- function(x) {
     return(list(index_variable = index_variable, index_name = index_name))
 }
 
+get_variable_vec_liver_big <- function(x) {
+    df_loc <- data.frame(name_cov = colnames(x))
+    index_name <- sapply(df_loc$name_cov, function(name_cov) {
+        true_name_cov <- sub("slice.*", "", name_cov) # avant le mot slice
+        return(true_name_cov)
+    })
+    index_clin <- which(!substr(df_loc$name_cov, nchar(df_loc$name_cov) - 3, nchar(df_loc$name_cov)) %in% c("PORT", "ART_", "VEIN", "TARD"))
+    index_name[index_clin] <- colnames(x)[index_clin]
+    index_name_no_clin <- index_name[-index_clin]
+    index_variable <- rep(0, ncol(x))
+    ordered_levels <- unique(index_name_no_clin)
+    index_variable[-index_clin] <- as.integer(factor(index_name_no_clin, levels = ordered_levels))
+    index_variable[index_clin] <- -1
+    index_name <- unname(index_name)
+    return(list(index_variable = index_variable, index_name = index_name))
+}
+
 find_modes <- function(x, index) {
     names_x <- colnames(x)
     names_x_multimodal <- names_x[index != -1]
