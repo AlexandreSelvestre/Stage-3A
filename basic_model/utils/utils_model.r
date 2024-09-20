@@ -297,11 +297,11 @@ plot_global <- function(imp_average, path_plot, ending_name, inference) {
         # On va tout regrouper par mode à chaque fois
         different_blocs <- sort(unique(inference@index_bloc[inference@index_bloc != -1]))
         li_variable_importance_groups <- lapply(seq_along(li_index_modes), function(m) {
-            slice_name <- li_name_modes[[m]][inference@index_bloc > -0.5]
-            bloc_name <- as.character(inference@index_bloc)[inference@index_bloc > -0.5]
+            slice_name <- li_name_modes[[m]][li_index_modes[[m]] > -0.5]
+            bloc_name <- as.character(inference@index_bloc)[li_index_modes[[m]] > -0.5]
             grouping_col <- paste0("Bloc_", bloc_name, "_", slice_name)
             grouping_name <- paste0("Mode_", m)
-            variable_importance_local <- variable_importance[li_index_modes[[m]] > -1, ]
+            variable_importance_local <- variable_importance[li_index_modes[[m]] > -0.5, ]
             variable_importance_local[[grouping_name]] <- grouping_col
             formula_string <- paste("Overall ~", grouping_name)
             formula <- as.formula(formula_string)
@@ -470,7 +470,7 @@ reorder_local <- function(matrix_bloc, li_index_mode_global, vec_dim_bloc, index
     # On récupère l'index bloc global: attention à bien le recalibrer sur le bloc qui nous intéresse à chazque fois qu'on récupère un index_mode
 
     new_mat_bloc <- matrix(NA_real_, nrow = nrow(matrix_bloc), ncol = ncol(matrix_bloc))
-    vec_dim_bloc_compact <- vec_dim_bloc[vec_dim_bloc > -0.5]
+    vec_dim_bloc_compact <- vec_dim_bloc[vec_dim_bloc > 0.5]
     vec_base_mode <- rep(1, length(vec_dim_bloc_compact))
     # print(vec_dim_bloc)
     for (a in seq_along(vec_dim_bloc_compact)) {
@@ -481,14 +481,14 @@ reorder_local <- function(matrix_bloc, li_index_mode_global, vec_dim_bloc, index
         }
         vec_base_mode[a] <- value
     }
-
     for (j in seq_len(ncol(matrix_bloc))) {
         col <- matrix_bloc[, j]
         vec_modes_col <- sapply(seq_along(li_index_mode_global), function(m) {
             index_mode <- li_index_mode_global[[m]]
             value <- index_mode[index_l][j]
             return(value)
-        })
+        }) # vecteur des modes de cette colonne
+        # print(vec_modes_col)
         vec_modes_col <- vec_modes_col[vec_modes_col > -0.5] - 1 # Hyper important ce -1 sinon out of bounds
         position <- sum(vec_modes_col * vec_base_mode) + 1
         # print(paste("colonne", j))
@@ -499,6 +499,10 @@ reorder_local <- function(matrix_bloc, li_index_mode_global, vec_dim_bloc, index
     if (any(is.na(matrix_bloc))) {
         print(matrix_bloc)
         stop("matrix_bloc contient des NA")
+    }
+
+    if (any(is.na(new_mat_bloc))) {
+        stop("Le reorder a échoué")
     }
     # print(all(new_mat_bloc == matrix_bloc))
     return(list(mat = new_mat_bloc, vec_base_mode = vec_base_mode))

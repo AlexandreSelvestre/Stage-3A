@@ -30,3 +30,23 @@ clusterEvalQ(cl, {
 })
 
 stopCluster(cl)
+
+
+# Le sauveur dans caret:
+# # Debut:
+# # Lister tous les fichiers .txt contenant "archaique" dans leur nom
+# files_to_remove <- list.files(pattern = "archaique.*\\.txt$")
+
+# # Supprimer les fichiers listés
+# file.remove(files_to_remove)
+
+
+### Dans le fit:
+
+# name_file <- paste0(worker_name, "_archaique", ".txt")
+# file.create(name_file)
+# lines <- c(
+#     "first",
+#     "JUJU"
+# )
+# writeLines(lines, name_file)

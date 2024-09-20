@@ -72,7 +72,6 @@ extract_all <- function(config_extrac, sysname) {
         non_concerned_outliers <- c("patient_num", "classe_name", "temps_inj")
         col_outli <- setdiff(names(data_radio), non_concerned_outliers)
         to_be_treated <- data.frame(lapply(data_radio[, col_outli], as.numeric))
-        # print(sapply(to_be_treated, class))
         data_radio <- data.frame(lapply(data_radio, convert_to_num))
         # write_xlsx(data_radio, "..\\data\\sauver.xlsx")
         ancient <- copy(data_radio)
@@ -107,12 +106,13 @@ extract_all <- function(config_extrac, sysname) {
     #### Passer les radios en lignes et écrire les colonnes de la nouvelle table ####################
 
 
-    former_col_names <- names(data_radio)
+    former_col_names <- colnames(data_radio)
     unique_col_names <- c("keys", "patient_num", "classe_name")
-    multiple_former_col_names <- former_col_names[-c(1, 2, 3)]
+    multiple_former_col_names <- former_col_names[setdiff(former_col_names, unique_col_names)]
+    multiple_former_col_names <- setdiff(former_col_names, c("classe_name, temps_inj, patient_num"))
 
 
-    new_col_names <- unique_col_names # portale c'est quand?
+    new_col_names <- unique_col_names
     for (temps_inj in config_extrac$time_inj) {
         for (col_name in multiple_former_col_names) {
             new_col_names <- append(new_col_names, glue("{col_name}_{temps_inj}"))
@@ -169,7 +169,7 @@ extract_all <- function(config_extrac, sysname) {
         if (name_time_inj %in% names(dict_temps)) {
             index_temps <- dict_temps[[name_time_inj]]
             start_index_row <- 4 + index_temps * length(multiple_former_col_names)
-            new_row[1, start_index_row:(start_index_row + length(multiple_former_col_names) - 1)] <- short_row[, -c(1, 2, 3)]
+            new_row[1, start_index_row:(start_index_row + length(multiple_former_col_names) - 1)] <- short_row[, setdiff(colnames(short_row), c("classe_name", "temps_inj", "patient_num"))]
             data_radio_in_lines[data_radio_in_lines$keys == key, ] <- new_row
         }
     }
@@ -223,11 +223,6 @@ extract_all <- function(config_extrac, sysname) {
     li_index_variable <- get_variable_vec_liver(data_used[, train_cols])
     index_variable <- li_index_variable$index_variable
     name_variable <- li_index_variable$index_name
-
-    # Corriger le fait d'avoir des numéros de colonnes variables d'un bloc à l'autre.
-    for (i in 1:length(index_bloc)) {
-
-    }
 
 
     saveRDS(index_bloc, file = "../data/RDS/index_bloc.rds")

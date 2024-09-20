@@ -29,8 +29,13 @@
 # config_extrac <- config::get(file = "configs/extrac/config_extrac_multi_slice.yml", config = "my_config")
 
 extract_all <- function(config_extrac, sys_name) {
-    brute_data <- read_excel("../data/multislice_excel.xlsx")
-    brute_data <- as.data.frame(brute_data)
+    if (config_extrac$shape_2D$do) {
+        brute_data <- read_excel("../data/multislice_excel_with_shape_2D.xlsx")
+        brute_data <- as.data.frame(brute_data)
+    } else {
+        brute_data <- read_excel("../data/multislice_excel.xlsx")
+        brute_data <- as.data.frame(brute_data)
+    }
 
 
     ### Degager les colonnes fausses
@@ -43,9 +48,18 @@ extract_all <- function(config_extrac, sys_name) {
     brute_data <- brute_data[, !col_diagnos]
 
     # Toute colonne constante ne sert à rien
-    vec_sd <- as.vector(apply(brute_data[, 5:ncol(brute_data)], 2, sd))
+    col_to_examine <- !colnames(brute_data) %in% c("slice_num", "classe_name", "temps_inj", "patient_num")
+    indices_not_examined <- which(col_to_examine == FALSE)
+    vec_sd <- as.vector(apply(brute_data[, col_to_examine], 2, sd))
     col_const <- vec_sd < 10^-6
-    col_const <- c(rep(FALSE, 4), col_const)
+    j <- 1
+    # Remettre des FALSE pour les colonnes non examinées aux bons endroits
+    while (j <= ncol(brute_data)) {
+        if (j %in% indices_not_examined) {
+            col_const <- append(col_const, FALSE, after = j - 1)
+        }
+        j <- j + 1
+    }
     brute_data <- brute_data[, !col_const]
 
     # Dégager les mixtes si demandé
@@ -53,9 +67,9 @@ extract_all <- function(config_extrac, sys_name) {
         brute_data <- brute_data[brute_data$classe_name != "Mixtes", ]
     }
 
-    ### Donner des entiers aux slice_num
+    ### Donner des entiers aux slice_num et patient_num
     brute_data$slice_num <- as.integer(brute_data$slice_num)
-
+    brute_data$patient_num <- as.integer(brute_data$patient_num)
     ### refaire l'indexation pour avoir un indexe différent entre CHC, CCK et Mixtes
     li_index_type <- list() # liste par type de tumeur des index des patients
     for (i in seq_len(nrow(brute_data))) {
@@ -273,11 +287,6 @@ extract_all <- function(config_extrac, sys_name) {
             chosen_slice_num <- true_vec_slices[chosen_slice_position]
             temps_for_chosen_slice <- li_slice_per_time[[as.character(patient_num)]][[as.character(chosen_slice_num)]]
             if (length(temps_for_chosen_slice) != expected_size) {
-                # print("start")
-                # print(index_to_extract_float)
-                # print(distances_to_index_float)
-                # print(chosen_shift)
-                # print(li_distance_to_full_slice_per_slice_per_patient[[as.character(patient_num)]])
                 print(paste("Slice", chosen_slice_num, "patient", patient_num, "n'a pas le bon nombre de temps"))
                 print(temps_for_chosen_slice)
                 stop("Erreur: slice choisie n'a pas le bon nombre de temps")
@@ -323,7 +332,7 @@ extract_all <- function(config_extrac, sys_name) {
     })
     names(li_patient) <- unique(as.character(brute_data$patient_num))
     data_radio_in_lines <- do.call(rbind, li_patient)
-    ### On récupère la taille de la tumeur
+    ### On récupère la taille de la tumeur :Inutile... Dégagé à la fin
     df_size <- as.data.frame(matrix(NA, nrow = nrow(data_radio_in_lines), ncol = 2))
     i <- 1
     for (patient_num in names(li_patient)) {
@@ -335,9 +344,89 @@ extract_all <- function(config_extrac, sys_name) {
         }
     }
     colnames(df_size) <- c("key", "size_tumeur")
+    ### Fin inutile
+
+    if (config_extrac$shape_2D$do & config_extrac$shape_2D$average) {
+        to_kill <- c()
+        vec_shape <- grep("shape", colnames(data_radio_in_lines))
+        vec_names_shape <- colnames(data_radio_in_lines)[vec_shape]
+        # Isoler par slice
+        for (j in seq_len(config_extrac$n_slices)) {
+            vec_shape_slice_j <- vec_shape[grep(paste0("slice_", j, "_"), vec_names_shape)]
+            vec_names_shape_slice_j <- colnames(data_radio_in_lines)[vec_shape_slice_j]
+            if (length(vec_names_shape_slice_j) != expected_size * length(grep(paste0("shape"), colnames(brute_data)))) {
+                stop(paste("Mauvais nombre de shape pris en compte (multiplié par nb de temporalités): expected", expected_size * length(grep(paste0("shape"), colnames(brute_data))), "and got", length(vec_names_shape_slice_j)))
+            }
+            # Isoler par nom de covariable
+            for (covariable in colnames(brute_data)[grep(paste0("shape"), colnames(brute_data))]) {
+                vec_shape_slice_j_cov <- vec_shape_slice_j[grep(paste0(covariable, "_"), vec_names_shape_slice_j)]
+                if (length(vec_shape_slice_j_cov) != expected_size) {
+                    print(colnames(data_radio_in_lines)[vec_shape_slice_j_cov])
+                    stop(paste("Mauvais nombre de shape pris en compte pour la covariable", covariable, ": expected", expected_size, "and got", length(vec_shape_slice_j_cov)))
+                }
+                ## Commencer le calcul de moyenne sur nos 3 colonnes
+                average_col <- as.numeric(data_radio_in_lines[, vec_shape_slice_j_cov[1]])
+                if (expected_size > 1) {
+                    for (k in 2:expected_size) {
+                        average_col <- average_col + as.numeric(data_radio_in_lines[, vec_shape_slice_j_cov[k]])
+                    }
+                }
+                average_col <- average_col / expected_size
+                name_average <- paste0("average_filter_", covariable, "_slice_", j, "_")
+                data_radio_in_lines[name_average] <- average_col
+                to_kill <- c(to_kill, vec_shape_slice_j_cov)
+            }
+        }
+        data_radio_in_lines <- data_radio_in_lines[, -to_kill]
+
+        # stop("Transformer les colonnes de shape2D en leur équivalent moyenné sur une colonne par temps. Astuce: récupérer pour chaque var shape (forcément 2D à ce stade) les valeurs, les moyenner et créer une nouvelle colonne. Supprimer au passage les colonnes précédentes. La placer à la fin. Itérer.")
+    }
 
 
+    if (config_extrac$shape_3D$do) {
+        data_radio_global <- read_excel("../data/radiomiques_global.xlsx")
+        li_df_global_shape <- list()
+        for (i in seq_len(nrow(data_radio_in_lines))) {
+            key <- data_radio_in_lines$key[i]
+            class_key <- substr(key, 1, 3)
+            patient_key <- substr(key, 5, nchar(key))
+            lines_with_key <- data_radio_global[data_radio_global$classe_name == class_key & data_radio_global$patient_num == patient_key & data_radio_global$temps_inj %in% time_inj, ]
+            if (nrow(lines_with_key) != expected_size) {
+                print(paste("Key", key, "not found in global data"))
+                print(paste(lines_with_key$classe_name, lines_with_key$patient_num))
+                stop("probème pour trouver la key dans les données 3D")
+            }
+            ## Si on average
+            if (config_extrac$shape_3D$average) {
+                lines_with_key_shape <- lines_with_key[, grepl("shape", colnames(lines_with_key))]
+                lines_with_key_shape[] <- lapply(lines_with_key_shape, as.numeric)
+                lines_with_key <- data.frame(lapply(lines_with_key_shape, mean))
+                colnames(lines_with_key) <- colnames(lines_with_key_shape)
+                li_df_global_shape[[i]] <- lines_with_key
+                ## Sinon:
+            } else {
+                lines_with_key_shape <- lines_with_key[, grepl("shape", colnames(lines_with_key)) | colnames(lines_with_key) == "temps_inj"]
+                li_df <- list()
+                for (a in seq_along(time_inj)) {
+                    time <- time_inj[a]
+                    time_write <- config_extrac$new_names_time_inj[a]
+                    line <- lines_with_key_shape[lines_with_key_shape$temps_inj == time, colnames(lines_with_key_shape) != "temps_inj"]
+                    colnames(line) <- paste0(colnames(line), "_", time_write)
+                    li_df[[a]] <- line
+                }
+                line_all_times <- do.call(cbind, li_df)
+                li_df_global_shape[[i]] <- line_all_times
+            }
+        }
+        df_global_shape <- do.call(rbind, li_df_global_shape)
+        data_radio_in_lines <- cbind(data_radio_in_lines, df_global_shape)
+    }
+    write_xlsx(data_radio_in_lines, "..//data//data_radio_in_lines.xlsx")
+
+    # Passer en numéric ce qui doit l'être
     data_radio_in_lines <- data.frame(lapply(data_radio_in_lines, convert_to_num))
+
+    # Gérer les outliers
     if (config_extrac$kill_outliers == TRUE) {
         non_concerned_outliers <- c("patient_num", "classe_name", "key", "Gender")
         col_outli <- setdiff(names(data_radio_in_lines), non_concerned_outliers)
@@ -346,6 +435,8 @@ extract_all <- function(config_extrac, sys_name) {
         data_radio_in_lines[, col_outli] <- treat_outliers(to_be_treated, percentile = 0.02)
         print(paste("Outliers killed: ", sum(ancient[, col_outli] != data_radio_in_lines[, col_outli], na.rm = TRUE), "out of", nrow(ancient[, col_outli]) * ncol(ancient[, col_outli])))
     }
+
+    # Importer les univariés et faire la jointure
 
     data_patients <- read_excel("../data/Descriptif_patients.xlsx")
     data_patients <- change_dates(data_patients)
@@ -357,7 +448,10 @@ extract_all <- function(config_extrac, sys_name) {
 
 
     data_used <- merge(data_radio_in_lines, data_patients, by = c("key"))
+    # Rajouter ici les paramètres de forme (shape)
+
     data_used <- na.omit(data_used)
+
 
     ### Remettre en ordre les clonnes de data_used (les non explicatives au début)
     col_names <- colnames(data_used)
@@ -365,7 +459,7 @@ extract_all <- function(config_extrac, sys_name) {
     other_cols <- col_names[!col_names %in% two_col_key]
     new_col_order <- c(two_col_key, other_cols)
     data_used <- data_used[, new_col_order]
-    data_used <- merge(data_used, df_size, by = c("key"))
+    # data_used <- merge(data_used, df_size, by = c("key")) #Size inutile!!!
 
     data_used <- data_used[, setdiff(colnames(data_used), c("key"))]
 
@@ -401,21 +495,35 @@ extract_all <- function(config_extrac, sys_name) {
     li_index_modes$mode_temps <- res_index_temps$index_mode
     li_name_modes$mode_temps <- res_index_temps$index_name
 
+
     index_slice <- rep(-1, ncol(data_used[, train_cols]))
     name_slice <- rep("clinique", ncol(data_used[, train_cols]))
-    # 2792 expected
-    nb_multiway <- length(col_to_concatenate)
-    for (i in seq_along(time_inj)) {
-        for (j in seq_len(nb_to_extract)) {
-            debut <- (i - 1) * nb_to_extract * nb_multiway + (j - 1) * nb_multiway + 1
-            fin <- (i - 1) * nb_to_extract * nb_multiway + j * nb_multiway
-            index_slice[debut:fin] <- j
-            name_slice[debut:fin] <- paste0("slice_", j)
+    for (j in seq_len(ncol(data_used[, train_cols]))) {
+        name_col <- colnames(data_used[, train_cols])[j]
+        if (grepl("slice_", name_col)) {
+            start_pos <- gregexpr("slice_", name_col)[[1]][1] + 6
+            restant <- substr(name_col, start_pos, nchar(name_col))
+            next_underscore <- gregexpr("_", restant)[[1]][1]
+            number_extracted <- substr(restant, 1, next_underscore - 1)
+            slice_num <- as.numeric(number_extracted)
+            index_slice[j] <- slice_num
+            name_slice[j] <- paste0("slice_", slice_num)
         }
     }
 
+    # nb_multiway <- length(col_to_concatenate)
+    # for (i in seq_along(time_inj)) {
+    #     for (j in seq_len(nb_to_extract)) {
+    #         debut <- (i - 1) * nb_to_extract * nb_multiway + (j - 1) * nb_multiway + 1
+    #         fin <- (i - 1) * nb_to_extract * nb_multiway + j * nb_multiway
+    #         index_slice[debut:fin] <- j
+    #         name_slice[debut:fin] <- paste0("slice_", j)
+    #     }
+    # }
+
     li_index_modes$mode_slice <- index_slice
     li_name_modes$mode_slice <- name_slice
+
 
     saveRDS(index_bloc, file = "../data/RDS/index_bloc.rds")
     saveRDS(name_bloc, file = "../data/RDS/name_bloc.rds")

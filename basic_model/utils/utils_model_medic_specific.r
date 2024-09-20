@@ -87,7 +87,7 @@ get_bloc_vec_liver <- function(vec, exist_temps = TRUE, different_clin = FALSE) 
     index_bloc <- rep(0, length(vec))
     for (j in 1:length(vec)) {
         name_col <- vec[j]
-        if (!substr(name_col, nchar(name_col) - 3, nchar(name_col)) %in% c("PORT", "ART_", "VEIN", "TARD") & exist_temps) {
+        if (!substr(name_col, nchar(name_col) - 3, nchar(name_col)) %in% c("PORT", "ART_", "VEIN", "TARD") & exist_temps & !grepl("average_filter", name_col)) {
             if (different_clin) {
                 name_bloc[j] <- paste0("clinical_", j)
                 index_bloc[j] <- -1
@@ -172,9 +172,14 @@ get_variable_vec_liver_big <- function(x) {
     df_loc <- data.frame(name_cov = colnames(x))
     index_name <- sapply(df_loc$name_cov, function(name_cov) {
         true_name_cov <- sub("slice.*", "", name_cov) # avant le mot slice
+        if (substr(true_name_cov, nchar(true_name_cov) - 3, nchar(true_name_cov)) %in% c("PORT", "ART_", "VEIN", "TARD")) {
+            return(substr(true_name_cov, 0, nchar(true_name_cov) - 5))
+        }
         return(true_name_cov)
     })
-    index_clin <- which(!substr(df_loc$name_cov, nchar(df_loc$name_cov) - 3, nchar(df_loc$name_cov)) %in% c("PORT", "ART_", "VEIN", "TARD"))
+
+    index_clin <- which(!substr(df_loc$name_cov, nchar(df_loc$name_cov) - 3, nchar(df_loc$name_cov)) %in% c("PORT", "ART_", "VEIN", "TARD") & !grepl("average_filter", df_loc$name_cov))
+
     index_name[index_clin] <- colnames(x)[index_clin]
     index_name_no_clin <- index_name[-index_clin]
     index_variable <- rep(0, ncol(x))

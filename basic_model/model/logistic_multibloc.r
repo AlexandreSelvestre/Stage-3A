@@ -184,6 +184,7 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         simplest_mode <- indices_non_zero[simplest_mode_contracted]
         return(simplest_mode)
     })
+
     names(li_least_slices_mode_per_bloc) <- as.character(different_blocs) # util pour compléter les modes manquants dans certains blocs sans exploser les temps de calcul
     li_x_multi_bloc_pos <- list()
     col_num <- 0
@@ -191,8 +192,13 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
     for (l_num in different_blocs) {
         l_char <- as.character(l_num)
         li_x_multi_bloc_pos[[l_char]] <- reorder_local(as.matrix(x)[, index_bloc == l_num], li_index_modes, li_dim[[l_char]], which(index_bloc == l_num))
+        if (any(is.na(li_x_multi_bloc_pos[[l_char]]$mat))) {
+            print(l_num)
+            stop("Echec NA reorder")
+        }
         col_num <- col_num + ncol(li_x_multi_bloc_pos[[l_char]]$mat) # Sert seulement pour le test
     }
+
     if (col_num != ncol(mat_x_tens)) {
         print(col_num)
         stop("Problème de correspondance des colonnes des blocs!")
@@ -219,7 +225,7 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         logistic_classic <- glmnet:::glmnet.fit(
             x = Z %*% Q, y = y_numeric, family = binomial(), alpha = 1,
             weights = weights / dim(Z)[1], lambda = param$lambda, intercept = TRUE, maxit = 1e8,
-            thresh = 1e-8
+            thresh = 1e-9
         )
         faux_beta <- as.numeric(logistic_classic$beta)
         intercept <- logistic_classic$a0
@@ -275,6 +281,20 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
                         })
                         prod_beta <- prod(vec_prod)
                         Z_m_l_r <- bloc_m * prod_beta
+                        if (any(is.na(Z_m_l_r))) {
+                            # print(Z_m_l_r)
+                            # print(r)
+                            # print(l_num)
+                            # print(index_col_normal_format)
+                            # print(x_l_ordered[,163])
+                            # print(bloc_m)
+                            stop("NA")
+                        }
+                        # print(length(different_slices))
+                        # print(m)
+                        # print(l_num)
+                        # print(dim(Z_m_l_r))
+                        # print(dim(Z_m_l))
                         Z_m_l[, ((r - 1) * length(different_slices) + 1):(r * length(different_slices))] <- Z_m_l[, ((r - 1) * length(different_slices) + 1):(r * length(different_slices))] + Z_m_l_r
                     }
                 }
@@ -282,7 +302,7 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
             }
 
 
-            if (length(li_dim[[l_char]][m_initial]) == 0) {
+            if (li_dim[[l_char]][m_initial] == 0) {
                 Z_m_l <- basic_Z_m_l_construction(li_least_slices_mode_per_bloc[[l_char]])
             } else {
                 Z_m_l <- basic_Z_m_l_construction(m_initial)
@@ -343,7 +363,7 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         # Réalise le bon update, en tenant compte de quel mode a réellement été updaté dans chaque bloc. Ne pas considérer ici l'intercept (qui sera géré au niveau global)
         li_true_mode <- lapply(different_blocs, function(l_num) {
             l_char <- as.character(l_num)
-            if (length(li_dim[[l_char]][m]) == 0) {
+            if (li_dim[[l_char]][m] == 0) {
                 return(li_least_slices_mode_per_bloc[[l_char]])
             } else {
                 return(m)
@@ -459,6 +479,13 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
             print("Warning, LOOP!!")
             print(paste("Le rapport vaut:", rapport))
         }
+        for (m in seq_len(M_max - 1)) {
+            if (vec_crit[m] > vec_crit[m + 1]) {
+                continue <- FALSE
+                print("Recroissance de la fonction de coût")
+            }
+        }
+
         delta_time <- as.numeric(Sys.time() - debut_time, units = "secs")
         if (delta_time > max_temps) {
             print("Warning, temps de calcul trop long")

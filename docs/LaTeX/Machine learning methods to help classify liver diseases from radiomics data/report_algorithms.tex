@@ -128,13 +128,13 @@
 
 \begin{document}
 
-    \date{}
-    \maketitle
+\date{}
+\maketitle
 
 \begin{abstract}
-\noindent In this report, we investigate whether tensor-based machine learning algorithms outperform more traditional machine learning on tensor-structured data. Specifically, we benchmark these methods on a radiomic and clinical dataset of liver tumors. The radiomic variables for each tumor are categorized into three main groups: first-order, shape, and texture, and are observed at four time points corresponding to different phases after contrast medium injection: arterial, portal, venous, and late. This organization gives the radiomic data a tensorial structure, and we aim to determine if models that leverage this structure lead to better predictions.\\
-\indent More precisely, we aim to distinguish patients whose tumor type is "CCK" from those whose tumor type is "CHC".  This is a complex task, since only microscopy of cancerous tissue can characterize without hesitation the tumor type. Indeed, experts do not always agree with each other when they analyze X-rays alone. We begin by proposing a logistic regression penalized by lasso as a baseline. We then compare its results with those of algorithms exploiting the tensorial structure of the data: group lasso \cite{grp_lasso}, multiway logistic regression \cite{multi_rank_1,multi_rank_r} and finally multiway and multiblock logistic regression.
-\\\\Keywords: Machine learning, Multibloc, Multiway, Liver tumor .  
+    \noindent In this report, we investigate whether tensor-based machine learning algorithms outperform more traditional machine learning on tensor-structured data. Specifically, we benchmark these methods on a radiomic and clinical dataset of liver tumors. The radiomic variables for each tumor are categorized into three main groups: first-order, shape, and texture, and are observed at four time points corresponding to different phases after contrast medium injection: arterial, portal, venous, and late. This organization gives the radiomic data a tensorial structure, and we aim to determine if models that leverage this structure lead to better predictions.\\
+    \indent More precisely, we aim to distinguish patients whose tumor type is "CCK" from those whose tumor type is "CHC".  This is a complex task, since only microscopy of cancerous tissue can characterize without hesitation the tumor type. Indeed, experts do not always agree with each other when they analyze X-rays alone. We begin by proposing a logistic regression penalized by lasso as a baseline. We then compare its results with those of algorithms exploiting the tensorial structure of the data: group lasso \cite{grp_lasso}, multiway logistic regression \cite{multi_rank_1,multi_rank_r} and finally multiway and multiblock logistic regression.
+    \\\\Keywords: Machine learning, Multibloc, Multiway, Liver tumor .
 \end{abstract}
 
 
@@ -175,13 +175,13 @@ For these methods, we start by unfolding the tensorial data $\underline{\mathbf{
 
 \noindent The fundamental idea of the model is to decompose the parameter $\bm{\beta}_{\text{tens}} \in \mathbb{R}^{JK}$ associated with the tensor explanatory variables of the logistic regression as:
 \begin{equation}
-\bm{\beta}_{\text{tens}} = \sum\limits_{r = 1}^R\bm{\beta}_r^K \otimes \bm{\beta}_r^J
+    \bm{\beta}_{\text{tens}} = \sum\limits_{r = 1}^R\bm{\beta}_r^K \otimes \bm{\beta}_r^J
 \end{equation}
 with for all $r \in \llbracket 1 ,R \rrbracket$, $\bm{\beta}_r^J \in \mathbb{R}^J$ and $\bm{\beta}_r^K \in \mathbb{R}^K$. To take account of the $M$ clinical variables, which are not tensorial, we associate them with a coefficient $\bm{\beta}_{\text{tab}} \in \mathbb{R}^M$. In this way, the parameter $\bm{\beta}$ of the logistic regression is written: $\left[\bm{\beta_{\text{tens}}}; \, \bm{\beta_{\text{tab}}} \right]$.\\
 As usual with logistic regressions, we consider that each realization of the explained variable $y_i$ ($i \in \llbracket 1, n \rrbracket$) follows an independent Bernoulli law conditionally on $\mathbf{x_i}$. This law is defined by:
 \begin{equation}
-\label{eqref:vraisemblance}
-\mathbb{P}( y_i = 1\, | \, \mathbf{x}_i) = \frac{1}{1 + \exp(- \mathbf{x}_i^T \bm{\beta} - \beta_0)}
+    \label{eqref:vraisemblance}
+    \mathbb{P}( y_i = 1\, | \, \mathbf{x}_i) = \frac{1}{1 + \exp(- \mathbf{x}_i^T \bm{\beta} - \beta_0)}
 \end{equation}
 where  $\beta_0 \in \mathbb{R}$ is the intercept\\ %and $\mathbf{x}_i \in \mathbb{R}^{JK}$ is given by $\mathbf{x}_i = {(\mathbf{x}_{\text{tot}}})_{i:}$ \\
 
@@ -189,66 +189,66 @@ where  $\beta_0 \in \mathbb{R}$ is the intercept\\ %and $\mathbf{x}_i \in \mathb
 \vspace{5 pt}
 \noindent In order to simplify the calculations, while ensuring that the penalty continues to promote sparse models, we adapt the definition of the lasso penalty. The new penalty defines the following optimization problem: %\in \mathbb{R}\times \mathbb{R}^{RJ} \times  \mathbb{R}^{RK} \times \mathbb{R}^M
 \begin{equation}
- \beta_0, \bm{\beta}^J, \bm{\beta}^K, \bm{\beta}_{\text{tab}} \; = \hspace{-8pt} \underset{\beta_0 ,\, \bm{\beta}^J, \, \bm{\beta}^K, \, \bm{\beta}_{\text{tab}}}{\text{argmin}} \left( - \sum\limits_{i = 1}^{N} \log(\mathbb{P}(y_i = 1 \, | \mathbf{x}_i)) + \sum\limits_{r = 1}^R 
+    \beta_0, \bm{\beta}^J, \bm{\beta}^K, \bm{\beta}_{\text{tab}} \; = \hspace{-8pt} \underset{\beta_0 ,\, \bm{\beta}^J, \, \bm{\beta}^K, \, \bm{\beta}_{\text{tab}}}{\text{argmin}} \left( - \sum\limits_{i = 1}^{N} \log(\mathbb{P}(y_i = 1 \, | \mathbf{x}_i)) + \sum\limits_{r = 1}^R
     \lVert \bm{\beta}_r^K \otimes \bm{\beta}_r^J \rVert_1 + \lVert \bm{\beta}_{\text{tab}} \rVert_1 \right)
 \end{equation}
 
-\noindent Optimization is performed by alternating directions between $\left[ \beta_0 ;\, \bm{\beta}^J  ; \,  \bm{\beta}_{\text{uni}}   \right]$ and  $\left[ \beta_0; \, \bm{\beta}^K  ;\, \bm{\beta}_{\text{uni}}  \right]$. The stopping criterion is defined by the relative difference between the value of the objective function after optimization in the first direction and the value of the same function after optimization in the second direction.  We note that optimizing the loss function in each of these directions is tantamount to performing a simple logistic regression with a lasso penalty. Indeed, if we denote $C$ the loss function of classical logistic regression penalized by lasso (for any $K_0 \in \mathbb{N}^{*}$): 
+\noindent Optimization is performed by alternating directions between $\left[ \beta_0 ;\, \bm{\beta}^J  ; \,  \bm{\beta}_{\text{uni}}   \right]$ and  $\left[ \beta_0; \, \bm{\beta}^K  ;\, \bm{\beta}_{\text{uni}}  \right]$. The stopping criterion is defined by the relative difference between the value of the objective function after optimization in the first direction and the value of the same function after optimization in the second direction.  We note that optimizing the loss function in each of these directions is tantamount to performing a simple logistic regression with a lasso penalty. Indeed, if we denote $C$ the loss function of classical logistic regression penalized by lasso (for any $K_0 \in \mathbb{N}^{*}$):
 
 \begin{equation}
-%% Gerer l'allign
-C: \begin{cases} 
-    \begin{array}{ccl}
-    \mathbb{R} \times \mathbb{R}^{K_0} \times \mathbb{R}^{N \times K_0} \times \mathbb{R}^{N} \times \mathbb{R} & \longrightarrow & \mathbb{R} \\
-    (\beta_0, \bm{\beta}, \mathbf{X}, \mathbf{y}, \lambda ) & \longmapsto & -\displaystyle{\sum\limits_{i = 1}^N} [ y_i(\beta_0 + \mathbf{x}_i^T \bm{\beta}) - \log(1 + \exp(\beta_0 + \mathbf{x}_i^T \bm{\beta})) ] + \lambda \lVert \bm{\beta} \rVert_1
-     \end{array}
-\end{cases}
+    %% Gerer l'allign
+    C: \begin{cases}
+        \begin{array}{ccl}
+            \mathbb{R} \times \mathbb{R}^{K_0} \times \mathbb{R}^{N \times K_0} \times \mathbb{R}^{N} \times \mathbb{R} & \longrightarrow & \mathbb{R}                                                                                                                                                                    \\
+            (\beta_0, \bm{\beta}, \mathbf{X}, \mathbf{y}, \lambda )                                                     & \longmapsto     & -\displaystyle{\sum\limits_{i = 1}^N} [ y_i(\beta_0 + \mathbf{x}_i^T \bm{\beta}) - \log(1 + \exp(\beta_0 + \mathbf{x}_i^T \bm{\beta})) ] + \lambda \lVert \bm{\beta} \rVert_1
+        \end{array}
+    \end{cases}
 \end{equation}
 
 \noindent optimizing the overall loss function with respect to $\left[ \beta_0;\, \bm{\beta}^J ;\, \bm{\beta}_{\text{uni}}  \right]$ amounts to solve
 \begin{equation}
-\underset{(\beta_0, \bm{\beta}) \in \mathbb{R} \times \mathbb{R}^{JR + M}}{\text{argmin}}  C(\beta_0, (\mathbf{Q}^J)^{-1}\bm{\beta},\mathbf{Z}^J \mathbf{Q}^J, \mathbf{y}, \lambda) 
+    \underset{(\beta_0, \bm{\beta}) \in \mathbb{R} \times \mathbb{R}^{JR + M}}{\text{argmin}}  C(\beta_0, (\mathbf{Q}^J)^{-1}\bm{\beta},\mathbf{Z}^J \mathbf{Q}^J, \mathbf{y}, \lambda)
 \end{equation}
-\noindent Where $\mathbf{Q}^J$ and $\mathbf{Z}^J$ are defined as follows: 
+\noindent Where $\mathbf{Q}^J$ and $\mathbf{Z}^J$ are defined as follows:
 \begin{align}
-    \mathbf{Z}^J &= [\mathbf{Z}_1^J \; \; \hdots \; \; \mathbf{Z}_R^J \; \;  \mathbf{X}_{\text{tab}}]\\
-    \text{where} \; \forall r \in \llbracket 1, R\rrbracket\, , \hspace{0.5 cm} \mathbf{Z_r^J} &= \sum\limits_{k = 1}^K \mathbf{X}_{::k} (\beta_r^K)_k \hspace{0.5 cm} (\mathbf{Z}_r^J \in \mathbb{R}^{N \times J})\\
+    \mathbf{Z}^J                                                                               & = [\mathbf{Z}_1^J \; \; \hdots \; \; \mathbf{Z}_R^J \; \;  \mathbf{X}_{\text{tab}}]                                                                             \\
+    \text{where} \; \forall r \in \llbracket 1, R\rrbracket\, , \hspace{0.5 cm} \mathbf{Z_r^J} & = \sum\limits_{k = 1}^K \mathbf{X}_{::k} (\beta_r^K)_k \hspace{0.5 cm} (\mathbf{Z}_r^J \in \mathbb{R}^{N \times J})                                             \\
     \hspace{7 pt}
-    \mathbf{Q}^J &= \text{Diag}([\lVert \bm{\beta}_1^K \rVert_1^{-1} \mathbbm{1}_J; \; \; \hdots \; \; ;\, \lVert \bm{\beta}_R^K \rVert_1^{-1} \mathbbm{1}_J ;\,  \mathbbm{1}_M])
+    \mathbf{Q}^J                                                                               & = \text{Diag}([\lVert \bm{\beta}_1^K \rVert_1^{-1} \mathbbm{1}_J; \; \; \hdots \; \; ;\, \lVert \bm{\beta}_R^K \rVert_1^{-1} \mathbbm{1}_J ;\,  \mathbbm{1}_M])
 \end{align}
 \hspace{10 pt}
- \noindent \textit{Girka et al.} (2021) \cite{multi_rank_r} demonstrate this result by noting that for $i \in \llbracket 1, n\rrbracket$,
+\noindent \textit{Girka et al.} (2021) \cite{multi_rank_r} demonstrate this result by noting that for $i \in \llbracket 1, n\rrbracket$,
 
- \begin{align}
-      {{\mathbf{x}_{(1)}}_i}^{\hspace{-5 pt} T} \left( \sum\limits_{r = 1}^R \bm{\beta}_r^K \otimes \bm{\beta}_r^J \right) &= \sum\limits_{r = 1}^R \left[({{\mathbf{x}_{(1)}}_i}^{\hspace{-5 pt} T}   \left( \bm{\beta}_r^K  \otimes \mathbf{I}_J\right)\right] \bm{\beta}_r^J\\
-      &= \sum\limits_{r = 1}^R (\mathbf{z}_r^J)_i^T \bm{\beta}_r^J
+\begin{align}
+    {{\mathbf{x}_{(1)}}_i}^{\hspace{-5 pt} T} \left( \sum\limits_{r = 1}^R \bm{\beta}_r^K \otimes \bm{\beta}_r^J \right) & = \sum\limits_{r = 1}^R \left[({{\mathbf{x}_{(1)}}_i}^{\hspace{-5 pt} T}   \left( \bm{\beta}_r^K  \otimes \mathbf{I}_J\right)\right] \bm{\beta}_r^J \\
+                                                                                                                         & = \sum\limits_{r = 1}^R (\mathbf{z}_r^J)_i^T \bm{\beta}_r^J
 \end{align}
 
 \noindent and that
 
 \begin{align}
-    &\sum\limits_{r = 1}^R \lVert \bm{\beta}_r^K \otimes \bm{\beta}_r^J \rVert_1 = \lVert \mathbf{R}_{\text{tens}}^J \bm{\beta}^J\rVert_1\\
-    \text{with} \hspace{0.5 cm} &\mathbf{R}_{\text{tens}}^J = \text{Diag}([\lVert \bm{\beta}_1^K \rVert_1 \mathbbm{1}_J; \; \; \hdots \; \; ; \,  \lVert \bm{\beta}_R^K \rVert_1 \mathbbm{1}_J ])
+                                & \sum\limits_{r = 1}^R \lVert \bm{\beta}_r^K \otimes \bm{\beta}_r^J \rVert_1 = \lVert \mathbf{R}_{\text{tens}}^J \bm{\beta}^J\rVert_1                             \\
+    \text{with} \hspace{0.5 cm} & \mathbf{R}_{\text{tens}}^J = \text{Diag}([\lVert \bm{\beta}_1^K \rVert_1 \mathbbm{1}_J; \; \; \hdots \; \; ; \,  \lVert \bm{\beta}_R^K \rVert_1 \mathbbm{1}_J ])
 \end{align}
 
 \noindent Thus,
 \begin{align}
-    &(\mathbf{x}_{\text{tot}})_i^T \bm{\beta}= (\mathbf{z}_i^J)^T [\bm{\beta}^J; \bm{\beta}_{\text{tab}}]  \\
-    \text{and} \hspace{0.5 cm} & \sum\limits_{i = 1}^N 
+                               & (\mathbf{x}_{\text{tot}})_i^T \bm{\beta}= (\mathbf{z}_i^J)^T [\bm{\beta}^J; \bm{\beta}_{\text{tab}}] \\
+    \text{and} \hspace{0.5 cm} & \sum\limits_{i = 1}^N
     \lVert \bm{\beta}_r^K \otimes \bm{\beta}_r^J \rVert_1 + \lVert \bm{\beta}_{\text{tab}} \rVert_1= \lVert (\mathbf{Q}^J)^{-1} \bm{\beta} \rVert_1
 \end{align}
 This justifies the previous results\\[5 pt]
 \noindent For optimization with respect to $\left[ \beta_0; \, \bm{\beta}^K; \, \bm{\beta}_{\text{tab}}  \right]$ , the method is analogous. The only difference concerns the definition of $\mathbf{Z}^K$. It is:
 \begin{align}
-& \mathbf{Z}^K = [\mathbf{Z}_1^K \; \; \hdots \; \; \mathbf{Z}_R^K \; \; \mathbf{X}_{\text{tab}}]\\
-\text{with} \forall r \in \llbracket 1, R \rrbracket \hspace{0.5 cm} & \mathbf{Z}_r^K = \sum\limits_{j = 1}^J (\beta_r^J)_j \mathbf{X}_{:j:}
+                                                                         & \mathbf{Z}^K = [\mathbf{Z}_1^K \; \; \hdots \; \; \mathbf{Z}_R^K \; \; \mathbf{X}_{\text{tab}}] \\
+    \text{with} \forall r \in \llbracket 1, R \rrbracket \hspace{0.5 cm} & \mathbf{Z}_r^K = \sum\limits_{j = 1}^J (\beta_r^J)_j \mathbf{X}_{:j:}
 \end{align}
 
 \noindent This is justified by:
 
 \begin{align}
-    {{\mathbf{x}_{(1)}}_i}^{\hspace{-5 pt} T}  \left( \sum\limits_{r = 1}^R \bm{\beta}_r^K \otimes \bm{\beta}_r^J \right) &= \sum\limits_{r = 1}^R \left[ ({{\mathbf{x}_{(1)}}_i}^{\hspace{-5 pt} T}  \left( I_K \otimes \bm{\beta}_r^J \right) \right] \bm{\beta}_r^K\\
-    & = \sum\limits_{r = 1}^R (\mathbf{z}_r^K)_i^T \bm{\beta}_r^K
+    {{\mathbf{x}_{(1)}}_i}^{\hspace{-5 pt} T}  \left( \sum\limits_{r = 1}^R \bm{\beta}_r^K \otimes \bm{\beta}_r^J \right) & = \sum\limits_{r = 1}^R \left[ ({{\mathbf{x}_{(1)}}_i}^{\hspace{-5 pt} T}  \left( I_K \otimes \bm{\beta}_r^J \right) \right] \bm{\beta}_r^K \\
+                                                                                                                          & = \sum\limits_{r = 1}^R (\mathbf{z}_r^K)_i^T \bm{\beta}_r^K
 \end{align}
 
 \subsection{Multiway and multibloc logistic regression with lasso}
@@ -259,99 +259,99 @@ $$\sum\limits_{l = 1}^L d_l = J$$
 \indent We reorganize $\underline{\mathbf{X}}$ by grouping together slices $\mathbf{X}_{:j:}$ associated with quantities from the same block. More precisely, for all $l \in \llbracket 1, L \rrbracket$, we call  $\underline{\mathbf{X}}^{l}$  the tensor constituted by the slices $\mathbf{X}_{:j:}$ associated with the $l$-th bloc. We then concatenate these tensors along their second mode to obtain the new tensor of explanatory variables: $\underline{\mathbf{X}}'$.\\[5 pt]
 \indent The new $\bm{\beta}$ structure is defined by blocks. It is:
 \begin{equation}
-\bm{\beta} = \left[ \sum\limits_{r = 1}^R \bm{\beta}_{(1,r)}^K \otimes \bm{\beta}_{(1,r)}^J;   \; \; \hdots  \; \; ;\, \sum\limits_{r = 1}^R \bm{\beta}_{(L,r)}^K \otimes \bm{\beta}_{(L,r)}^J\; ;\,\bm{\beta}_{\text{tab}}   \right]
+    \bm{\beta} = \left[ \sum\limits_{r = 1}^R \bm{\beta}_{(1,r)}^K \otimes \bm{\beta}_{(1,r)}^J;   \; \; \hdots  \; \; ;\, \sum\limits_{r = 1}^R \bm{\beta}_{(L,r)}^K \otimes \bm{\beta}_{(L,r)}^J\; ;\,\bm{\beta}_{\text{tab}}   \right]
 \end{equation}
 With for all $(l,r) \in \llbracket 1,L \rrbracket \times \llbracket 1, R\rrbracket$, $\bm{\beta}_{(l,r)}^J \in \mathbb{R}^{d_l}$ and $\bm{\beta}_{(l,r)}^K \in \mathbb{R}^{K}$  \\
 
 We call $\bm{\beta}^J$ and $\bm{\beta}^K$ the vectors
 \begin{align}
-    \bm{\beta}^J &= \left[ \bm{\beta}_{(1,1)}^J\, ; \hspace{7 pt} \hdots \hspace{7 pt} \, ; \, \bm{\beta}_{(1,R)}^J \,;    \hspace{7 pt} \hdots \hspace{7 pt}  \hdots \hspace{7 pt} \, ; \,  \bm{\beta}_{(L,1)}^J   \hspace{7 pt} \hdots \hspace{7 pt}  \, ;\,\bm{\beta}_{(L,R)}^J   \right]\\
-    \bm{\beta}^K &= \left[ \bm{\beta}_{(1,1)}^K\, ; \hspace{7 pt} \hdots \hspace{7 pt} \, ; \, \bm{\beta}_{(1,R)}^K \,;    \hspace{7 pt} \hdots \hspace{7 pt}  \hdots \hspace{7 pt} \, ; \,  \bm{\beta}_{(L,1)}^K   \hspace{7 pt} \hdots \hspace{7 pt}  \, ;\,\bm{\beta}_{(L,R)}^K   \right]
+    \bm{\beta}^J & = \left[ \bm{\beta}_{(1,1)}^J\, ; \hspace{7 pt} \hdots \hspace{7 pt} \, ; \, \bm{\beta}_{(1,R)}^J \,;    \hspace{7 pt} \hdots \hspace{7 pt}  \hdots \hspace{7 pt} \, ; \,  \bm{\beta}_{(L,1)}^J   \hspace{7 pt} \hdots \hspace{7 pt}  \, ;\,\bm{\beta}_{(L,R)}^J   \right] \\
+    \bm{\beta}^K & = \left[ \bm{\beta}_{(1,1)}^K\, ; \hspace{7 pt} \hdots \hspace{7 pt} \, ; \, \bm{\beta}_{(1,R)}^K \,;    \hspace{7 pt} \hdots \hspace{7 pt}  \hdots \hspace{7 pt} \, ; \,  \bm{\beta}_{(L,1)}^K   \hspace{7 pt} \hdots \hspace{7 pt}  \, ;\,\bm{\beta}_{(L,R)}^K   \right]
 \end{align}
 % Indiquer qui est l et r après et changer les beta montrés (cf cahier)
 
 \noindent In a similar way to what is done in the multiway model, we adapt the lasso penalty, so that the new optimization problem becomes:
 \begin{equation}
-    \beta_0 ,\, \bm{\beta}^J, \, \bm{\beta}^K, \, \bm{\beta}_{\text{tab}} = \hspace{- 8 pt} \underset{\beta_0 ,\, \bm{\beta}^J, \, \bm{\beta}^K, \, \bm{\beta}_{\text{tab}}}{\text{argmin}} \left(  - \sum\limits_{i = 1}^{N} \log(\mathbb{P}(y_i = 1 \, | \mathbf{x}_i)) + \sum\limits_{l = 1}^L \sum\limits_{r = 1}^R 
+    \beta_0 ,\, \bm{\beta}^J, \, \bm{\beta}^K, \, \bm{\beta}_{\text{tab}} = \hspace{- 8 pt} \underset{\beta_0 ,\, \bm{\beta}^J, \, \bm{\beta}^K, \, \bm{\beta}_{\text{tab}}}{\text{argmin}} \left(  - \sum\limits_{i = 1}^{N} \log(\mathbb{P}(y_i = 1 \, | \mathbf{x}_i)) + \sum\limits_{l = 1}^L \sum\limits_{r = 1}^R
     \lVert \bm{\beta}_{(l,r)}^K \otimes \bm{\beta}_{(l,r)}^J \rVert_1 + \lVert \bm{\beta}_{\text{tab}} \rVert_1 \right)
 \end{equation}
 
 \noindent Once again, this problem is solved by alternating optimization directions $\left[ \beta_0 ;\, \bm{\beta}^J ;\,  \bm{\beta}_{\text{tab}} \right]$ and\\
 $\left[ \beta_0 ;\, \bm{\beta}^K ;\,  \bm{\beta}_{\text{tab}} \right]$. Each of these two problems can be reduced to a lasso-penalized classical logistic\\[3 pt]
- regression.\\
+regression.\\
 Indeed, optimizing according to $\left[ \beta_0 ;\, \bm{\beta}^J ;\,  \bm{\beta}_{\text{tab}} \right]$ is equivalent to searching
 \begin{equation}
-\underset{(\beta_0, \bm{\beta}) \in \mathbb{R} \times \mathbb{R}^{RJ + M}}{\text{argmin}}  C(\beta_0, (\mathbf{Q}^J)^{-1}\bm{\beta},\mathbf{Z}^J \mathbf{Q}^J, \mathbf{y}, \lambda) 
+    \underset{(\beta_0, \bm{\beta}) \in \mathbb{R} \times \mathbb{R}^{RJ + M}}{\text{argmin}}  C(\beta_0, (\mathbf{Q}^J)^{-1}\bm{\beta},\mathbf{Z}^J \mathbf{Q}^J, \mathbf{y}, \lambda)
 \end{equation}
 Where $\mathbf{Q}^J$ and $\mathbf{Z}^J$ are defined as follows:
 
 \begin{align}
-\mathbf{Z}^J = [ \mathbf{Z}_{(1,1)}^J \; \; \hdots \; \; &\mathbf{Z}_{(1,R)}^J  \; \; \hdots  \; \; \hdots \; \; \mathbf{Z}_{(L,1)}^J \; \; \hdots \; \; \mathbf{Z}_{(L,R)}^J \; \; \mathbf{X}_{\text{tab}}] \label{eqref: Z_j}\\
-\text{where} \; \forall r \in \llbracket 1, R\rrbracket\, , \hspace{0.5 cm} \mathbf{Z}_{(l,r)}^J &= \sum\limits_{k = 1}^K \mathbf{X}^l_{::k} \left(\beta_{(l,r)}^K\right)_k \hspace{0.5 cm} \left(\mathbf{Z}_{(l,r)}^J \in \mathbb{R}^{n \times d_l}\right) \label{eqref: Z_r}\\
-\hspace{7 pt}
-\mathbf{Q}^J = \text{Diag}([\lVert \bm{\beta}_{(1,1)}^K \rVert_1^{-1} \mathbbm{1}_{d_1}; \; \; \hdots \; \;; \,& \lVert \bm{\beta}_{(1,R)}^K \rVert_1^{-1} \mathbbm{1}_{d_1};  \; \; \hdots \; \;  \hdots \; \; ;\, \lVert \bm{\beta}_{(L,1)}^K \rVert_1^{-1} \mathbbm{1}_{d_L};  \; \;  \hdots \; \; ;\, \lVert \bm{\beta}_{(L,R)}^K \rVert_1^{-1} \mathbbm{1}_{d_L}; \, \mathbbm{1}_M]) \label{eqref:Q^J}
+    \mathbf{Z}^J = [ \mathbf{Z}_{(1,1)}^J \; \; \hdots \; \;                                                        & \mathbf{Z}_{(1,R)}^J  \; \; \hdots  \; \; \hdots \; \; \mathbf{Z}_{(L,1)}^J \; \; \hdots \; \; \mathbf{Z}_{(L,R)}^J \; \; \mathbf{X}_{\text{tab}}] \label{eqref: Z_j}                                                                                                                      \\
+    \text{where} \; \forall r \in \llbracket 1, R\rrbracket\, , \hspace{0.5 cm} \mathbf{Z}_{(l,r)}^J                & = \sum\limits_{k = 1}^K \mathbf{X}^l_{::k} \left(\beta_{(l,r)}^K\right)_k \hspace{0.5 cm} \left(\mathbf{Z}_{(l,r)}^J \in \mathbb{R}^{n \times d_l}\right) \label{eqref: Z_r}                                                                                                               \\
+    \hspace{7 pt}
+    \mathbf{Q}^J = \text{Diag}([\lVert \bm{\beta}_{(1,1)}^K \rVert_1^{-1} \mathbbm{1}_{d_1}; \; \; \hdots \; \;; \, & \lVert \bm{\beta}_{(1,R)}^K \rVert_1^{-1} \mathbbm{1}_{d_1};  \; \; \hdots \; \;  \hdots \; \; ;\, \lVert \bm{\beta}_{(L,1)}^K \rVert_1^{-1} \mathbbm{1}_{d_L};  \; \;  \hdots \; \; ;\, \lVert \bm{\beta}_{(L,R)}^K \rVert_1^{-1} \mathbbm{1}_{d_L}; \, \mathbbm{1}_M]) \label{eqref:Q^J}
 \end{align}
 
 The demonstration of this result is similar to that of the multiway case. Indeed, we note that
 \begin{align}
-    \hspace{-40 pt}(\mathbf{x}_{(1)}')_i^T \left[ \sum\limits_{r = 1}^R \bm{\beta}_{(1,r)}^K \otimes \bm{\beta}_{(1,r)}^J;   \; \; \hdots  \; \; ;\, \sum\limits_{r = 1}^R \bm{\beta}_{(L,r)}^K \otimes \bm{\beta}_{(L,r)}^J \right] &= \sum\limits_{l = 1}^L \sum\limits_{r = 1}^R \left(\mathbf{x}_{(1)}^l\right)_i^T \left(\bm{\beta}_{(l,r)}^K \otimes \bm{\beta}_{(l,r)}^J \right)\\
-    &= \sum\limits_{l = 1}^L \sum\limits_{r = 1}^R \left[ \left(\mathbf{x}_{(1)}^l\right)_i^T \left( \bm{\beta}_{(l,r)}^K \otimes I_{d_l} \right) \right]\bm{\beta}_{(l,r)}^J\\ 
-    &= \sum\limits_{l = 1}^L \sum\limits_{r = 1}^R \left(\mathbf{z}_{(l,r)}^J\right)_i^T \bm{\beta}_{(l,r)}^J
+    \hspace{-40 pt}(\mathbf{x}_{(1)}')_i^T \left[ \sum\limits_{r = 1}^R \bm{\beta}_{(1,r)}^K \otimes \bm{\beta}_{(1,r)}^J;   \; \; \hdots  \; \; ;\, \sum\limits_{r = 1}^R \bm{\beta}_{(L,r)}^K \otimes \bm{\beta}_{(L,r)}^J \right] & = \sum\limits_{l = 1}^L \sum\limits_{r = 1}^R \left(\mathbf{x}_{(1)}^l\right)_i^T \left(\bm{\beta}_{(l,r)}^K \otimes \bm{\beta}_{(l,r)}^J \right)                        \\
+                                                                                                                                                                                                                                     & = \sum\limits_{l = 1}^L \sum\limits_{r = 1}^R \left[ \left(\mathbf{x}_{(1)}^l\right)_i^T \left( \bm{\beta}_{(l,r)}^K \otimes I_{d_l} \right) \right]\bm{\beta}_{(l,r)}^J \\
+                                                                                                                                                                                                                                     & = \sum\limits_{l = 1}^L \sum\limits_{r = 1}^R \left(\mathbf{z}_{(l,r)}^J\right)_i^T \bm{\beta}_{(l,r)}^J
 \end{align}
 
 An that
 
 \begin{align}
-    \sum\limits_{l = 1}^L \sum\limits_{r = 1}^R \lVert \bm{\beta}_{(l,r)}^K \otimes \bm{\beta}_{(l,r)}^J \rVert_1 &= \lVert \mathbf{R}_{\text{tens}}^J \bm{\beta}^J\rVert_1\\
-    \text{with} \hspace{0.5 cm} \mathbf{R}_{\text{tens}}^J = \text{Diag}    ([\lVert \bm{\beta}_{(1,1)}^K \rVert_1 \mathbbm{1}_{d_1}; \; \; \hdots \; \;; \,& \lVert \bm{\beta}_{(1,R)}^K \rVert_1 \mathbbm{1}_{d_1};  \; \; \hdots \; \;  \hdots \; \; ;\, \lVert \bm{\beta}_{(L,1)}^K \rVert_1 \mathbbm{1}_{d_L};  \; \;  \hdots \; \; ;\, \lVert \bm{\beta}_{(L,R)}^K \rVert_1 \mathbbm{1}_{d_L}; \, \mathbbm{1}_M])
+    \sum\limits_{l = 1}^L \sum\limits_{r = 1}^R \lVert \bm{\beta}_{(l,r)}^K \otimes \bm{\beta}_{(l,r)}^J \rVert_1                                            & = \lVert \mathbf{R}_{\text{tens}}^J \bm{\beta}^J\rVert_1                                                                                                                                                                                                  \\
+    \text{with} \hspace{0.5 cm} \mathbf{R}_{\text{tens}}^J = \text{Diag}    ([\lVert \bm{\beta}_{(1,1)}^K \rVert_1 \mathbbm{1}_{d_1}; \; \; \hdots \; \;; \, & \lVert \bm{\beta}_{(1,R)}^K \rVert_1 \mathbbm{1}_{d_1};  \; \; \hdots \; \;  \hdots \; \; ;\, \lVert \bm{\beta}_{(L,1)}^K \rVert_1 \mathbbm{1}_{d_L};  \; \;  \hdots \; \; ;\, \lVert \bm{\beta}_{(L,R)}^K \rVert_1 \mathbbm{1}_{d_L}; \, \mathbbm{1}_M])
 \end{align}
 
 \noindent We deduce that
 
 \begin{align}
-    &[{\mathbf{x}_{\text{(1)}}'}_i; \, \mathbf{x}_{\text{tab}\raisebox{-4pt}{$\scriptstyle i$}}]\, \bm{\beta}= (\mathbf{z}_i^J)^T [\bm{\beta}^J; \, \bm{\beta}_{\text{tab}}]  \\
+                               & [{\mathbf{x}_{\text{(1)}}'}_i; \, \mathbf{x}_{\text{tab}\raisebox{-4pt}{$\scriptstyle i$}}]\, \bm{\beta}= (\mathbf{z}_i^J)^T [\bm{\beta}^J; \, \bm{\beta}_{\text{tab}}]                                 \\
     \text{and} \hspace{0.5 cm} & \sum\limits_{l = 1}^L \sum\limits_{r = 1}^R \lVert \bm{\beta}_{(l,r)}^K \otimes \bm{\beta}_{(l,r)}^J \rVert_1 + \lVert \bm{\beta}_{\text{uni}} \rVert_1= \lVert (\mathbf{Q}^J)^{-1} \bm{\beta} \rVert_1
 \end{align}
 
 \noindent Wich justifies the previous results.\\[5 pt]
 \noindent For optimization with respect to $\left[ \beta_0 ;\, \bm{\beta}^K ;\,  \bm{\beta}_{\text{tab}} \right]$, the method is analogous. The only difference concerns the form of $\mathbf{Z}^K$. It is written as:
 \begin{align}
-    \mathbf{Z}^K	=[ \mathbf{Z}_{(1,1)}^K \; \; \hdots \; \; &\mathbf{Z}_{(1,R)}^K  \; \; \hdots  \; \; \hdots \; \; \mathbf{Z}_{(L,1)}^K \; \; \hdots \; \; \mathbf{Z}_{(L,R)}^K \; \; \mathbf{X}_{\text{tab}}] \label{eqref: Z^K}\\
-    \text{where} \; \forall r \in \llbracket 1, R\rrbracket\, , \hspace{0.5 cm} \mathbf{Z}_{(l,r)}^K &= \sum\limits_{j = 1}^{d_l} \mathbf{X}_{:j:}^l \left(\beta_{(l,r)}^J\right)_j \hspace{0.5 cm} \left(\mathbf{Z}_{(l,r)}^K \in \mathbb{R}^{N \times K}\right) \label{eqref: Z_tens^K}
+    \mathbf{Z}^K	=[ \mathbf{Z}_{(1,1)}^K \; \; \hdots \; \;                                          & \mathbf{Z}_{(1,R)}^K  \; \; \hdots  \; \; \hdots \; \; \mathbf{Z}_{(L,1)}^K \; \; \hdots \; \; \mathbf{Z}_{(L,R)}^K \; \; \mathbf{X}_{\text{tab}}] \label{eqref: Z^K}               \\
+    \text{where} \; \forall r \in \llbracket 1, R\rrbracket\, , \hspace{0.5 cm} \mathbf{Z}_{(l,r)}^K & = \sum\limits_{j = 1}^{d_l} \mathbf{X}_{:j:}^l \left(\beta_{(l,r)}^J\right)_j \hspace{0.5 cm} \left(\mathbf{Z}_{(l,r)}^K \in \mathbb{R}^{N \times K}\right) \label{eqref: Z_tens^K}
 \end{align}
 
 \noindent The justification of that last result is analogous to the one used in the multiway case.\\[2 pt]
 
-\noindent \textbf{Notes}: 
+\noindent \textbf{Notes}:
 \begin{itemize}
-\item In the multiway and multibloc logistic regression with lasso, it is possible to allow for the choice of a specific rank for each block. We have not yet studied this model extension, but deriving its equations is straightforward, based on the equations provided in this report.
-\item We decided to optimize the loss function completely in one direction before turning to the other one instead of alternating one step in each direction because the first procedure was more stable and could be implemented efficiently using the glmnet package in R \cite{glmnet}. 
+    \item In the multiway and multibloc logistic regression with lasso, it is possible to allow for the choice of a specific rank for each block. We have not yet studied this model extension, but deriving its equations is straightforward, based on the equations provided in this report.
+    \item We decided to optimize the loss function completely in one direction before turning to the other one instead of alternating one step in each direction because the first procedure was more stable and could be implemented efficiently using the glmnet package in R \cite{glmnet}.
 \end{itemize}
 
 \vspace{7 pt}
 
-{\fontsize{12}{8}\selectfont \noindent \textbf{Pseudo-code:}}\\[1 pt] 
+{\fontsize{12}{8}\selectfont \noindent \textbf{Pseudo-code:}}\\[1 pt]
 In order to clarify the algorithm that we use, we give here the pseudo-code of our implementation. In order to be more readable, we keep the notations that were used during the presentation of the model.\\[5 pt]
 \newpage
 \begin{mdframed}[leftmargin=0cm, rightmargin=4cm]
-\noindent \textbf{Inputs}\\
-\phantom{a}\hspace{5 pt} $\bullet$ $\epsilon >0$, $\lambda >0$, $R \in \mathbb{N}^{*}$\\[2 pt]
-\phantom{a}\hspace{5 pt} $\bullet$ $\bm{\beta}^{K(0)} \in \mathbb{R}^{LRK}$\\[4 pt]
-\textbf{Treatment}\\
-\phantom{a}\hspace{5 pt} $\bullet$ $q \leftarrow 0$\\[2 pt]
-\phantom{a}\hspace{5 pt}  \textbf{Repeat}\\[2 pt]
-\begin{tikzpicture}[overlay, remember picture]
-    \draw[thick] (0.9, 0.18) -- (0.9, -3.75);  % Modifier les coordonnées pour ajuster la position et la
-\end{tikzpicture}
-\phantom{a}\hspace{22 pt} $\bullet$ Construct $\mathbf{Z}^J$ according to \cref{eqref: Z_j,eqref: Z_r}\\[2 pt]
-\phantom{a}\hspace{25 pt} $\bullet$ Construct $\mathbf{Q}^J$ according to \cref{eqref:Q^J}\\[2 pt]
-\phantom{a}\hspace{25 pt}  $\bullet$ $(\beta_0^{(q)}, \bm{\beta}^{J {(q)}}) \longleftarrow \hspace{-10 pt} \underset{(\beta_0, \bm{\beta}) \in \mathbb{R} \times \mathbb{R}^{RJ + M}}{\text{argmin}} \left( C(\beta_0, (\mathbf{Q}^J)^{-1}\bm{\beta},\mathbf{Z}^J \mathbf{Q}^J, \mathbf{y}, \lambda) \right)$\\[2 pt]
-\phantom{a}\hspace{25 pt} $\bullet$ Construct $\mathbf{Z}^K$ according to \cref{eqref: Z^K,eqref: Z_tens^K}\\[3 pt]
-\phantom{a}\hspace{25 pt} $\bullet$ Construct $\mathbf{Q}^K$ by adapting \cref{eqref:Q^J}\\[2 pt]
-\phantom{a}\hspace{25 pt}  $\bullet$ $(\beta_0^{(q)}, \bm{\beta}^{K {(q)}}) \longleftarrow \hspace{-10 pt} \underset{(\beta_0, \bm{\beta}) \in \mathbb{R} \times \mathbb{R}^{LRK + M}}{\text{argmin}} \left( C(\beta_0, (\mathbf{Q}^K)^{-1}\bm{\beta},\mathbf{Z}^K \mathbf{Q}^K, \mathbf{y}, \lambda) \right)$\\[2 pt]
-\phantom{a}\hspace{25 pt}  $\bullet$ $q \leftarrow q + 1$\\[4 pt]
-\phantom{a}\hspace{8 pt}  \textbf{until} $|C^K - C^J| < \epsilon |C^J| $\\[4 pt]
-\textbf{Return} $(\beta_0^{(q)},\bm{\beta}^{K(q)}, \bm{\beta}^{J(q)})$
+    \noindent \textbf{Inputs}\\
+    \phantom{a}\hspace{5 pt} $\bullet$ $\epsilon >0$, $\lambda >0$, $R \in \mathbb{N}^{*}$\\[2 pt]
+    \phantom{a}\hspace{5 pt} $\bullet$ $\bm{\beta}^{K(0)} \in \mathbb{R}^{LRK}$\\[4 pt]
+    \textbf{Treatment}\\
+    \phantom{a}\hspace{5 pt} $\bullet$ $q \leftarrow 0$\\[2 pt]
+    \phantom{a}\hspace{5 pt}  \textbf{Repeat}\\[2 pt]
+    \begin{tikzpicture}[overlay, remember picture]
+        \draw[thick] (0.9, 0.18) -- (0.9, -3.75);  % Modifier les coordonnées pour ajuster la position et la
+    \end{tikzpicture}
+    \phantom{a}\hspace{22 pt} $\bullet$ Construct $\mathbf{Z}^J$ according to \cref{eqref: Z_j,eqref: Z_r}\\[2 pt]
+    \phantom{a}\hspace{25 pt} $\bullet$ Construct $\mathbf{Q}^J$ according to \cref{eqref:Q^J}\\[2 pt]
+    \phantom{a}\hspace{25 pt}  $\bullet$ $(\beta_0^{(q)}, \bm{\beta}^{J {(q)}}) \longleftarrow \hspace{-10 pt} \underset{(\beta_0, \bm{\beta}) \in \mathbb{R} \times \mathbb{R}^{RJ + M}}{\text{argmin}} \left( C(\beta_0, (\mathbf{Q}^J)^{-1}\bm{\beta},\mathbf{Z}^J \mathbf{Q}^J, \mathbf{y}, \lambda) \right)$\\[2 pt]
+    \phantom{a}\hspace{25 pt} $\bullet$ Construct $\mathbf{Z}^K$ according to \cref{eqref: Z^K,eqref: Z_tens^K}\\[3 pt]
+    \phantom{a}\hspace{25 pt} $\bullet$ Construct $\mathbf{Q}^K$ by adapting \cref{eqref:Q^J}\\[2 pt]
+    \phantom{a}\hspace{25 pt}  $\bullet$ $(\beta_0^{(q)}, \bm{\beta}^{K {(q)}}) \longleftarrow \hspace{-10 pt} \underset{(\beta_0, \bm{\beta}) \in \mathbb{R} \times \mathbb{R}^{LRK + M}}{\text{argmin}} \left( C(\beta_0, (\mathbf{Q}^K)^{-1}\bm{\beta},\mathbf{Z}^K \mathbf{Q}^K, \mathbf{y}, \lambda) \right)$\\[2 pt]
+    \phantom{a}\hspace{25 pt}  $\bullet$ $q \leftarrow q + 1$\\[4 pt]
+    \phantom{a}\hspace{8 pt}  \textbf{until} $|C^K - C^J| < \epsilon |C^J| $\\[4 pt]
+    \textbf{Return} $(\beta_0^{(q)},\bm{\beta}^{K(q)}, \bm{\beta}^{J(q)})$
 \end{mdframed}
 
 
@@ -373,7 +373,7 @@ In order to clarify the algorithm that we use, we give here the pseudo-code of o
 
 
 \vspace{2 cm}
- 
+
 \section{results}
 
 

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.7.16)  16 JUL 2024 12:08
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.9.14)  14 SEP 2024 12:25
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -6,7 +6,7 @@ entering extended mode
 **"/home/alexandre/Documents/Stage-3A/docs/LaTeX/Machine learning methods to help classify liver diseases from radiomics data/report_algorithms.tex"
 (/home/alexandre/Documents/Stage-3A/docs/LaTeX/Machine learning methods to help classify liver diseases from radiomics data/report_algorithms.tex
 LaTeX2e <2024-06-01> patch level 2
-L3 programming layer <2024-05-27>
+L3 programming layer <2024-08-16>
 (/usr/local/share/miktex-texmf/tex/latex/base/article.cls
 Document Class: article 2024/02/08 v1.4n Standard LaTeX document class
 (/usr/local/share/miktex-texmf/tex/latex/base/size10.clo
@@ -119,13 +119,13 @@ Package: ltxcmds 2023-12-04 v1.26 LaTeX kernel commands for general use (HO)
 ) (/home/alexandre/.miktex/texmfs/install/tex/latex/kvsetkeys/kvsetkeys.sty
 Package: kvsetkeys 2022-10-05 v1.19 Key value parser (HO)
 )) (/usr/local/share/miktex-texmf/tex/latex/l3packages/xparse/xparse.sty (/usr/local/share/miktex-texmf/tex/latex/l3kernel/expl3.sty
-Package: expl3 2024-05-27 L3 programming layer (loader) 
+Package: expl3 2024-08-16 L3 programming layer (loader) 
  (/usr/local/share/miktex-texmf/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2024-05-08 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count280
 \l__pdf_internal_box=\box54
 ))
-Package: xparse 2024-05-08 L3 Experimental document command parser
+Package: xparse 2024-08-16 L3 Experimental document command parser
 ) (/usr/local/share/miktex-texmf/tex/latex/etoolbox/etoolbox.sty
 Package: etoolbox 2020/10/05 v2.5k e-TeX tools for LaTeX (JAW)
 \etb@tempcnta=\count281
@@ -467,7 +467,7 @@ Package: verbatim 2024-01-22 v1.5x LaTeX2e package for verbatim enhancements
 \verbatim@line=\toks38
 \verbatim@in@stream=\read3
 ) (/home/alexandre/.miktex/texmfs/install/tex/latex/fancyhdr/fancyhdr.sty
-Package: fancyhdr 2024/04/23 v4.2 Extensive control of page headers and footers
+Package: fancyhdr 2024/07/23 v4.3.1 Extensive control of page headers and footers
 \f@nch@headwidth=\skip121
 \f@nch@O@elh=\skip122
 \f@nch@O@erh=\skip123
@@ -674,7 +674,7 @@ LaTeX Font Info:    Overwriting math alphabet `\mathbbm' in version `bold'
 LaTeX Font Info:    Overwriting math alphabet `\mathbbmss' in version `bold'
 (Font)                  U/bbmss/m/n --> U/bbmss/bx/n on input line 35.
 ) (/usr/local/share/miktex-texmf/tex/latex/hyperref/hyperref.sty
-Package: hyperref 2024-05-23 v7.01i Hypertext links for LaTeX
+Package: hyperref 2024-07-10 v7.01j Hypertext links for LaTeX
  (/home/alexandre/.miktex/texmfs/install/tex/generic/pdfescape/pdfescape.sty
 Package: pdfescape 2019/12/09 v1.15 Implements pdfTeX's escape features (HO)
 ) (/home/alexandre/.miktex/texmfs/install/tex/latex/hycolor/hycolor.sty
@@ -694,7 +694,7 @@ Package: stringenc 2019/11/29 v1.12 Convert strings between diff. encodings (HO)
 \Hy@linkcounter=\count343
 \Hy@pagecounter=\count344
  (/usr/local/share/miktex-texmf/tex/latex/hyperref/pd1enc.def
-File: pd1enc.def 2024-05-23 v7.01i Hyperref: PDFDocEncoding definition (HO)
+File: pd1enc.def 2024-07-10 v7.01j Hyperref: PDFDocEncoding definition (HO)
 Now handling font encoding PD1 ...
 ... no UTF-8 mapping file for font encoding PD1
 ) (/home/alexandre/.miktex/texmfs/install/tex/generic/intcalc/intcalc.sty
@@ -702,7 +702,7 @@ Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
 )
 \Hy@SavedSpaceFactor=\count345
  (/usr/local/share/miktex-texmf/tex/latex/hyperref/puenc.def
-File: puenc.def 2024-05-23 v7.01i Hyperref: PDF Unicode definition (HO)
+File: puenc.def 2024-07-10 v7.01j Hyperref: PDF Unicode definition (HO)
 Now handling font encoding PU ...
 ... no UTF-8 mapping file for font encoding PU
 )
@@ -745,7 +745,7 @@ package with kernel methods
 )
 Package hyperref Info: Driver (autodetected): hpdftex.
  (/usr/local/share/miktex-texmf/tex/latex/hyperref/hpdftex.def
-File: hpdftex.def 2024-05-23 v7.01i Hyperref driver for pdfTeX
+File: hpdftex.def 2024-07-10 v7.01j Hyperref driver for pdfTeX
  (/usr/local/share/miktex-texmf/tex/latex/base/atveryend-ltx.sty
 Package: atveryend-ltx 2020/08/19 v1.0a Emulation of the original atveryend package
 with kernel methods
@@ -1023,7 +1023,7 @@ Package mdframed Info: Not enough space on this page on input line 355.
 [9] (report_algorithms.aux)
  ***********
 LaTeX2e <2024-06-01> patch level 2
-L3 programming layer <2024-05-27>
+L3 programming layer <2024-08-16>
  ***********
 
 
@@ -1033,10 +1033,10 @@ Package rerunfilecheck Info: File `report_algorithms.out' has not changed.
 (rerunfilecheck)             Checksum: 6C8048859554A673FAA76815D4BEB9AF;1491.
  ) 
 Here is how much of TeX's memory you used:
- 30148 strings out of 473905
- 549009 string characters out of 5733684
- 1953905 words of memory out of 5000000
- 52376 multiletter control sequences out of 15000+600000
+ 30146 strings out of 473900
+ 548986 string characters out of 5733584
+ 1953957 words of memory out of 5000000
+ 52379 multiletter control sequences out of 15000+600000
  594044 words of font info for 143 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  102i,17n,133p,1387b,588s stack positions out of 10000i,1000n,20000p,200000b,200000s

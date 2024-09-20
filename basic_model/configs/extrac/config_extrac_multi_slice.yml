@@ -1,5 +1,4 @@
 default:
-
   time_inj:
     - "ART"
     - "PORT"
@@ -18,7 +17,7 @@ default:
     - "Gender"
     - "Age_at_disease"
 
-  max_prop_consecutif_acceptable : 0.05
+  max_prop_consecutif_acceptable: 0.05
   max_prop_acceptable: 0.99
   #ici c'est à chaque fois la proportion d'absents acceptable
   kill_mixtes: TRUE
@@ -26,5 +25,12 @@ default:
   n_slices: 10
   strong_exclusion: FALSE #Est-ce que la présence d'une seule temporalité suffit à faire commencer la tumeur (TRUE = oui)
 
+  shape_3D:
+    do: TRUE
+    average: TRUE
+
+  shape_2D:
+    do: TRUE
+    average: TRUE
 
 my_config:

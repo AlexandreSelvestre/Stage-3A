@@ -165,8 +165,6 @@ setMethod("get_results", "apply_model", function(object) {
   object@predictions <- as.vector(predict(object@model, newdata = as.matrix(object@test_set[, object@col_x])))
   object@predictions_proba <- predict(object@model, newdata = as.matrix(object@test_set[, object@col_x]), type = "prob")
   object@predictions_train_proba <- predict(object@model, newdata = as.matrix(object@train_cols[, object@col_x]), type = "prob")
-  print("GOGOGOGOGOG")
-  print(as.matrix(object@test_set[, object@col_x])[1, 5])
   return(object)
 })
 
