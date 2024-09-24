@@ -215,3 +215,81 @@ le f1 score CHC sur l'échantillon entier vaut: 0.837010676157
 There were 50 or more warnings (use warnings() to see the first 50)
 
 Test multibloc en données réelles. Choix param: 262   7  14  14 5.99484250319e-08
+
+
+Avec comparaison région saine, shape 3D et shape2D averaged en multislices: logistic simple
+
+radio_big:
+  lambda_min: 0.001
+  lambda_max: 2
+  tuneLength: 20
+
+et 10 slices (86 individus restants)
+
+
+[1] "La valeur de l'AUC de train est de 1"
+[1] "End of analysis phase"
+[1] "actuelle moyenne AUC test 0.713725490196078 ite: 40"
+[1] "actuel ecart type AUC test 0.113623157440557 ite: 40"
+[1] "actuelle moyenne AUC val 0.77844696969697 ite: 40"
+[1] "actuelle moyenne Accuracy test 0.569362745098039 ite: 40"
+[1] "actuelle somme des confusion matrix ite: 40 :"
+[1] "actuelle moyenne du macro F1 test 0.561114344744859 ite: 40"
+[1] "actuelle moyenne du F1 CCK test 0.240178571428571 ite: 40"
+[1] "actuelle moyenne du F1 CHC test 0.882050118061147 ite: 40"
+          Reference
+Prediction CCK CHC
+       CCK  29  70
+       CHC  91 610
+Saving 7 x 7 in image
+[1] "On va essayer de faire des plots pour les modes"
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+[1] "Voilà la matrice de confusion sommée"
+          Reference
+Prediction CCK CHC
+       CCK  29  70
+       CHC  91 610
+[1] "voilà la matrice de confusion en pourcentage: ... % de classe 1 ont été bien classés vs ... % mal classés"
+          CCK       CHC
+CCK 0.2416667 0.1029412
+CHC 0.7583333 0.8970588
+[1] "La balanced accuracy sur l'échantillon total vaut: 0.581557371143676"
+le f1 score CCK sur l'échantillon entier vaut: 0.2648402 
+le f1 score CHC sur l'échantillon entier vaut: 0.8834178 
+[1] "Le f1 macro sur l'échantillon total vaut: 0.574128997913629"
+
+
+Même chose sans les sains:
+[1] "End of analysis phase"
+[1] "actuelle moyenne AUC test 0.71421568627451 ite: 40"
+[1] "actuel ecart type AUC test 0.147193670369253 ite: 40"
+[1] "actuelle moyenne AUC val 0.7855 ite: 40"
+[1] "actuelle moyenne Accuracy test 0.593382352941176 ite: 40"
+[1] "actuelle somme des confusion matrix ite: 40 :"
+[1] "actuelle moyenne du macro F1 test 0.583530955635735 ite: 40"
+[1] "actuelle moyenne du F1 CCK test 0.298710317460317 ite: 40"
+[1] "actuelle moyenne du F1 CHC test 0.868351593811153 ite: 40"
+          Reference
+Prediction CCK CHC
+       CCK  39  94
+       CHC  81 586
+Saving 7 x 7 in image
+[1] "On va essayer de faire des plots pour les modes"
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+[1] "Voilà la matrice de confusion sommée"
+          Reference
+Prediction CCK CHC
+       CCK  39  94
+       CHC  81 586
+[1] "voilà la matrice de confusion en pourcentage: ... % de classe 1 ont été bien classés vs ... % mal classés"
+      CCK       CHC
+CCK 0.325 0.1382353
+CHC 0.675 0.8617647
+[1] "La balanced accuracy sur l'échantillon total vaut: 0.585896901173473"
+le f1 score CCK sur l'échantillon entier vaut: 0.3083004 
+le f1 score CHC sur l'échantillon entier vaut: 0.8700817 
+[1] "Le f1 macro sur l'échantillon total vaut: 0.589191029105816"

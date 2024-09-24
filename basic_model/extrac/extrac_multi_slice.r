@@ -30,11 +30,20 @@
 
 extract_all <- function(config_extrac, sys_name) {
     if (config_extrac$shape_2D$do) {
-        brute_data <- read_excel("../data/multislice_excel_with_shape_2D.xlsx")
-        brute_data <- as.data.frame(brute_data)
+        if (config_extrac$shape_2D$compare_sain) {
+            brute_data <- read_excel("../data/multislice_excel_with_shape_2D_sain.xlsx")
+            brute_data <- as.data.frame(brute_data)
+            # print(brute_data$patient_num)
+        } else {
+            brute_data <- read_excel("../data/multislice_excel_with_shape_2D.xlsx")
+            brute_data <- as.data.frame(brute_data)
+        }
     } else {
         brute_data <- read_excel("../data/multislice_excel.xlsx")
         brute_data <- as.data.frame(brute_data)
+        if (config_extrac$shape_2D$compare_sain) {
+            stop("Pas encore implémenté...")
+        }
     }
 
 
@@ -44,13 +53,14 @@ extract_all <- function(config_extrac, sys_name) {
     brute_data <- brute_data[, setdiff(colnames(brute_data), exclure)]
 
     # Les colonnes diagnostics sont inutiles
-    col_diagnos <- substr(colnames(brute_data), 1, 11) == "diagnostics"
+    # col_diagnos <- substr(colnames(brute_data), 1, 11) == "diagnostics"
+    col_diagnos <- grepl("diagnostics", colnames(brute_data))
     brute_data <- brute_data[, !col_diagnos]
 
     # Toute colonne constante ne sert à rien
     col_to_examine <- !colnames(brute_data) %in% c("slice_num", "classe_name", "temps_inj", "patient_num")
     indices_not_examined <- which(col_to_examine == FALSE)
-    vec_sd <- as.vector(apply(brute_data[, col_to_examine], 2, sd))
+    vec_sd <- as.vector(apply(brute_data[, col_to_examine], 2, function(x) sd(x, na.rm = TRUE)))
     col_const <- vec_sd < 10^-6
     j <- 1
     # Remettre des FALSE pour les colonnes non examinées aux bons endroits
@@ -60,6 +70,7 @@ extract_all <- function(config_extrac, sys_name) {
         }
         j <- j + 1
     }
+    # print(col_const)
     brute_data <- brute_data[, !col_const]
 
     # Dégager les mixtes si demandé
@@ -159,11 +170,12 @@ extract_all <- function(config_extrac, sys_name) {
         for (i in seq_along(li_num_slice_per_time[[patient_num]])) {
             slice_num <- li_num_slice_per_time[[patient_num]][i]
             slice_num <- as.character(slice_num)
-            if (length(li_slice_per_time[[patient_num]][[slice_num]]) != expected_size) {
+            mask_sain_mauvais <- any(is.na(brute_data[brute_data$patient_num == patient_num & brute_data$slice_num == slice_num, ]))
+            if (length(li_slice_per_time[[patient_num]][[slice_num]]) != expected_size | mask_sain_mauvais) {
                 if (config_extrac$strong_exclusion) {
                     condit <- length(li_slice_per_time[[patient_num]][[slice_num]]) > 0
                 } else {
-                    condit <- FALSE
+                    condit <- length(li_slice_per_time[[patient_num]][[slice_num]]) == expected_size
                 }
                 if (condit) {
                     start_tumeur <- TRUE # alors la tumeur a démarré
@@ -326,6 +338,7 @@ extract_all <- function(config_extrac, sys_name) {
         row <- c(unname(unlist(df_patient_slice[1, no_multivariate_col])), row)
         new_df_patient[1, ] <- row
         if (any(is.na(new_df_patient))) {
+            write_xlsx(new_df_patient, "..//data//new_df_patient_test.xlsx")
             stop("Erreur: il reste des NA dans le nouveau df")
         }
         return(new_df_patient)

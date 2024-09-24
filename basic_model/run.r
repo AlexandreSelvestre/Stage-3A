@@ -29,9 +29,9 @@ library(rlang)
 sysname <- Sys.info()["sysname"]
 set.seed(11) ## seed du modèle
 seed_model <- .Random.seed
-set.seed(5) # seed pour la cross validation
+set.seed(7) # seed pour la cross validation
 seed_cv <- .Random.seed
-set.seed(1) ## seed pour la partition des données
+set.seed(2) ## seed pour la partition des données
 seed_partition <- .Random.seed
 .Random.seed <- seed_model
 
@@ -84,7 +84,7 @@ if (regression) {
 } else {
     stop("Not implemented yet")
 }
-path_plot <- paste0("plots/", model_name)
+path_plot <- paste0("../data/plots/", model_name)
 
 source("main.r")
 source("./utils/utils.r")
