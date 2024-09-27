@@ -3,6 +3,7 @@ setGeneric("reform_beta", function(object) {
 })
 
 setMethod("reform_beta", "apply_model", function(object) {
+    path_data <- object@path_data
     K <- length(unique(object@index_mode[object@index_mode > -0.5]))
     L <- length(unique(object@index_bloc[object@index_bloc > -0.5]))
     li_d <- sapply(1:L, function(l) {
@@ -18,8 +19,8 @@ setMethod("reform_beta", "apply_model", function(object) {
         return(mat_beta_loc)
     })
     mat_tot <- do.call(cbind, li_mat)
-    path_xlsx <- paste0("../data/beta_picto/big_picto_reconstructed_", object@name_model, ".xlsx")
-    path_heat <- paste0("../data/beta_picto/heatmap_", object@name_model, ".png")
+    path_xlsx <- paste0(path_data, "/beta_picto/big_picto_reconstructed_", object@name_model, ".xlsx")
+    path_heat <- paste0(path_data, "/beta_picto/heatmap_", object@name_model, ".png")
     write_xlsx(as.data.frame(mat_tot), path_xlsx)
     create_heatmap(path_xlsx, path_heat)
     object <- compare_mat_beta(object, path_xlsx, path_heat)
@@ -32,7 +33,7 @@ setGeneric("compare_mat_beta", function(object, ...) {
 
 setMethod("compare_mat_beta", "apply_model", function(object, path_xlsx, path_heat) {
     mat_reconstructed <- as.matrix(read_excel(path_xlsx))
-    mat_origin <- as.matrix(silent_run(read_excel, "..//data//beta_picto//big_picto.xlsx"))
+    mat_origin <- as.matrix(silent_run(read_excel, paste0(path_data, "/beta_picto/big_picto.xlsx")))
     mat_diff <- unname(mat_reconstructed) - unname(mat_origin) # OUILLE en données réelles
     erreur <- mean(abs(mat_diff))
     object@score_recons <- erreur

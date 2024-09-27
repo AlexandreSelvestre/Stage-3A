@@ -1,8 +1,9 @@
 extract_all <- function(config_extrac, sysname) {
     ##### Importer les données ########
+    path_data <- config_extrac$path_data
     if (sysname == "Linux") {
-        data_radio <- read_excel("../data/radiomiques_global.xlsx")
-        data_patients <- read_excel("../data/Descriptif_patients.xlsx")
+        data_radio <- read_excel(paste0(path_data, "/radiomiques_global.xlsx"))
+        data_patients <- read_excel(paste0(path_data, "/Descriptif_patients.xlsx"))
     } else {
         data_radio <- read_excel("..\\data\\radiomiques_global.xlsx")
         data_patients <- read_excel("..\\data\\Descriptif_patients.xlsx")
@@ -187,8 +188,8 @@ extract_all <- function(config_extrac, sysname) {
 
 
     if (sysname == "Linux") {
-        write_xlsx(data_used, "..//data//data_used.xlsx")
-        write.csv(data_used, "..//data//data_used.csv", row.names = FALSE)
+        write_xlsx(data_used, paste0(path_data, "/data_used.xlsx"))
+        write.csv(data_used, paste0(path_data, "/data_used.csv"), row.names = FALSE)
     } else {
         write_xlsx(data_used, "..\\data\\data_used.xlsx")
         write.csv(data_used, "..\\data\\data_used.csv", row.names = FALSE)
@@ -198,7 +199,7 @@ extract_all <- function(config_extrac, sysname) {
     exclude_cols <- c("patient_num", "keys")
     explained_col <- c("classe_name")
     info_cols <- list(exclude_cols = exclude_cols, explained_col = explained_col)
-    saveRDS(info_cols, file = "../data/RDS/info_cols.rds")
+    saveRDS(info_cols, file = paste0(path_data, "/RDS/info_cols.rds"))
 
     # Créer les indices de modes, de variable et de binaire!
     # Ne pas présupposer l'existence de colonnes potentiellement inexistantes...
@@ -225,14 +226,14 @@ extract_all <- function(config_extrac, sysname) {
     name_variable <- li_index_variable$index_name
 
 
-    saveRDS(index_bloc, file = "../data/RDS/index_bloc.rds")
-    saveRDS(name_bloc, file = "../data/RDS/name_bloc.rds")
+    saveRDS(index_bloc, file = paste0(path_data, "/RDS/index_bloc.rds"))
+    saveRDS(name_bloc, file = paste0(path_data, "/RDS/name_bloc.rds"))
 
-    saveRDS(index_mode, file = "../data/RDS/index_mode.rds")
-    saveRDS(name_mode, file = "../data/RDS/name_mode.rds")
+    saveRDS(index_mode, file = paste0(path_data, "/RDS/index_mode.rds"))
+    saveRDS(name_mode, file = paste0(path_data, "/RDS/name_mode.rds"))
 
-    saveRDS(index_variable, file = "../data/RDS/index_variable.rds")
-    saveRDS(name_variable, file = "../data/RDS/name_variable.rds")
+    saveRDS(index_variable, file = paste0(path_data, "/RDS/index_variable.rds"))
+    saveRDS(name_variable, file = paste0(path_data, "/RDS/name_variable.rds"))
 
-    saveRDS(is_binary, file = "../data/RDS/is_binary.rds")
+    saveRDS(is_binary, file = paste0(path_data, "/RDS/is_binary.rds"))
 }

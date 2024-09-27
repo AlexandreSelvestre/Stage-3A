@@ -29,17 +29,18 @@
 # config_extrac <- config::get(file = "configs/extrac/config_extrac_multi_slice.yml", config = "my_config")
 
 extract_all <- function(config_extrac, sys_name) {
+    path_data <- config_extrac$path_data
     if (config_extrac$shape_2D$do) {
         if (config_extrac$shape_2D$compare_sain) {
-            brute_data <- read_excel("../data/multislice_excel_with_shape_2D_sain.xlsx")
+            brute_data <- read_excel(paste0(path_data, "/multislice_excel_with_shape_2D_sain.xlsx"))
             brute_data <- as.data.frame(brute_data)
             # print(brute_data$patient_num)
         } else {
-            brute_data <- read_excel("../data/multislice_excel_with_shape_2D.xlsx")
+            brute_data <- read_excel(paste0(path_data, "/multislice_excel_with_shape_2D.xlsx"))
             brute_data <- as.data.frame(brute_data)
         }
     } else {
-        brute_data <- read_excel("../data/multislice_excel.xlsx")
+        brute_data <- read_excel(paste0(path_data, "/multislice_excel.xlsx"))
         brute_data <- as.data.frame(brute_data)
         if (config_extrac$shape_2D$compare_sain) {
             stop("Pas encore implémenté...")
@@ -338,7 +339,7 @@ extract_all <- function(config_extrac, sys_name) {
         row <- c(unname(unlist(df_patient_slice[1, no_multivariate_col])), row)
         new_df_patient[1, ] <- row
         if (any(is.na(new_df_patient))) {
-            write_xlsx(new_df_patient, "..//data//new_df_patient_test.xlsx")
+            write_xlsx(new_df_patient, paste0(path_data, "/new_df_patient_test.xlsx"))
             stop("Erreur: il reste des NA dans le nouveau df")
         }
         return(new_df_patient)
@@ -397,7 +398,7 @@ extract_all <- function(config_extrac, sys_name) {
 
 
     if (config_extrac$shape_3D$do) {
-        data_radio_global <- read_excel("../data/radiomiques_global.xlsx")
+        data_radio_global <- read_excel(paste0(path_data, "/radiomiques_global.xlsx"))
         li_df_global_shape <- list()
         for (i in seq_len(nrow(data_radio_in_lines))) {
             key <- data_radio_in_lines$key[i]
@@ -434,7 +435,7 @@ extract_all <- function(config_extrac, sys_name) {
         df_global_shape <- do.call(rbind, li_df_global_shape)
         data_radio_in_lines <- cbind(data_radio_in_lines, df_global_shape)
     }
-    write_xlsx(data_radio_in_lines, "..//data//data_radio_in_lines.xlsx")
+    write_xlsx(data_radio_in_lines, paste0(path_data, "/data_radio_in_lines.xlsx"))
 
     # Passer en numéric ce qui doit l'être
     data_radio_in_lines <- data.frame(lapply(data_radio_in_lines, convert_to_num))
@@ -451,7 +452,7 @@ extract_all <- function(config_extrac, sys_name) {
 
     # Importer les univariés et faire la jointure
 
-    data_patients <- read_excel("../data/Descriptif_patients.xlsx")
+    data_patients <- read_excel(paste0(path_data, "/Descriptif_patients.xlsx"))
     data_patients <- change_dates(data_patients)
     data_patients <- data_patients[config_extrac$patients_col]
     data_patients$Gender <- unname(sapply(data_patients$Gender, change_genre))
@@ -476,15 +477,15 @@ extract_all <- function(config_extrac, sys_name) {
 
     data_used <- data_used[, setdiff(colnames(data_used), c("key"))]
 
-    write_xlsx(data_used, "..//data//data_used.xlsx")
-    write.csv(data_used, "..//data//data_used.csv", row.names = FALSE)
+    write_xlsx(data_used, paste0(path_data, "/data_used.xlsx"))
+    write.csv(data_used, paste0(path_data, "/data_used.csv"), row.names = FALSE)
 
     ### Créer les autres infos indispensables, notamment pour du traitement multiway multibloc
 
     exclude_cols <- c("patient_num")
     explained_col <- c("classe_name")
     info_cols <- list(exclude_cols = exclude_cols, explained_col = explained_col)
-    saveRDS(info_cols, file = "../data/RDS/info_cols.rds")
+    saveRDS(info_cols, file = paste0(path_data, "/RDS/info_cols.rds"))
 
     is_binary <- rep(FALSE, ncol(data_used))
     if ("Gender" %in% names(data_used)) {
@@ -538,16 +539,16 @@ extract_all <- function(config_extrac, sys_name) {
     li_name_modes$mode_slice <- name_slice
 
 
-    saveRDS(index_bloc, file = "../data/RDS/index_bloc.rds")
-    saveRDS(name_bloc, file = "../data/RDS/name_bloc.rds")
+    saveRDS(index_bloc, file = paste0(path_data, "/RDS/index_bloc.rds"))
+    saveRDS(name_bloc, file = paste0(path_data, "/RDS/name_bloc.rds"))
 
-    saveRDS(li_index_modes, file = "../data/RDS/li_index_modes.rds")
-    saveRDS(li_name_modes, file = "../data/RDS/li_name_modes.rds")
+    saveRDS(li_index_modes, file = paste0(path_data, "/RDS/li_index_modes.rds"))
+    saveRDS(li_name_modes, file = paste0(path_data, "/RDS/li_name_modes.rds"))
 
-    saveRDS(index_variable, file = "../data/RDS/index_variable.rds")
-    saveRDS(name_variable, file = "../data/RDS/name_variable.rds")
+    saveRDS(index_variable, file = paste0(path_data, "/RDS/index_variable.rds"))
+    saveRDS(name_variable, file = paste0(path_data, "/RDS/name_variable.rds"))
 
-    saveRDS(is_binary, file = "../data/RDS/is_binary.rds")
+    saveRDS(is_binary, file = paste0(path_data, "/RDS/is_binary.rds"))
 
 
     print("Fin extraction multislice")

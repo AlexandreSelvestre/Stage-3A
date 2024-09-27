@@ -17,17 +17,18 @@ source("extrac/gene_x_scalar.r")
 
 # Beta sera décomposé ligne par ligne pour rester cohérent
 extract_all <- function(config_extrac, sysname) {
+    path_data <- config_extrac$path_data
     # Récupérer les dossiers des pictogrammes d'intérêt
     vec_num_picto <- config_extrac$num_picto
     name_picto <- sapply(vec_num_picto, function(num_picto) {
-        vec_path <- list.dirs("../data/beta_picto", recursive = FALSE, full.names = FALSE)
+        vec_path <- list.dirs(paste0(path_data, "/beta_picto"), recursive = FALSE, full.names = FALSE)
         good_dir <- vec_path[substr(vec_path, 1, length(as.character(num_picto))) == as.character(num_picto)]
         return(good_dir)
     })
 
     # Récupérer les matrices X et beta des pictogrammes sélectionnés
     li_beta_matrix <- lapply(name_picto, function(good_dir) {
-        path <- paste0("../data/beta_picto/", good_dir, "/Beta0.csv")
+        path <- paste0(path_data, "/beta_picto/", good_dir, "/Beta0.csv")
         beta_matrix <- as.matrix(read.csv(path, header = FALSE))
         return(beta_matrix)
     })
@@ -98,10 +99,10 @@ extract_all <- function(config_extrac, sysname) {
     data_used <- cbind(y, as.data.frame(X))
     colnames(data_used)[1] <- "beta_class"
     if (sysname == "Linux") {
-        write.csv(data_used, "..//data//data_used.csv", row.names = FALSE)
-        write_xlsx(data_used, "..//data//data_used.xlsx")
-        write_xlsx(as.data.frame(beta_matrix), "..//data//beta_picto//big_picto.xlsx")
-        create_heatmap("..//data//beta_picto//big_picto.xlsx", "..//data//beta_picto//big_picto_heatmap.png")
+        write.csv(data_used, paste0(path_data, "/data_used.csv"), row.names = FALSE)
+        write_xlsx(data_used, paste0(path_data, "/data_used.xlsx"))
+        write_xlsx(as.data.frame(beta_matrix), paste0(path_data, "/beta_picto/big_picto.xlsx"))
+        create_heatmap(paste0(path_data, "/beta_picto/big_picto.xlsx"), paste0(path_data, "/beta_picto/big_picto_heatmap.png"))
     } else {
         write.csv(data_used, "..\\data\\data_used.csv", row.names = FALSE)
         write_xlsx(data_used, "..\\data\\data_used.xlsx")
@@ -151,13 +152,13 @@ extract_all <- function(config_extrac, sysname) {
     })))
 
 
-    saveRDS(info_cols, file = "../data/RDS/info_cols.rds")
-    saveRDS(is_binary, file = "../data/RDS/is_binary.rds")
-    saveRDS(index_mode, file = "../data/RDS/index_mode.rds")
-    saveRDS(index_bloc, file = "../data/RDS/index_bloc.rds")
-    saveRDS(index_variable, file = "../data/RDS/index_variable.rds")
+    saveRDS(info_cols, file = paste0(path_data, "/RDS/info_cols.rds"))
+    saveRDS(is_binary, file = paste0(path_data, "/RDS/is_binary.rds"))
+    saveRDS(index_mode, file = paste0(path_data, "/RDS/index_mode.rds"))
+    saveRDS(index_bloc, file = paste0(path_data, "/RDS/index_bloc.rds"))
+    saveRDS(index_variable, file = paste0(path_data, "/RDS/index_variable.rds"))
 
-    saveRDS(name_mode, file = "../data/RDS/name_mode.rds")
-    saveRDS(name_bloc, file = "../data/RDS/name_bloc.rds")
-    saveRDS(name_variable, file = "../data/RDS/name_variable.rds")
+    saveRDS(name_mode, file = paste0(path_data, "/RDS/name_mode.rds"))
+    saveRDS(name_bloc, file = paste0(path_data, "/RDS/name_bloc.rds"))
+    saveRDS(name_variable, file = paste0(path_data, "/RDS/name_variable.rds"))
 }

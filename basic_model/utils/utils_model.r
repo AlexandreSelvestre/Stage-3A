@@ -389,12 +389,7 @@ plot_global <- function(imp_average, path_plot, ending_name, inference) {
     }
 }
 
-# library(readxl)
-# library(writexl)
-# if (Sys.info()["sysname"] == "Linux") {
-#     path <- "..//data//"
-#     path_RDS <- "..//data//RDS//"
-# }
+
 
 convert_y <- function(y, classe_1) {
     classe_min <- names(which.min(table(y)))

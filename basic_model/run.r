@@ -1,5 +1,13 @@
 rm(list = ls())
 
+path_data <- "../data"
+
+current_dir <- getwd()
+if (current_dir == "/gpfs/users/selvestra/basic_model") {
+    .libPaths("/gpfs/workdir/selvestra/R_packages")
+    path_data <- "/gpfs/workdir/selvestra/data"
+}
+
 library(readxl)
 library(writexl)
 library(glue)
@@ -75,7 +83,9 @@ li_model_configs <- list(
 model_config <- li_model_configs[[model_name]]
 config <- modifyList(config_model, config_extrac)
 config <- modifyList(config, model_config)
+config$path_data <- path_data
 regression <- config$regression
+
 
 
 path_model <- paste0("model/", model_name, ".r")
@@ -84,7 +94,7 @@ if (regression) {
 } else {
     stop("Not implemented yet")
 }
-path_plot <- paste0("../data/plots/", model_name)
+path_plot <- paste0(path_data, "/plots/", model_name)
 
 source("main.r")
 source("./utils/utils.r")
@@ -112,7 +122,7 @@ is_null <- list()
 imp_li <- list()
 li_confus <- list()
 if (sysname == "Linux") {
-    path <- "..//data//data_used.csv"
+    path <- paste0(path_data, "/data_used.csv")
 } else {
     path <- "..\\data\\data_used.csv"
 }

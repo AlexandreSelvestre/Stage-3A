@@ -191,60 +191,60 @@ setMethod("importance_method", "apply_model", function(object) {
     print("start imp")
     best_beta <- object@model$finalModel$beta
     object@beta_final <- best_beta
-    variable_importance <- data.frame(Variable = colnames(object@train_cols[, object@col_x]), Overall = abs(best_beta))
-    object@li_df_var_imp <- variable_importance
-    # variable_importance <- variable_importance[order(-variable_importance$Overall), ]
-    variable_importance$Group <- object@name_mode
-    variable_importance$small_Group <- object@name_variable
+    # variable_importance <- data.frame(Variable = colnames(object@train_cols[, object@col_x]), Overall = abs(best_beta))
+    # object@li_df_var_imp <- variable_importance
+    # # variable_importance <- variable_importance[order(-variable_importance$Overall), ]
+    # variable_importance$Group <- object@name_mode
+    # variable_importance$small_Group <- object@name_variable
 
 
-    variable_importance_grouped <- aggregate(Overall ~ Group, data = variable_importance, FUN = mean)
-    variable_importance_small_grouped <- aggregate(Overall ~ small_Group, data = variable_importance, FUN = mean)
-    variable_importance <- subset(variable_importance, Overall > 0.0001)
-    variable_importance_grouped <- subset(variable_importance_grouped, Overall > 0.0001)
-    variable_importance_small_grouped <- subset(variable_importance_small_grouped, Overall > 0.0001)
+    # variable_importance_grouped <- aggregate(Overall ~ Group, data = variable_importance, FUN = mean)
+    # variable_importance_small_grouped <- aggregate(Overall ~ small_Group, data = variable_importance, FUN = mean)
+    # variable_importance <- subset(variable_importance, Overall > 0.0001)
+    # variable_importance_grouped <- subset(variable_importance_grouped, Overall > 0.0001)
+    # variable_importance_small_grouped <- subset(variable_importance_small_grouped, Overall > 0.0001)
 
 
-    image <- ggplot2::ggplot(variable_importance, aes(x = reorder(Variable, Overall), y = Overall)) +
-        geom_bar(stat = "identity") +
-        coord_flip() +
-        theme_light() +
-        xlab("Variable") +
-        ylab("Importance") +
-        ggtitle("Variable Importance") +
-        theme(axis.text.y = element_text(size = 2)) # Adjust the size as needed
-    ggsave(paste0("plots/logistic_grp/importance", "_", object@id_term, ".png"), image, width = 10, height = 15)
+    # image <- ggplot2::ggplot(variable_importance, aes(x = reorder(Variable, Overall), y = Overall)) +
+    #     geom_bar(stat = "identity") +
+    #     coord_flip() +
+    #     theme_light() +
+    #     xlab("Variable") +
+    #     ylab("Importance") +
+    #     ggtitle("Variable Importance") +
+    #     theme(axis.text.y = element_text(size = 2)) # Adjust the size as needed
+    # ggsave(paste0("plots/logistic_grp/importance", "_", object@id_term, ".png"), image, width = 10, height = 15)
 
 
-    image <- ggplot(variable_importance_grouped, aes(x = reorder(Group, Overall), y = Overall)) +
-        geom_bar(stat = "identity") +
-        coord_flip() +
-        theme_light() +
-        xlab("Variable") +
-        ylab("Importance") +
-        ggtitle("Variable Importance")
-    ggsave(paste0("plots/logistic_grp/big_groups_importance", "_", object@id_term, ".png"), image)
+    # image <- ggplot(variable_importance_grouped, aes(x = reorder(Group, Overall), y = Overall)) +
+    #     geom_bar(stat = "identity") +
+    #     coord_flip() +
+    #     theme_light() +
+    #     xlab("Variable") +
+    #     ylab("Importance") +
+    #     ggtitle("Variable Importance")
+    # ggsave(paste0("plots/logistic_grp/big_groups_importance", "_", object@id_term, ".png"), image)
 
 
-    image <- ggplot(variable_importance_small_grouped, aes(x = reorder(small_Group, Overall), y = Overall)) +
-        geom_bar(stat = "identity") +
-        coord_flip() +
-        theme_light() +
-        xlab("Variable") +
-        ylab("Importance") +
-        ggtitle("Variable Importance")
-    ggsave(paste0("plots/logistic_grp/small_groups_importance", "_", object@id_term, ".png"), image)
+    # image <- ggplot(variable_importance_small_grouped, aes(x = reorder(small_Group, Overall), y = Overall)) +
+    #     geom_bar(stat = "identity") +
+    #     coord_flip() +
+    #     theme_light() +
+    #     xlab("Variable") +
+    #     ylab("Importance") +
+    #     ggtitle("Variable Importance")
+    # ggsave(paste0("plots/logistic_grp/small_groups_importance", "_", object@id_term, ".png"), image)
 
 
-    df_cv <- object@model$resample
-    df_cv <- df_cv[, setdiff(names(df_cv), "Resample")]
-    df_long <- melt(df_cv)
+    # df_cv <- object@model$resample
+    # df_cv <- df_cv[, setdiff(names(df_cv), "Resample")]
+    # df_long <- melt(df_cv)
 
-    box_plots_stats <- ggplot(df_long, aes(x = variable, y = value)) +
-        geom_boxplot() +
-        stat_summary(fun = median, geom = "point", shape = 20, size = 3, color = "red") +
-        theme(axis.text.x = element_text(angle = 90, hjust = 1)) # Rotate x-axis labels for readability
-    ggsave(paste0("plots/logistic_grp/box_plots_stats", "_", object@id_term, ".png"), box_plots_stats)
+    # box_plots_stats <- ggplot(df_long, aes(x = variable, y = value)) +
+    #     geom_boxplot() +
+    #     stat_summary(fun = median, geom = "point", shape = 20, size = 3, color = "red") +
+    #     theme(axis.text.x = element_text(angle = 90, hjust = 1)) # Rotate x-axis labels for readability
+    # ggsave(paste0("plots/logistic_grp/box_plots_stats", "_", object@id_term, ".png"), box_plots_stats)
 
     return(object)
 })

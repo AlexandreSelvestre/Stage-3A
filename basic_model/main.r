@@ -3,8 +3,9 @@ execute <- function(config, config_run, id_term, seed_cv, seed_partition, sysnam
         extract_all(config, sysname)
     }
     config$id_term <- id_term
+    path_data <- config$path_data
     if (sysname == "Linux") {
-        path <- "..//data//data_used.csv"
+        path <- paste0(path_data, "/data_used.csv")
     } else {
         path <- "..\\data\\data_used.csv"
     }
@@ -14,7 +15,7 @@ execute <- function(config, config_run, id_term, seed_cv, seed_partition, sysnam
     }
     data_used <- as.data.frame(read.csv(path, check.names = FALSE))
     print(paste(c("dimensions data used", dim(data_used))))
-    info_cols <- readRDS(file = "../data/RDS/info_cols.rds")
+    info_cols <- readRDS(file = paste0(path_data, "/RDS/info_cols.rds"))
     config$data_used <- data_used
     config$info_cols <- info_cols
     config$use_li_index_modes <- use_li_index_modes
@@ -34,9 +35,9 @@ execute <- function(config, config_run, id_term, seed_cv, seed_partition, sysnam
     .Random.seed <<- seed_partition
     if (!config_run$keep_partition | as.numeric(id_term) == 1) {
         training_index <- as.vector(createDataPartition(y = data_used[[info_cols$explained_col]], p = config$p, list = FALSE))
-        saveRDS(training_index, file = "../data/RDS/training_index.rds")
+        saveRDS(training_index, file = paste0(path_data, "RDS/training_index.rds"))
     } else {
-        training_index <- readRDS(file = "../data/RDS/training_index.rds")
+        training_index <- readRDS(file = paste0(path_data, "/RDS/training_index.rds"))
     }
     seed_partition <- .Random.seed
 

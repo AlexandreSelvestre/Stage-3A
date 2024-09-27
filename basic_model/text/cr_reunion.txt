@@ -1,0 +1,12 @@
+- Recaler les slices (le plus simple: selon l'aire des masks : recalage axe z, sinon recalage 3D sur les masks) en calculant le maximum des produits scalaires décalés: on parle de covariance shift. Dans l'idéal, on fait le recalage selon l'axe z AVANT extraction. De sorte que les slices_nums soient bonnes au moment où on extrait...
+
+- Plus précis pour z: Pour chaque temporalité, on trouve le bon écart de slices vis à vis du temps artériel. Puis on se sert de cette fonction calculatrice de l'écart de slices (dans un fichier .py) pour extraire la bonne slice à chaque fois. Noter: si la slice n'existe pas: mettre une image nulle partout! 
+
+- Faire la segmentation en 3D sur les image sitk. Si le recalage des indices a été efficace, il permet de retrouver les mêmes morceaux de couronne... On calcule quels sont les nouveaux "bons pixels" pour le masque à chaque fois et on regarde le résultat (quitte à le rogner un peu: pour correspondre au critère de luminosité et garder une faible variance locale: pas trop grande, vs max de cette variance en image précédente? Problème d'échelle? - c'est juste une idée-...)
+On donne juste l'extraction 3D sur la zone trouvée (mais une par temporalité) pour le réhaussement
+
+
+
+- Pourquoi pas dégager 2 pixels de tumeur avec érosion?
+
+
