@@ -1,4 +1,3 @@
-.libPaths("/gpfs/workdir/selvestra/R_packages")
 library(glmnet)
 setClass("Test", representation(x = "numeric", y = "numeric"))
 

@@ -11,7 +11,7 @@ default:
   search: "grid" #grid ou random
   parallel:
     do: TRUE
-    n_process: 8
+    n_process: 40
     forking: FALSE #useless
   analyse_data:
     do: FALSE

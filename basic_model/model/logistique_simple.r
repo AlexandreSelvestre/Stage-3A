@@ -25,7 +25,7 @@ setClass("logistique_simple",
 
 li_caret_simple <- list()
 
-li_caret_simple$library <- "varclust"
+li_caret_simple$library <- "glmnet"
 
 li_caret_simple$type <- "Classification"
 
@@ -158,6 +158,10 @@ setMethod("train_method", "logistique_simple", function(object) {
         # cl <- makePSOCKcluster(2)
         registerDoParallel(cl)
         clusterEvalQ(cl, {
+            current_dir <- getwd()
+            if (current_dir == "/gpfs/users/selvestra/basic_model") {
+                .libPaths("/gpfs/workdir/selvestra/R_packages")
+            }
             files <- list.files("./utils", full.names = TRUE, pattern = "\\.r$")
             for (file in files) {
                 source(file)

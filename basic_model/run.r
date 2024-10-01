@@ -4,7 +4,6 @@ path_data <- "../data"
 
 current_dir <- getwd()
 if (current_dir == "/gpfs/users/selvestra/basic_model") {
-    .libPaths("/gpfs/workdir/selvestra/R_packages")
     path_data <- "/gpfs/workdir/selvestra/data"
 }
 
@@ -96,6 +95,9 @@ if (regression) {
 }
 path_plot <- paste0(path_data, "/plots/", model_name)
 
+
+
+
 source("main.r")
 source("./utils/utils.r")
 source("launch_model.r")
@@ -103,10 +105,9 @@ source("analyse_data/find_outliers.r")
 source("analyse_data/heatmap.r")
 
 import_folder("./utils")
-import_folder("./StepReg_modif/R")
+# import_folder("./StepReg_modif/R")
 
 unregister_dopar()
-
 
 source(path_model)
 source(path_importance)
@@ -127,10 +128,12 @@ if (sysname == "Linux") {
     path <- "..\\data\\data_used.csv"
 }
 
+
 if (config_run$extrac_first) {
     extract_all(config, sysname)
 }
 data_used_local <- as.data.frame(read.csv(path))
+
 
 
 

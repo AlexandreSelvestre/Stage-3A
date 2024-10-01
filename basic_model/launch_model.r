@@ -248,7 +248,7 @@ setMethod("analyse_results", "apply_model", function(object) {
   print(best_params)
   vec_roc_res <- c(0, 0, 0, 0, 0)
 
-  pdf("plots/ROC_curves.pdf")
+  pdf(paste0(object@path_data, "/plots/ROC_curves.pdf"))
   par(mfrow = c(2, 1))
   roc_test <- pROC::roc(response = object@test_set[[object@name_y]], predictor = object@predictions_proba[, 1])
   ##### Changer et checker structure
