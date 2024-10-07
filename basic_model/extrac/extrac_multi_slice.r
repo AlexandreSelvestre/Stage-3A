@@ -31,18 +31,18 @@
 extract_all <- function(config_extrac, sys_name) {
     path_data <- config_extrac$path_data
     if (config_extrac$shape_2D$do) {
-        if (config_extrac$shape_2D$compare_sain) {
-            brute_data <- read_excel(paste0(path_data, "/multislice_excel_with_shape_2D_sain.xlsx"))
+        if (config_extrac$compare_sain) {
+            brute_data <- read_excel(paste0(path_data, "/multislice_excel_with_shape_2D.xlsx"))
             brute_data <- as.data.frame(brute_data)
             # print(brute_data$patient_num)
         } else {
-            brute_data <- read_excel(paste0(path_data, "/multislice_excel_with_shape_2D.xlsx"))
+            brute_data <- read_excel(paste0(path_data, "/multislice_excel_with_shape_2D.xlsx")) # devrait faire identique a multislice classique!!!! (shape 2d pres)
             brute_data <- as.data.frame(brute_data)
         }
     } else {
         brute_data <- read_excel(paste0(path_data, "/multislice_excel.xlsx"))
         brute_data <- as.data.frame(brute_data)
-        if (config_extrac$shape_2D$compare_sain) {
+        if (config_extrac$compare_sain) {
             stop("Pas encore implémenté...")
         }
     }
@@ -171,7 +171,7 @@ extract_all <- function(config_extrac, sys_name) {
         for (i in seq_along(li_num_slice_per_time[[patient_num]])) {
             slice_num <- li_num_slice_per_time[[patient_num]][i]
             slice_num <- as.character(slice_num)
-            mask_sain_mauvais <- any(is.na(brute_data[brute_data$patient_num == patient_num & brute_data$slice_num == slice_num, ]))
+            mask_sain_mauvais <- any(is.na(brute_data[brute_data$patient_num == patient_num & brute_data$slice_num == slice_num, ])) # les NA ne peuvent venir que du mask sain (pas de NA dans le radiomique multislice)
             if (length(li_slice_per_time[[patient_num]][[slice_num]]) != expected_size | mask_sain_mauvais) {
                 if (config_extrac$strong_exclusion) {
                     condit <- length(li_slice_per_time[[patient_num]][[slice_num]]) > 0
@@ -260,7 +260,7 @@ extract_all <- function(config_extrac, sys_name) {
     # print(length(unique(brute_data[brute_data$classe_name == "CHC", ]$patient_num)))
     # print(length(unique(brute_data[brute_data$classe_name == "CCK", ]$patient_num)))
     # print(length(unique(brute_data$patient_num)))
-    # brute_data <- brute_data[!brute_data$patient_num %in% patients_trop_incomplet, ]
+    brute_data <- brute_data[!brute_data$patient_num %in% patients_trop_incomplet, ]
     # # print(dim(brute_data))
     # print(length(unique(brute_data[brute_data$classe_name == "CHC", ]$patient_num)))
     # print(length(unique(brute_data[brute_data$classe_name == "CCK", ]$patient_num)))
@@ -359,6 +359,7 @@ extract_all <- function(config_extrac, sys_name) {
     }
     colnames(df_size) <- c("key", "size_tumeur")
     ### Fin inutile
+    # print(dim(data_radio_in_lines))
 
     if (config_extrac$shape_2D$do & config_extrac$shape_2D$average) {
         to_kill <- c()
@@ -436,6 +437,65 @@ extract_all <- function(config_extrac, sys_name) {
         data_radio_in_lines <- cbind(data_radio_in_lines, df_global_shape)
     }
     write_xlsx(data_radio_in_lines, paste0(path_data, "/data_radio_in_lines.xlsx"))
+
+    if (config_extrac$compare_sain) {
+        path_sain <- paste0(path_data, "/liver_sain.xlsx")
+        data_sain <- read_excel(path_sain)
+        data_sain <- as.data.frame(data_sain)
+        col_diagnos <- grepl("diagnostics", colnames(data_sain))
+        data_sain <- data_sain[, !col_diagnos]
+        col_to_examine <- !colnames(data_sain) %in% c("slice_num", "classe_name", "temps_inj", "patient_num")
+        indices_not_examined <- which(col_to_examine == FALSE)
+        vec_sd <- as.vector(apply(data_sain[, col_to_examine], 2, function(x) sd(x, na.rm = TRUE)))
+        col_const <- vec_sd < 10^-6
+        j <- 1
+        # Remettre des FALSE pour les colonnes non examinées aux bons endroits
+        while (j <= ncol(data_sain)) {
+            if (j %in% indices_not_examined) {
+                col_const <- append(col_const, FALSE, after = j - 1)
+            }
+            j <- j + 1
+        }
+        # print(col_const)
+        data_sain <- data_sain[, !col_const]
+
+        # Dégager les mixtes si demandé
+        if (config_extrac$kill_mixtes) {
+            data_sain <- data_sain[data_sain$classe_name != "Mixtes", ]
+        }
+        data_sain <- data_sain[data_sain$temps_inj %in% time_inj, ]
+        col_to_concatenate <- setdiff(colnames(data_sain), c(no_multivariate_col, crushed_cols))
+        data_sain[["key"]] <- paste0(data_sain$classe_name, "_", data_sain$patient_num)
+        lines <- lapply(unique(data_sain$key), function(key) {
+            df_sain_key <- data_sain[data_sain$key == key, ]
+            vec_line <- c()
+            if (nrow(df_sain_key) != length(time_inj)) {
+                print(paste("Key", key, "not found in sain data"))
+                return(NULL)
+            } else {
+                for (time in time_inj) {
+                    vec_line_time <- unname(unlist(df_sain_key[df_sain_key$temps_inj == time, col_to_concatenate]))
+                    vec_line <- c(vec_line, vec_line_time)
+                }
+                vec_line <- c(key, vec_line)
+                return(vec_line)
+            }
+        })
+        lines <- Filter(Negate(is.null), lines)
+        data_sain_in_lines <- as.data.frame(do.call(rbind, lines))
+        new_col_names <- c()
+
+        # Parcourir chaque élément de config_extrac$new_names_time_inj
+        for (time_name in config_extrac$new_names_time_inj) {
+            # Pour chaque élément de col_to_concatenate, créer un nouveau nom de colonne
+            for (col_name in col_to_concatenate) {
+                new_col_names <- c(new_col_names, paste0(col_name, "_",time_name))
+            }
+        }
+        colnames(data_sain_in_lines) <- c("key", new_col_names)
+        write_xlsx(data_sain_in_lines, paste0(path_data, "/data_sain_in_lines.xlsx"))
+    }
+
 
     # Passer en numéric ce qui doit l'être
     data_radio_in_lines <- data.frame(lapply(data_radio_in_lines, convert_to_num))

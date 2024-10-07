@@ -32,6 +32,7 @@ default:
   shape_2D:
     do: TRUE
     average: TRUE
-    compare_sain: FALSE #comparer
+
+  compare_sain: TRUE #comparer
 
 my_config:

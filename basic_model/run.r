@@ -7,8 +7,8 @@ if (current_dir == "/gpfs/users/selvestra/basic_model") {
     path_data <- "/gpfs/workdir/selvestra/data"
 }
 
-library(Rmpi)
-library(doMPI)
+# library(Rmpi)
+# library(doMPI)
 library(readxl)
 library(writexl)
 library(glue)

@@ -1,6 +1,6 @@
 To do:
 
--Changer tous les paths relatifs de data pour ruche
+- Rajouter la version sans compare sain pour multislice recalé et checker que ça correspond bien à qqc à chaque fois via des plots!! (plt.subplot). Comprendre la disparition de slices par moment seulement à certains temps!
 
 -Comparer sur des petits échantillons les perfs des algos simple et multibloc sur 40 runs pour évacuer les doutes (reste à faire simple). On veut des seuils d'indécision sous les 1%. On prendra une nouvelle seed pour confirmer les résultats. Reste le logistique simple qui bug en "explosant" quand en parallèle
 

@@ -9,7 +9,7 @@
 # }
 
 library(Rmpi)
-# library(doMPI)
+library(doMPI)
 # library(readxl)
 # library(writexl)
 # library(glue)
@@ -38,15 +38,23 @@ library(Rmpi)
 # srun --mpi=pmi2 Rscript toy.r
 # srun --mpi=pmi2 ./mpi_info
 
+
 print(paste("cpu", mpi.universe.size()))
 print(paste("rank", mpi.comm.rank()))
 print(paste("size MPI comm 1", mpi.comm.size(0)))
-
-# cl <- startMPIcluster(comm = 0, maxcores = 20)
-# registerDoMPI(cl)
-# x <- foreach(i = 1:3) %dopar% {
-#     sqrt(i)
-# }
-# closeCluster(cl)
-# print("done")
+cl <- startMPIcluster(maxcores = 2, includemaster = TRUE)
+registerDoMPI(cl)
+results <- foreach(i = 1:4) %dopar% {
+    res <- list()
+    # res$sqrt <- sqrt(i)
+    res$cpu <- paste("cpu", mpi.universe.size())
+    res$rank <- paste("rank", mpi.comm.rank())
+    res$size <- paste("size MPI comm 1", mpi.comm.size(0))
+    res
+}
+# print(paste("cpu", mpi.universe.size()))
+# print(paste("rank", mpi.comm.rank()))
+# print(paste("size MPI comm 1", mpi.comm.size(0)))
+closeCluster(cl)
+print(results)
 mpi.quit()
