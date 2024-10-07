@@ -24,7 +24,7 @@ def eliminate_temps(name):
     return (name[:-useless_part_length])
 
 
-def equalize_slices(ls_image_full_time, dict_image_full_time, num=None, key=None, show=False):
+def equalize_slices(ls_image_full_time, dict_image_full_time,force_spacing = None, num=None, key=None, show=False, do_nothing=False):
     names = check_key_num(num, key, ls_image_full_time, dict_image_full_time)
     names_masks = [name.replace('_NAT', '').replace(
         '.nii', '_masked.nii') for name in names]
@@ -35,33 +35,31 @@ def equalize_slices(ls_image_full_time, dict_image_full_time, num=None, key=None
     differences = reference - li_num_slice_tot
     former_diff = np.copy(differences)
     if show:
-        print("difference", differences)
+        print("difference avant", differences)
     good_time = np.argmin(differences)
-    for i in range(len(li_images)):
-        if i != good_time:
+    if not do_nothing:
+        for i in range(len(li_images)):
+            ref = False
+            if i == good_time:
+                ref = True
             li_images[i], resample = resample_image_to_reference(
-                li_images[i], li_images[good_time])
+                li_images[i], li_images[good_time], force_spacing=force_spacing)
             li_masks[i] = resample.Execute(li_masks[i]) != 0
 
     li_num_slice_tot = np.array([mask.GetSize()[2] for mask in li_masks])
-    li_slices_masks = [[sitk.GetArrayFromImage(mask[:, :, z]).astype(
-        int) for z in range(li_num_slice_tot[i])] for i, mask in enumerate(li_masks)]
+    li_slices_masks = [[sitk.Cast(mask[:, :, z], sitk.sitkUInt8) for z in range(li_num_slice_tot[i])] for i, mask in enumerate(li_masks)]
     li_slices_images = [[image[:, :, z] for z in range(
         li_num_slice_tot[i])] for i, image in enumerate(li_images)]
     reference = max(li_num_slice_tot)
     differences = reference - li_num_slice_tot
-    for i, li_slices_time_t in enumerate(li_slices_masks):
-        difference = differences[i]
-        if difference > 0:
-            print("TRES ETRANGE, new differences:",
-                  differences, "avant on avait", former_diff)
-            size = li_slices_time_t[0].shape
-            for _ in range(difference//2):
-                li_slices_time_t.append(np.zeros(size))
-                li_slices_time_t.insert(0, np.zeros(size))
-            if difference % 2 == 1:
-                li_slices_time_t.append(np.zeros(size))
-    return li_slices_masks, li_slices_images
+    if not do_nothing:
+        for i, li_slices_time_t in enumerate(li_slices_masks):
+            difference = differences[i]
+            if difference > 0:
+                print("TRES ETRANGE, new differences:",
+                    differences, "avant on avait", former_diff)
+                raise Exception("Le resampled n'a pas la bonne!")
+    return li_slices_masks, li_slices_images, li_images, li_masks
 
 
 def shift_vertical_with_zeros(mat, shift=1):
@@ -163,27 +161,67 @@ def find_best_z_decal(li_slices_time_t_ref, li_slices_time_t_2, fenetre_z):
 def find_best_decal_all_times(ls_image_full_time, dict_image_full_time, fenetre_z, fenetre_x=None, fenetre_y=None, num=None, key=None, mode="area"):
     names = check_key_num(num, key, ls_image_full_time, dict_image_full_time)
     # def resample_image_to_reference(image, reference_image):
-    li_slices, _ = equalize_slices(
+    li_slices, _, _, _ = equalize_slices(
         ls_image_full_time, dict_image_full_time, num=num, key=key)
-    li_slices_time_t_ref = li_slices[0]
+    li_slices_array  = [[sitk.GetArrayFromImage(slice) for slice in li_slices_time] for li_slices_time in li_slices]
+    li_slices_time_t_ref = li_slices_array[0]
     if mode == "simple":
         li_best_decal = [[0, 0, 0]] + [find_best_decal(
-            li_slices_time_t_ref, li_slices_time_t_other, fenetre_x, fenetre_y, fenetre_z) for li_slices_time_t_other in li_slices[1:]]
+            li_slices_time_t_ref, li_slices_time_t_other, fenetre_x, fenetre_y, fenetre_z) for li_slices_time_t_other in li_slices_array[1:]]
     if mode == "area":
         # vecteur des différentes décalages vs premioer temps
         li_best_decal = [0] + [find_best_z_decal(li_slices_time_t_ref, li_slices_time_t_other, fenetre_z)
-                               for li_slices_time_t_other in li_slices[1:]]
+                               for li_slices_time_t_other in li_slices_array[1:]]
     return li_best_decal
 
 
 def find_best_decal_all_times_short(li_slices, fenetre_z, fenetre_x=None, fenetre_y=None, mode="area"):
     # def resample_image_to_reference(image, reference_image):
-    li_slices_time_t_ref = li_slices[0]
+    li_slices_array  = [[sitk.GetArrayFromImage(slice) for slice in li_slices_time] for li_slices_time in li_slices]
+    li_slices_time_t_ref = li_slices_array[0]
     if mode == "simple":
         li_best_decal = [[0, 0, 0]] + [find_best_decal(
-            li_slices_time_t_ref, li_slices_time_t_other, fenetre_x, fenetre_y, fenetre_z) for li_slices_time_t_other in li_slices[1:]]
+            li_slices_time_t_ref, li_slices_time_t_other, fenetre_x, fenetre_y, fenetre_z) for li_slices_time_t_other in li_slices_array[1:]]
     if mode == "area":
         # vecteur des différentes décalages vs premioer temps
         li_best_decal = [0] + [find_best_z_decal(li_slices_time_t_ref, li_slices_time_t_other, fenetre_z)
-                               for li_slices_time_t_other in li_slices[1:]]
+                               for li_slices_time_t_other in li_slices_array[1:]]
     return li_best_decal
+
+def find_best_all_area(li_masks, fenetre_z, fenetre_x, fenetre_y, ref_num = 0):
+    ####### CONTINUER avec ref_num
+    li_slices_x = [[sitk.GetArrayFromImage(li_slices_time_t[x,:,:]) for x in range(li_slices_time_t.GetSize()[0])] for li_slices_time_t in li_masks]
+    li_slices_y = [[sitk.GetArrayFromImage(li_slices_time_t[:,y,:]) for y in range(li_slices_time_t.GetSize()[1])] for li_slices_time_t in li_masks]
+    li_slices_z = [[sitk.GetArrayFromImage(li_slices_time_t[:,:,z]) for z in range(li_slices_time_t.GetSize()[2])] for li_slices_time_t in li_masks]
+    li_best_decal_x = [find_best_z_decal(li_slices_x[ref_num], li_slices_time_t_other, fenetre_x) if i != ref_num else 0 for i,li_slices_time_t_other in enumerate(li_slices_x)]
+    li_best_decal_y = [find_best_z_decal(li_slices_y[ref_num], li_slices_time_t_other, fenetre_y) if i != ref_num else 0 for i, li_slices_time_t_other in enumerate(li_slices_y)]
+    li_best_decal_z = [find_best_z_decal(li_slices_z[ref_num], li_slices_time_t_other, fenetre_z) if i != ref_num else 0 for i, li_slices_time_t_other in enumerate(li_slices_z)]
+    spacing = li_masks[0].GetSpacing()
+    li_best_shift_y = [li_best_shift_y * spacing[1] for li_best_shift_y in li_best_decal_y]
+    li_best_shift_x = [li_best_shift_x * spacing[0] for li_best_shift_x in li_best_decal_x]
+    return li_best_shift_x, li_best_shift_y, li_best_decal_z
+
+def translate_mask(mask, x_shift, y_shift, z_shift):
+    #rappel la translation sitk va de l'output vers l'input
+    #Mais ici double inversion avec le fait que ps shift calcule aussi du nouveau temps vers la référence
+    translation = sitk.TranslationTransform(3) #nb dimensions
+    translation.SetOffset((-x_shift, -y_shift,-z_shift))
+    default_value = 0
+    resampled = sitk.Resample(mask,mask, translation,sitk.sitkNearestNeighbor , default_value)
+    return resampled
+    
+if __name__ == "__main__":
+    import matplotlib
+    matplotlib.use('TkAgg')
+    ls_image =sorted(glob.glob('./*_NAT*/*.nii'))
+    name = ls_image[0]
+    mask = sitk.ReadImage(name.replace('_NAT', '').replace('.nii', '_masked.nii')) !=0
+    plt.subplot(1, 2, 1)
+    plt.imshow(sitk.GetArrayFromImage(mask)[36,:,:])
+    new_mask = translate_mask(mask, - 100, 10, 0)
+    plt.subplot(1, 2, 2)
+    plt.imshow(sitk.GetArrayFromImage(new_mask)[36,:,:])
+    plt.show()
+    
+    
+    

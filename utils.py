@@ -56,6 +56,22 @@ def get_good_slice(image_name):
         return
     else:
         return li_good[len(li_good)//2]
+    
+def get_good_slices_from_li(li_image,li_mask):
+    li_good = []
+    for slice_num, slice_image in enumerate(li_image):
+        slice_mask = li_mask[slice_num]
+        lsif = sitk.LabelStatisticsImageFilter()
+        lsif.Execute(slice_image, slice_mask != 0)
+        boundingBox = np.array(lsif.GetBoundingBox(label=1))
+        ndims = np.sum((boundingBox[1::2] - boundingBox[0::2] + 1) > 3)
+        if (sitk.GetArrayFromImage(slice_mask != 0).sum() > 0) & (ndims >= 2):
+            li_good.append(slice_num)
+    if len(li_good) == 0:
+        print('No good slices')
+        return
+    else:
+        return li_good
 
 
 def get_all_good_slices(image_name, image=None, mask=None):
@@ -126,11 +142,12 @@ def mask_superpose_simple(slice_image, slice_mask, other_mask=None, num=1, max_n
         mask_slice_good = sitk.GetArrayFromImage(slice_mask) != 0
     else:
         mask_slice_good = slice_mask
-
     slice_rgb = rescale_image(np.stack([slice_good]*3, axis=-1))
     slice_rgb[:, :, 0:3:2] = 0  # Seul canal 1 accepté
     slice_rgb[mask_slice_good == 1, 0] = 255
     if other_mask is not None:
+        if isinstance(other_mask, sitk.Image):
+            other_mask = sitk.GetArrayFromImage(other_mask)
         mask_superpose = other_mask != 0
         slice_rgb[mask_superpose == 1, 2] = 255
     plt.subplot(1, max_num, num)
@@ -152,12 +169,18 @@ def check_key_num(num, key, ls, d):
     return names
 
 
-def resample_image_to_reference(image, reference_image):
+def resample_image_to_reference(image, reference_image, force_spacing):
     # Obtenir l'espacement de l'image de référence
-    reference_spacing = reference_image.GetSpacing()
+    if force_spacing is not None:
+        reference_spacing = tuple(np.copy(force_spacing))
+    else:
+        reference_spacing = reference_image.GetSpacing()
 
     # Obtenir la taille de l'image de référence
-    reference_size = reference_image.GetSize()
+    reference_size_initial = reference_image.GetSize()
+    
+    #nouvelle référence size
+    reference_size = [int(np.ceil(reference_size_initial[i] * (reference_image.GetSpacing()[i] / reference_spacing[i]))) for i in range(len(reference_size_initial))]
 
     # Obtenir l'origine de l'image de référence
     reference_origin = reference_image.GetOrigin()
@@ -165,8 +188,6 @@ def resample_image_to_reference(image, reference_image):
     # Obtenir la direction de l'image de référence
     reference_direction = reference_image.GetDirection()
 
-    original_size = image.GetSize()
-    original_spacing = image.GetSpacing()
     # new_spacing = calculate_new_spacing(original_size, original_spacing, reference_size)
     new_spacing = reference_spacing
     new_spacing = list(new_spacing)
