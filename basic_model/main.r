@@ -24,6 +24,7 @@ execute <- function(config, config_run, id_term, seed_cv, seed_partition, sysnam
     config_names <- names(config)
     arguments <- config[intersect(slot_names, config_names)]
     inference <- do.call("new", args = c(name_model, arguments))
+    inference@config <- config
     inference <- init(inference)
     if (config$analyse_data$do & as.numeric(id_term) == 1) {
         analyse_data(inference)

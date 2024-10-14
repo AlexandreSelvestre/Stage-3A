@@ -28,24 +28,26 @@
 
 # config_extrac <- config::get(file = "configs/extrac/config_extrac_multi_slice.yml", config = "my_config")
 
-extract_all <- function(config_extrac, sys_name) {
+extract_all <- function(config_extrac, sys_name = "Linux") {
+    # radiomic_global <- "/radiomiques_global.xlsx"
+    radiomic_global <- "/global_excel.xlsx"
     path_data <- config_extrac$path_data
-    if (config_extrac$shape_2D$do) {
-        if (config_extrac$compare_sain) {
-            brute_data <- read_excel(paste0(path_data, "/multislice_excel_with_shape_2D.xlsx"))
-            brute_data <- as.data.frame(brute_data)
-            # print(brute_data$patient_num)
-        } else {
-            brute_data <- read_excel(paste0(path_data, "/multislice_excel_with_shape_2D.xlsx")) # devrait faire identique a multislice classique!!!! (shape 2d pres)
-            brute_data <- as.data.frame(brute_data)
-        }
-    } else {
-        brute_data <- read_excel(paste0(path_data, "/multislice_excel.xlsx"))
-        brute_data <- as.data.frame(brute_data)
-        if (config_extrac$compare_sain) {
-            stop("Pas encore implémenté...")
-        }
-    }
+    # if (config_extrac$shape_2D$do) {
+    # if (config_extrac$compare_sain) {
+    brute_data <- read_excel(paste0(path_data, "/multislice_excel_with_shape_2D_sain_2.xlsx"))
+    brute_data <- as.data.frame(brute_data)
+    # print(brute_data$patient_num)
+    # } else {
+    #     brute_data <- read_excel(paste0(path_data, "/multislice_excel_with_shape_2D.xlsx")) # devrait faire identique a multislice classique!!!! (shape 2d pres)
+    #     brute_data <- as.data.frame(brute_data)
+    # }
+    # } else {
+    #     brute_data <- read_excel(paste0(path_data, "/multislice_excel.xlsx"))
+    #     brute_data <- as.data.frame(brute_data)
+    #     if (config_extrac$compare_sain) {
+    #         stop("Enlever les shape2D est absurde")
+    #     }
+    # }
 
 
     ### Degager les colonnes fausses
@@ -78,6 +80,19 @@ extract_all <- function(config_extrac, sys_name) {
     if (config_extrac$kill_mixtes) {
         brute_data <- brute_data[brute_data$classe_name != "Mixtes", ]
     }
+
+    if (config_extrac$keep_features_slice$first_order == FALSE) {
+        brute_data <- brute_data[, !grepl("firstorder", colnames(brute_data))]
+    }
+
+    if (config_extrac$keep_features_slice$texture == FALSE) {
+        brute_data <- brute_data[, !grepl("glcm", colnames(brute_data))]
+        brute_data <- brute_data[, !grepl("gldm", colnames(brute_data))]
+        brute_data <- brute_data[, !grepl("glrlm", colnames(brute_data))]
+        brute_data <- brute_data[, !grepl("glszm", colnames(brute_data))]
+        brute_data <- brute_data[, !grepl("ngtdm", colnames(brute_data))]
+    }
+
 
     ### Donner des entiers aux slice_num et patient_num
     brute_data$slice_num <- as.integer(brute_data$slice_num)
@@ -156,7 +171,9 @@ extract_all <- function(config_extrac, sys_name) {
     nb_reshaped <- 0 # nb d'individus dont on a changé le nombre de slices de tumeur ( en dégageant début/fin)
     expected_size <- length(time_inj)
     patient_vide <- list()
+    li_area_per_patient <- list()
     for (patient_num in names(li_slice_per_time)) {
+        li_area_per_patient[[patient_num]] <- list()
         count_absent <- 0
         true_size <- 0
         consecutif <- 0
@@ -189,6 +206,9 @@ extract_all <- function(config_extrac, sys_name) {
                 }
 
                 if (start_tumeur) { # Si la tumeur avait démarré on est dans une slice manquante
+                    if (config_extrac$area_extrac) {
+                        li_area_per_patient[[patient_num]][[slice_num]] <- mean(as.numeric(brute_data[brute_data$patient_num == patient_num & brute_data$slice_num == slice_num, "original_shape2D_MeshSurface"]))
+                    }
                     count_absent <- count_absent + 1
                     consecutif <- consecutif + 1
                     true_size <- true_size + 1
@@ -199,6 +219,12 @@ extract_all <- function(config_extrac, sys_name) {
             } else { # On est dans une slice complète
                 exist_full_slice <- TRUE
                 li_distance_to_full_slice_per_slice_per_patient[[patient_num]][[slice_num]] <- c(0, 0)
+
+                if (config_extrac$area_extrac) {
+                    li_area_per_patient[[patient_num]][[slice_num]] <- mean(as.numeric(brute_data[brute_data$patient_num == patient_num & brute_data$slice_num == slice_num, "original_shape2D_MeshSurface"]))
+                    # print(paste("found", li_area_per_patient[[patient_num]][[slice_num]]))
+                    # print(brute_data[brute_data$patient_num == patient_num & brute_data$slice_num == slice_num, "original_shape2D_MeshSurface"])
+                }
                 dist_avant <- 1 # distance à la tumeur si la prochaine slice est manquante
                 if (length(previous_slice_nums) > 0) {
                     dist_apres <- length(previous_slice_nums)
@@ -276,28 +302,65 @@ extract_all <- function(config_extrac, sys_name) {
     ### Extraire seulement les slices d'intérêt
     nb_to_extract <- config_extrac$n_slices
     li_patient <- lapply(unique(brute_data$patient_num), function(patient_num) {
-        brute_data[brute_data$patient_num == patient_num, ]
+        # brute_data[brute_data$patient_num == patient_num, ]
         true_vec_slices <- li_num_slice_per_time[[as.character(patient_num)]]
         true_nb_slices <- length(true_vec_slices)
+        if (config_extrac$area_extrac & (patient_vide[[as.character(patient_num)]] == FALSE)) {
+            li_area_current <- li_area_per_patient[[as.character(patient_num)]]
+            li_area_repartition <- list(li_area_current[[1]])
+            if (length(li_area_current) > 1) {
+                for (i in 2:length(li_area_current)) {
+                    li_area_repartition[[i]] <- li_area_repartition[[i - 1]] + li_area_current[[i]]
+                }
+            }
+            if (any(is.na(unlist(li_area_current)))) {
+                print(li_area_current)
+                # print(brute_data[brute_data$patient_num == patient_num, "key"])
+                stop("Erreur: il reste des NA dans les aires")
+            }
+            # print(li_area_current)
+            exist_slice <- sapply(li_distance_to_full_slice_per_slice_per_patient[[as.character(patient_num)]], function(tuple) {
+                return(sum(abs(tuple)) == 0)
+            })
+            # print(brute_data[brute_data$patient_num == patient_num, "key"])
+            # print(li_distance_to_full_slice_per_slice_per_patient[[as.character(patient_num)]])
+            # print(exist_slice)
+            names(li_area_repartition) <- names(li_area_current)
+            li_area_repartition[!exist_slice] <- -li_area_repartition[[length(li_area_repartition)]]
+            # print(li_area_repartition)
+        }
+
         if (patient_vide[[as.character(patient_num)]]) {
             return(matrix(NA, nrow = 0, ncol = 0))
         }
+        # print(li_distance_to_full_slice_per_slice_per_patient[[as.character(patient_num)]])
         vec_indices_to_extrac <- sapply(seq_len(nb_to_extract), function(i) {
-            frac_to_extract <- i / nb_to_extract
-            index_to_extract_float <- frac_to_extract * (true_nb_slices - 1) + 1
-            # print(patient_num)
-            # print(true_nb_slices)
-            # print(li_distance_to_full_slice_per_slice_per_patient[[as.character(patient_num)]])
-            distances_to_index_float <- data.table::copy(li_distance_to_full_slice_per_slice_per_patient[[as.character(patient_num)]][[round(index_to_extract_float)]]) # le c(avant, après) de la slice qu'on voudrait si elle existait...
-            erreur <- round(index_to_extract_float) - index_to_extract_float
-            distances_to_index_float_calculus <- data.table::copy(distances_to_index_float)
-            distances_to_index_float_calculus[1] <- distances_to_index_float_calculus[1] + erreur
-            distances_to_index_float_calculus[2] <- distances_to_index_float_calculus[2] - erreur
-            avant_ou_apres <- which.min(distances_to_index_float_calculus)
-            distances_to_index_float[1] <- -distances_to_index_float[1] # valeur algébrique du shift
-            chosen_shift <- distances_to_index_float[avant_ou_apres]
-            chosen_slice_position <- round(index_to_extract_float) + chosen_shift
-            chosen_slice_num <- true_vec_slices[chosen_slice_position]
+            if (config_extrac$area_extrac == FALSE) {
+                frac_to_extract <- i / nb_to_extract
+                index_to_extract_float <- frac_to_extract * (true_nb_slices - 1) + 1
+                distances_to_index_float <- data.table::copy(li_distance_to_full_slice_per_slice_per_patient[[as.character(patient_num)]][[round(index_to_extract_float)]]) # le c(avant, après) de la slice qu'on voudrait si elle existait...
+                erreur <- round(index_to_extract_float) - index_to_extract_float
+                distances_to_index_float_calculus <- data.table::copy(distances_to_index_float)
+                distances_to_index_float_calculus[1] <- distances_to_index_float_calculus[1] + erreur
+                distances_to_index_float_calculus[2] <- distances_to_index_float_calculus[2] - erreur
+                avant_ou_apres <- which.min(distances_to_index_float_calculus)
+                distances_to_index_float[1] <- -distances_to_index_float[1] # valeur algébrique du shift
+                chosen_shift <- distances_to_index_float[avant_ou_apres]
+                chosen_slice_position <- round(index_to_extract_float) + chosen_shift
+                chosen_slice_num <- true_vec_slices[chosen_slice_position]
+                # print(paste(chosen_slice_num, "min:", true_vec_slices[1], "max:", true_vec_slices[length(true_vec_slices)], "frac:", frac_to_extract))
+            } else {
+                area_tot <- li_area_repartition[[true_nb_slices]]
+                # area_to_extract <- (i / nb_to_extract - 0.5 / nb_to_extract) * area_tot
+                area_to_extract <- ((i + 1) / (nb_to_extract + 1)) * area_tot # New strat??
+                difference_area <- abs(unlist(li_area_repartition) - area_to_extract)
+                index_to_extract <- which.min(difference_area)
+                chosen_slice_num <- true_vec_slices[index_to_extract]
+                # print(paste(chosen_slice_num, "min:", true_vec_slices[1], "max:", true_vec_slices[length(true_vec_slices)]))
+            }
+
+
+            # print(chosen_slice_num)
             temps_for_chosen_slice <- li_slice_per_time[[as.character(patient_num)]][[as.character(chosen_slice_num)]]
             if (length(temps_for_chosen_slice) != expected_size) {
                 print(paste("Slice", chosen_slice_num, "patient", patient_num, "n'a pas le bon nombre de temps"))
@@ -361,6 +424,10 @@ extract_all <- function(config_extrac, sys_name) {
     ### Fin inutile
     # print(dim(data_radio_in_lines))
 
+    if (config$shape_2D$do == FALSE) {
+        data_radio_in_lines <- data_radio_in_lines[, !grepl("shape", colnames(data_radio_in_lines))]
+    }
+
     if (config_extrac$shape_2D$do & config_extrac$shape_2D$average) {
         to_kill <- c()
         vec_shape <- grep("shape", colnames(data_radio_in_lines))
@@ -397,9 +464,18 @@ extract_all <- function(config_extrac, sys_name) {
         # stop("Transformer les colonnes de shape2D en leur équivalent moyenné sur une colonne par temps. Astuce: récupérer pour chaque var shape (forcément 2D à ce stade) les valeurs, les moyenner et créer une nouvelle colonne. Supprimer au passage les colonnes précédentes. La placer à la fin. Itérer.")
     }
 
+    if (config_extrac$keep_global) {
+        data_radio_global <- read_excel(paste0(path_data, radiomic_global))
+        data_radio_global <- as.data.frame(data_radio_global)
+        data_radio_global <- data_radio_global[, !grepl("shape", colnames(data_radio_global))] # On ne traite pas de forme ici
+        data_radio_global <- assainir(data_radio_global, config_extrac, no_multivariate_col, crushed_cols)
+        data_radio_global_in_lines <- make_in_lines(data_radio_global, config_extrac, no_multivariate_col, crushed_cols, special_name_col = "_global_")
+        data_radio_in_lines <- merge(data_radio_in_lines, data_radio_global_in_lines, by = "key", all = FALSE)
+    }
+
 
     if (config_extrac$shape_3D$do) {
-        data_radio_global <- read_excel(paste0(path_data, "/radiomiques_global.xlsx"))
+        data_radio_global <- read_excel(paste0(path_data, radiomic_global))
         li_df_global_shape <- list()
         for (i in seq_len(nrow(data_radio_in_lines))) {
             key <- data_radio_in_lines$key[i]
@@ -436,14 +512,22 @@ extract_all <- function(config_extrac, sys_name) {
         df_global_shape <- do.call(rbind, li_df_global_shape)
         data_radio_in_lines <- cbind(data_radio_in_lines, df_global_shape)
     }
+
+
     write_xlsx(data_radio_in_lines, paste0(path_data, "/data_radio_in_lines.xlsx"))
 
     if (config_extrac$compare_sain) {
-        path_sain <- paste0(path_data, "/liver_sain.xlsx")
+        path_sain <- paste0(path_data, "/liver_sain_go.xlsx")
         data_sain <- read_excel(path_sain)
         data_sain <- as.data.frame(data_sain)
         col_diagnos <- grepl("diagnostics", colnames(data_sain))
         data_sain <- data_sain[, !col_diagnos]
+        chose_firstorder <- grep("firstorder", colnames(data_sain))
+        chose_firstorder <- colnames(data_sain)[chose_firstorder]
+        keep_cols <- c("classe_name", "temps_inj", "patient_num", chose_firstorder)
+        if (config_extrac$sain_first_order_only) {
+            data_sain <- data_sain[, keep_cols]
+        }
         col_to_examine <- !colnames(data_sain) %in% c("slice_num", "classe_name", "temps_inj", "patient_num")
         indices_not_examined <- which(col_to_examine == FALSE)
         vec_sd <- as.vector(apply(data_sain[, col_to_examine], 2, function(x) sd(x, na.rm = TRUE)))
@@ -470,7 +554,7 @@ extract_all <- function(config_extrac, sys_name) {
             df_sain_key <- data_sain[data_sain$key == key, ]
             vec_line <- c()
             if (nrow(df_sain_key) != length(time_inj)) {
-                print(paste("Key", key, "not found in sain data"))
+                # print(paste("Key", key, "not found in sain data"))
                 return(NULL)
             } else {
                 for (time in time_inj) {
@@ -489,12 +573,15 @@ extract_all <- function(config_extrac, sys_name) {
         for (time_name in config_extrac$new_names_time_inj) {
             # Pour chaque élément de col_to_concatenate, créer un nouveau nom de colonne
             for (col_name in col_to_concatenate) {
-                new_col_names <- c(new_col_names, paste0(col_name, "_",time_name))
+                new_col_names <- c(new_col_names, paste0(col_name, "_sain_", time_name))
             }
         }
         colnames(data_sain_in_lines) <- c("key", new_col_names)
         write_xlsx(data_sain_in_lines, paste0(path_data, "/data_sain_in_lines.xlsx"))
+
+        data_radio_in_lines <- merge(data_sain_in_lines, data_radio_in_lines, by = c("key"), all = FALSE)
     }
+
 
 
     # Passer en numéric ce qui doit l'être
@@ -611,5 +698,6 @@ extract_all <- function(config_extrac, sys_name) {
     saveRDS(is_binary, file = paste0(path_data, "/RDS/is_binary.rds"))
 
 
+    # print(index_bloc)
     print("Fin extraction multislice")
 }

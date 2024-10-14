@@ -12,6 +12,7 @@ setClass(
     name_variable = "character", # input: vecteur des noms des variables des explicatives
     is_binary = "logical", #      input: vecteur logique des variables explicatives binaires
     path_data = "character", #         input: chemin du fichier de données
+    config = "ANY", # input: configuration du modèle
     name_y = "character", #       variable: nom de la variable expliquée
     class_maj_min = "character", # variable: c(nom_class_maj, nom_class_min)
     col_x = "character", #        variable: noms de colonnes de variables explicatives
@@ -64,6 +65,7 @@ setClass(
     classe_1 = "character", #       input: Définit qui est la classe 1
     analyse_data = "list", #        input: liste sur post analyse data (faire clusters?)
     do_product = "logical", #       input: indique si réutiliser ou non le Sigma picto
+    li_data_cross_val = "list", #   input: liste des données pour la cross validation sur l'extraction des données. Si vide: pas fait
     df_measures = "ANY", #          variable: dataframe des perfoemances
     li_df_var_imp = "ANY", #        variable: dataframe imp variables (pas tous les modèles)
     confus_mat = "ANY", #           variable: matrice de confusion
@@ -77,7 +79,8 @@ setClass(
     rep = 1,
     show_logs = TRUE,
     name_model = "logistique_simple",
-    id_term = "1"
+    id_term = "1",
+    li_data_cross_val = list()
   )
 )
 

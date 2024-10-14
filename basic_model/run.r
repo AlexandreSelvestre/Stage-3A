@@ -33,14 +33,15 @@ library(DMwR)
 library(themis)
 library(reshape2)
 library(rlang)
+library(gglasso)
 
 
 sysname <- Sys.info()["sysname"]
-set.seed(11) ## seed du modèle
+set.seed(10) ## seed du modèle
 seed_model <- .Random.seed
-set.seed(7) # seed pour la cross validation
+set.seed(6) # seed pour la cross validation
 seed_cv <- .Random.seed
-set.seed(2) ## seed pour la partition des données
+set.seed(3) ## seed pour la partition des données
 seed_partition <- .Random.seed
 .Random.seed <- seed_model
 

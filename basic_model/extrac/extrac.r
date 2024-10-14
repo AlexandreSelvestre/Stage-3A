@@ -1,5 +1,7 @@
 extract_all <- function(config_extrac, sysname) {
     ##### Importer les données ########
+    # radiomic_global <- "/radiomiques_global.xlsx"
+    radiomic_global <- "/global_excel.xlsx"
     path_data <- config_extrac$path_data
     if (sysname == "Linux") {
         data_radio <- read_excel(paste0(path_data, "/radiomiques_global.xlsx"))
@@ -81,31 +83,8 @@ extract_all <- function(config_extrac, sysname) {
         # write_xlsx(data_radio, "..\\data\\sauver_post.xlsx")
     }
 
-    # truef <- as.data.frame((ancient != data_radio))
-    # write_xlsx(truef, "..\\data\\tftf.xlsx")
-
-    #### Normaliser les données #################### Mauvaise façon de faire!!!
-
-    # data_patients_simple <- data.frame(lapply(data_patients[, setdiff(names(data_patients), c(
-    #     "patient_num"
-    # ))], normal))
-
-
-    # data_radio_simple <- data.frame(lapply(data_radio[, setdiff(names(data_radio), c(
-    #     "patient_num"
-    # ))], normal))
-
-    # data_patients[, setdiff(names(data_patients), "patient_num")] <- data_patients_simple
-    # data_radio[, setdiff(names(data_radio), "patient_num")] <- data_radio_simple
-
-    ##### Binairiser les genres et les classes ##########
 
     data_patients$Gender <- unname(sapply(data_patients$Gender, change_genre))
-    # data_patients$classe_name <- unname(sapply(data_patients$classe_name, change_class))
-    # data_radio$classe_name <- unname(sapply(data_radio$classe_name, change_class))
-
-    #### Passer les radios en lignes et écrire les colonnes de la nouvelle table ####################
-
 
     former_col_names <- colnames(data_radio)
     unique_col_names <- c("keys", "patient_num", "classe_name")

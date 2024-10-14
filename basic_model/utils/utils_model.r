@@ -291,7 +291,7 @@ plot_global <- function(imp_average, path_plot, ending_name, inference) {
 
 
     if (inference@use_li_index_modes) {
-        print("On va essayer de faire des plots pour les modes")
+        print("On va faire des plots pour les modes")
         li_name_modes <- inference@li_name_modes
         li_index_modes <- inference@li_index_modes
         # On va tout regrouper par mode à chaque fois

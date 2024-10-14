@@ -116,11 +116,17 @@ setMethod("train_method", "apply_model", function(object) {
     if (object@index_type == "var") {
         index <- object@index_variable
     }
-    if (object@index_type == "mode") {
-        index <- object@index_mode
-    }
+
     if (object@index_type == "bloc") {
         index <- object@index_bloc
+    }
+
+    if (object@use_li_index_modes & !object@index_type %in% c("var", "bloc")) {
+        index <- object@li_index_modes[[object@index_type]]
+    } else {
+        if (object@index_type == "mode") {
+            index <- object@index_mode
+        }
     }
 
 

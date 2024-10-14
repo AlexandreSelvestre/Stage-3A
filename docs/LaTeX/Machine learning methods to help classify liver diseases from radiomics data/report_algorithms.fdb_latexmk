@@ -1,22 +1,20 @@
 # Fdb version 4
-["bibtex report_algorithms"] 1726308803.56811 "report_algorithms.aux" "report_algorithms.bbl" "report_algorithms" 1726309504.25814 0
-  "./bibliography.bib" 1721046753.23 4570 311985d5d50dac6470be3231b274cafc ""
+["bibtex report_algorithms"] 1728917023.09344 "report_algorithms.aux" "report_algorithms.bbl" "report_algorithms" 1728917061.79552 0
+  "./bibliography.bib" 1728661166.71462 6872 0e1f40a6dcfb7a5c1541d560d044c126 ""
   "/usr/local/share/miktex-texmf/bibtex/bst/bibtex/ieeetr.bst" 1726308370.06082 18361 1a00e58565e7f19bf2b3e1bfb82254ae ""
-  "report_algorithms.aux" 1726309503.94298 2770 8bd1e0046135b2ac50e25a9dd129d4c3 "pdflatex"
+  "report_algorithms.aux" 1728917061.45507 3710 1fe00b00bf60173a08cd1aaddd405899 "pdflatex"
   (generated)
   "report_algorithms.bbl"
   "report_algorithms.blg"
   (rewritten before read)
-["pdflatex"] 1726309503.44632 "/home/alexandre/Documents/Stage-3A/docs/LaTeX/Machine learning methods to help classify liver diseases from radiomics data/report_algorithms.tex" "report_algorithms.pdf" "report_algorithms" 1726309504.25824 0
+["pdflatex"] 1728917060.92426 "/home/alexandre/Documents/Stage-3A/docs/LaTeX/Machine learning methods to help classify liver diseases from radiomics data/report_algorithms.tex" "report_algorithms.pdf" "report_algorithms" 1728917061.79564 0
   "/home/alexandre/.miktex/texmfs/data/fonts/map/pdftex/pdftex.map" 1726308924.31902 89647 935dc4f5e74bd82e4cc831400ed92539 ""
-  "/home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/ecbx0900.pk" 1726308706.04651 22504 b0f6ce289c3416f386676ebb64dee0a4 ""
   "/home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/ecbx1000.pk" 1726308709.94649 25420 d886a27782c377a5dd237d74a89f1b46 ""
   "/home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/ecbx1200.pk" 1726308708.6315 31952 a848510f8e923ecb115e01ff94fe33a8 ""
   "/home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/ecbx1440.pk" 1726308706.94151 40136 2fbeda267423cfe019169ba4facb6ec1 ""
   "/home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/ecrm0500.pk" 1726308709.50749 12520 e18acc6f7823549f12cd9685c015ab13 ""
   "/home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/ecrm0700.pk" 1726308709.07149 17000 db5ba7c71975fafb4211e940c5ed6bde ""
   "/home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/ecrm0800.pk" 1726308705.60051 19080 9fdb7511a88a1476091aed67413a4927 ""
-  "/home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/ecrm0900.pk" 1726308706.49151 21356 40080b022bf71ddf84c4ae4ace647cee ""
   "/home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/ecrm1000.pk" 1726308707.3905 23808 9bec7717f7406a2454685b6e8767116e ""
   "/home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/ecrm1200.pk" 1726308705.15652 28440 84f3fb9c9dacb6d6849ca4f89262075d ""
   "/home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/ecrm1728.pk" 1726308704.70252 42516 f9602e70e3ba9f805509634c62d815a1 ""
@@ -149,15 +147,13 @@
   "/home/alexandre/.miktex/texmfs/install/tex/latex/subfig/subfig.sty" 1121281010 22049 adc8323c809ccc2c21f05c93c1fe6ff3 ""
   "/home/alexandre/.miktex/texmfs/install/tex/latex/zref/zref-abspage.sty" 1726308686.84291 2269 4fe6fb3396214c91f164d45faf9bec45 ""
   "/home/alexandre/.miktex/texmfs/install/tex/latex/zref/zref-base.sty" 1726308686.84291 20785 f7d1133a287929598a897c93f8f4c44b ""
-  "/home/alexandre/Documents/Stage-3A/docs/LaTeX/Machine learning methods to help classify liver diseases from radiomics data/report_algorithms.tex" 1726309503.10897 31443 a313a88be34e74210058ec0a19617afc ""
-  "/usr/local/share/miktex-texmf/fonts/tfm/jknappen/ec/ecbx0900.tfm" 1726308370.54583 3200 f959f56c26f697d341ba38dba18fe1f8 ""
+  "/home/alexandre/Documents/Stage-3A/docs/LaTeX/Machine learning methods to help classify liver diseases from radiomics data/report_algorithms.tex" 1728917060.60307 41641 2952405ee9867a159465ce6506f9547c ""
   "/usr/local/share/miktex-texmf/fonts/tfm/jknappen/ec/ecbx1000.tfm" 1726308370.54583 3200 328792ff19833a39406f06fa0555a6dc ""
   "/usr/local/share/miktex-texmf/fonts/tfm/jknappen/ec/ecbx1200.tfm" 1726308370.54583 3200 b8d69bc738e5ef3e08cefeef3109ff56 ""
   "/usr/local/share/miktex-texmf/fonts/tfm/jknappen/ec/ecbx1440.tfm" 1726308370.54583 3196 0b37fa3083e15c57cfa8c4ff52f2807a ""
   "/usr/local/share/miktex-texmf/fonts/tfm/jknappen/ec/ecrm0500.tfm" 1726308370.54683 3160 7643a152c0e9200a0a8161b2bb3a452d ""
   "/usr/local/share/miktex-texmf/fonts/tfm/jknappen/ec/ecrm0700.tfm" 1726308370.54783 3168 c739b83da3134ef1007979877c1089cf ""
   "/usr/local/share/miktex-texmf/fonts/tfm/jknappen/ec/ecrm0800.tfm" 1726308370.54783 3152 11ecf5aad6aacf00ff18f394ab23a8b5 ""
-  "/usr/local/share/miktex-texmf/fonts/tfm/jknappen/ec/ecrm0900.tfm" 1726308370.54783 3156 6d4f5755d77638125f6f89de4f3bb757 ""
   "/usr/local/share/miktex-texmf/fonts/tfm/jknappen/ec/ecrm1000.tfm" 1726308370.54783 3148 7e594c8240c71e432203f65ab5f95a51 ""
   "/usr/local/share/miktex-texmf/fonts/tfm/jknappen/ec/ecrm1200.tfm" 1726308370.54783 3152 4850ff0163852b7fab34bd55e1197f28 ""
   "/usr/local/share/miktex-texmf/fonts/tfm/jknappen/ec/ecrm1440.tfm" 1726308370.54783 3168 3bd7b08ba4330af81521911744311212 ""
@@ -309,13 +305,15 @@
   "/usr/local/share/miktex-texmf/tex/latex/xcolor/xcolor.sty" 1726308374.73784 55487 80a65caedd3722f4c20a14a69e785d8f ""
   "/usr/local/share/miktex-texmf/tex/latex/xkeyval/xkeyval.sty" 1726308374.80884 4937 4ce600ce9bd4ec84d0250eb6892fcf4f ""
   "doiCmd.tex" 1721046753.23 1551 1f1d103949ee2f8a554bc4d29cf04c62 ""
-  "report_algorithms.aux" 1726309503.94298 2770 8bd1e0046135b2ac50e25a9dd129d4c3 "pdflatex"
-  "report_algorithms.bbl" 1726308803.64224 1177 3066e05573c87d95adbfa3a1d7f267a1 "bibtex report_algorithms"
-  "report_algorithms.out" 1726309503.94398 1491 6c8048859554a673faa76815d4beb9af "pdflatex"
-  "report_algorithms.tex" 1726309503.10897 31443 a313a88be34e74210058ec0a19617afc ""
+  "report_algorithms.aux" 1728917061.45507 3710 1fe00b00bf60173a08cd1aaddd405899 "pdflatex"
+  "report_algorithms.bbl" 1728917023.17207 1676 d1da5b31d833540697cd2b17798b27aa "bibtex report_algorithms"
+  "report_algorithms.out" 1728917061.45607 2428 ad2430cd4fa4ab2434eb5f2b835a15d9 "pdflatex"
+  "report_algorithms.tex" 1728917060.60307 41641 2952405ee9867a159465ce6506f9547c ""
+  "report_algorithms.toc" 1728917061.45607 1323 2fac5903f86623260d2b9d3979d598bd "pdflatex"
   (generated)
   "report_algorithms.aux"
   "report_algorithms.log"
   "report_algorithms.out"
   "report_algorithms.pdf"
+  "report_algorithms.toc"
   (rewritten before read)

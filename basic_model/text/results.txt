@@ -293,3 +293,59 @@ CHC 0.675 0.8617647
 le f1 score CCK sur l'échantillon entier vaut: 0.3083004 
 le f1 score CHC sur l'échantillon entier vaut: 0.8700817 
 [1] "Le f1 macro sur l'échantillon total vaut: 0.589191029105816"
+
+Après remise à la même échelle des radios à l'extraction, avec sain extrait en micro taches mais avec first order seul:
+
+[1] "actuelle moyenne AUC test 0.793055555555556 ite: 40"
+[1] "actuel ecart type AUC test 0.11382893981919 ite: 40"
+[1] "actuelle moyenne AUC val 0.827651515151515 ite: 40"
+[1] "actuelle moyenne Accuracy test 0.642361111111111 ite: 40"
+[1] "actuelle somme des confusion matrix ite: 40 :"
+[1] "actuelle moyenne du macro F1 test 0.642489175244109 ite: 40"
+[1] "actuelle moyenne du F1 CCK test 0.398300865800866 ite: 40"
+[1] "actuelle moyenne du F1 CHC test 0.886677484687353 ite: 40"
+          Reference
+Prediction CCK CHC
+       CCK  60  65
+       CHC 100 655
+Saving 7 x 7 in image
+[1] "On va essayer de faire des plots pour les modes"
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+[1] "Voilà la matrice de confusion sommée"
+          Reference
+Prediction CCK CHC
+       CCK  60  65
+       CHC 100 655
+[1] "voilà la matrice de confusion en pourcentage: ... % de classe 1 ont été bien classés vs ... % mal classés"
+      CCK        CHC
+CCK 0.375 0.09027778
+CHC 0.625 0.90972222
+[1] "La balanced accuracy sur l'échantillon total vaut: 0.673774834437086"
+le f1 score CCK sur l'échantillon entier vaut: 0.4210526 
+le f1 score CHC sur l'échantillon entier vaut: 0.8881356 
+[1] "Le f1 macro sur l'échantillon total vaut: 0.654594112399643"
+There were 14 warnings (use warnings() to see them)
+
+ 
+Et en logistic group avec goup = bloc sur 8 entrainements (bug de pas aller plus loin?) avec sain en firstorder only, ancienne version des sains et multislices et extraction sans aires:
+
+Setting direction: controls > cases
+[1] "La valeur de l'AUC de train est de 1"
+[1] "End of analysis phase"
+[1] "actuelle moyenne AUC test 0.868055555555556 ite: 8"
+[1] "actuel ecart type AUC test 0.0634300292188325 ite: 8"
+[1] "actuelle moyenne AUC val 0.778787878787879 ite: 8"
+[1] "actuelle moyenne Accuracy test 0.744791666666667 ite: 8"
+[1] "actuelle somme des confusion matrix ite: 8 :"
+[1] "actuelle moyenne du macro F1 test 0.720212325398084 ite: 8"
+[1] "actuelle moyenne du F1 CCK test 0.538852813852814 ite: 8"
+[1] "actuelle moyenne du F1 CHC test 0.901571836943354 ite: 8"
+          Reference
+Prediction CCK CHC
+       CCK  19  15
+       CHC  13 129
+[1] "dimensions data used" "89"  
+
+approfondir...

@@ -84,7 +84,7 @@
 
 get_bloc_vec_liver <- function(vec, exist_temps = TRUE, different_clin = FALSE) {
     name_bloc <- rep("a", length(vec))
-    index_bloc <- rep(0, length(vec))
+    index_bloc <- rep(NA, length(vec))
     for (j in 1:length(vec)) {
         name_col <- vec[j]
         if (!substr(name_col, nchar(name_col) - 3, nchar(name_col)) %in% c("PORT", "ART_", "VEIN", "TARD") & exist_temps & !grepl("average_filter", name_col)) {
@@ -92,15 +92,26 @@ get_bloc_vec_liver <- function(vec, exist_temps = TRUE, different_clin = FALSE) 
                 name_bloc[j] <- paste0("clinical_", j)
                 index_bloc[j] <- -1
             } else {
-                name_bloc[j] <- "clinical"
-                index_bloc[j] <- -1
+                if (grepl("shape", name_col)) {
+                    name_bloc[j] <- "shape_univariate"
+                    index_bloc[j] <- -1
+                } else {
+                    name_bloc[j] <- "clinical"
+                    index_bloc[j] <- -1
+                }
             }
         } else {
             classed <- FALSE
             if (grepl("firstorder", name_col)) {
-                name_bloc[j] <- "first order"
-                index_bloc[j] <- 1
-                classed <- TRUE
+                if (grepl("sain", name_col)) {
+                    name_bloc[j] <- "first order sain"
+                    index_bloc[j] <- 4
+                    classed <- TRUE
+                } else {
+                    name_bloc[j] <- "first order"
+                    index_bloc[j] <- 1
+                    classed <- TRUE
+                }
             }
             if (grepl("shape", name_col)) {
                 name_bloc[j] <- "shape"
@@ -108,13 +119,18 @@ get_bloc_vec_liver <- function(vec, exist_temps = TRUE, different_clin = FALSE) 
                 classed <- TRUE
             }
             if (grepl("glcm", name_col) | grepl("gldm", name_col) | grepl("glrl", name_col) | grepl("glsz", name_col) | grepl("ngtd", name_col)) {
-                name_bloc[j] <- "texture"
-                index_bloc[j] <- 3
-                classed <- TRUE
+                if (grepl("sain", name_col)) {
+                    name_bloc[j] <- "texture sain"
+                    index_bloc[j] <- 5
+                    classed <- TRUE
+                } else {
+                    name_bloc[j] <- "texture"
+                    index_bloc[j] <- 3
+                    classed <- TRUE
+                }
             }
             if (classed == FALSE) {
-                name_bloc[j] <- "clinical"
-                index_bloc[j] <- -1
+                stop("Erreur de classification des blocs")
             }
         }
     }
@@ -177,6 +193,7 @@ get_variable_vec_liver_big <- function(x) {
         }
         return(true_name_cov)
     })
+
 
     index_clin <- which(!substr(df_loc$name_cov, nchar(df_loc$name_cov) - 3, nchar(df_loc$name_cov)) %in% c("PORT", "ART_", "VEIN", "TARD") & !grepl("average_filter", df_loc$name_cov))
 

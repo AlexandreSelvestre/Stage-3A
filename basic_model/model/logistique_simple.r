@@ -45,8 +45,14 @@ create_grid_simple <- function(x, y, len = NULL, search = "grid") {
 
 li_caret_simple$grid <- create_grid_simple
 
-fit_simple <- function(x, y, wts, param, lev, last, weights_dict, classProbs, k_smote, sampling_choice, index_variable, index_bloc, is_binary, classe_1 = NULL, penalty_adapt) {
+fit_simple <- function(x, y, wts, param, lev, last, weights_dict, classProbs, k_smote, sampling_choice, index_variable, index_bloc, is_binary, penalty_adapt, config, classe_1 = NULL) {
     li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, index_bloc, is_binary)
+
+    if (length(param) > 1) {
+        extract_all()
+    }
+
+
     ######## THE GOOD LINE FOR NORMALIZATION
     x <- li_norm$new_x
     classe_min <- names(which.min(table(y)))
@@ -152,6 +158,12 @@ li_caret_simple$loop <- NULL
 
 setMethod("train_method", "logistique_simple", function(object) {
     tuneGrid <- expand.grid(lambda = exp(log(10) * seq(log10(object@lambda_min), log10(object@lambda_max), length = object@tuneLength)))
+    if (length(object@li_data_cross_val) > 0) {
+        li_tune <- c(as.list(tuneGrid), object@li_data_cross_val)
+        tuneGrid <- expand.grid(li_tune)
+    }
+    print(tuneGrid)
+    stop()
     if (object@parallel$do) {
         numCores <- detectCores()
         cl <- makePSOCKcluster(object@parallel$n_process)
@@ -171,11 +183,11 @@ setMethod("train_method", "logistique_simple", function(object) {
     print(dim(object@train_cols[, object@col_x]))
     object@model <- caret::train(
         y = object@y_train, x = object@train_cols[, object@col_x],
-        method = li_caret_simple, trControl = object@cv, metric = "AUC",
-        tuneLength = 8, tuneGrid = tuneGrid,
+        method = li_caret_simple, trControl = object@cv, metric = "AUC", tuneGrid = tuneGrid,
         weights_dict = object@weights, k_smote = object@k_smote, sampling_choice = object@sampling,
         index_variable = object@index_variable, index_bloc = object@index_bloc, is_binary = object@is_binary,
-        classe_1 = object@classe_1, penalty_adapt = object@penalty_adapt
+        classe_1 = object@classe_1, penalty_adapt = object@penalty_adapt, config = object@config
+        # , tuneLength = object@tuneLength
     )
     if (object@parallel$do) {
         stopCluster(cl)

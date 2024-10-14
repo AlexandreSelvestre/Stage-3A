@@ -2,13 +2,17 @@ default:
   regression: TRUE
 
 radio:
-  lambda_min: 0.001
+  lambda_min: 0.001 #en factor!
   tuneLength: 10
   index_type: "var" #"bloc" , "mode" ou "var" : par quoi on groupe
 
-simu:
-  lambda_min: 0.001
-  tuneLength: 20 
-  index_type: "bloc" #"bloc" , "mode" ou "var" : par quoi on groupe
+radio_big:
+  lambda_min: 0.001 #en factor!
+  tuneLength: 10
+  index_type: "bloc" #"var","bloc", "mode_slice", "mode_temps" en
 
+simu:
+  lambda_min: 0.001 #en factor!
+  tuneLength: 20
+  index_type: "bloc" #"bloc" , "mode" ou "var" : par quoi on groupe
 
