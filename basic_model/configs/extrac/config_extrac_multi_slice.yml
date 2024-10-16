@@ -22,7 +22,7 @@ default:
   #ici c'est à chaque fois la proportion d'absents acceptable
   kill_mixtes: TRUE
   kill_outliers: TRUE
-  n_slices: 5
+  n_slices: 10
   strong_exclusion: FALSE #Est-ce que la présence d'une seule temporalité suffit à faire commencer la tumeur (TRUE = oui)
 
   shape_3D:
@@ -39,19 +39,19 @@ default:
   sain_first_order_only: FALSE #comparer
   #Actuellement seul le firstorder est gardé
 
-  area_extrac: TRUE
+  area_extrac: FALSE
 
   keep_features_slice:
     first_order: TRUE
     texture: TRUE
 
-  li_data_cross_val:
-    n_slices:
-      - 3
-      - 5
-      - 8
-    do_decal:
-      - TRUE
-      - FALSE
+  # li_data_cross_val:
+  #   n_slices:
+  #     - 3
+  #     - 5
+  #     - 8
+  #   do_decal:
+  #     - TRUE
+  #     - FALSE
 
 my_config:

@@ -1,0 +1,23 @@
+PWD /home/alexandre/Documents/Stage-3A/docs/LaTeX/Machine learning methods to help classify liver diseases from radiomics data/tests
+INPUT /home/alexandre/.miktex/texmfs/data/miktex/data/le/pdftex/pdflatex.fmt
+INPUT /home/alexandre/Documents/Stage-3A/docs/LaTeX/Machine learning methods to help classify liver diseases from radiomics data/tests/test.tex
+OUTPUT test.log
+INPUT /usr/local/share/miktex-texmf/tex/latex/base/article.cls
+INPUT /usr/local/share/miktex-texmf/tex/latex/base/article.cls
+INPUT /usr/local/share/miktex-texmf/tex/latex/base/size10.clo
+INPUT /usr/local/share/miktex-texmf/tex/latex/base/size10.clo
+INPUT /usr/local/share/miktex-texmf/tex/latex/base/size10.clo
+INPUT /usr/local/share/miktex-texmf/tex/latex/l3backend/l3backend-pdftex.def
+INPUT /usr/local/share/miktex-texmf/tex/latex/l3backend/l3backend-pdftex.def
+INPUT ./test.aux
+INPUT ./test.aux
+INPUT test.aux
+OUTPUT test.aux
+INPUT /usr/local/share/miktex-texmf/fonts/tfm/public/cm/cmbx10.tfm
+OUTPUT test.pdf
+INPUT /home/alexandre/.miktex/texmfs/data/fonts/map/pdftex/pdftex.map
+INPUT test.aux
+INPUT /usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmbx10.pfb
+INPUT /usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmbx10.pfb
+INPUT /usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmr10.pfb
+INPUT /usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmr10.pfb

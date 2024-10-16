@@ -46,11 +46,21 @@ create_grid_simple <- function(x, y, len = NULL, search = "grid") {
 li_caret_simple$grid <- create_grid_simple
 
 fit_simple <- function(x, y, wts, param, lev, last, weights_dict, classProbs, k_smote, sampling_choice, index_variable, index_bloc, is_binary, penalty_adapt, config, classe_1 = NULL) {
-    li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, index_bloc, is_binary)
+    # if (length(param) > 1) {
+    #     for (name in names(param)) {
+    #         config[[name]] <- param[[name]]
+    #     }
+    #     li_param_data <- param[names(param) %in% names(config$li_data_cross_val)]
+    #     pairs <- sapply(names(), function(name) {
+    #         paste(name, li_param_data[[name]], sep = "_")
+    #     })
+    #     end_name <- paste(pairs, collapse = "_")
 
-    if (length(param) > 1) {
-        extract_all()
-    }
+    #     path_data_used <- paste0(config$path_data, paste0("/data_used", end_name, ".xlsx"))
+    #     data_used_loc <- as.data.frame(read.csv(path_data_used, check.names = FALSE))
+    #     x <-
+    # }
+    li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, index_bloc, is_binary)
 
 
     ######## THE GOOD LINE FOR NORMALIZATION
@@ -162,8 +172,6 @@ setMethod("train_method", "logistique_simple", function(object) {
         li_tune <- c(as.list(tuneGrid), object@li_data_cross_val)
         tuneGrid <- expand.grid(li_tune)
     }
-    print(tuneGrid)
-    stop()
     if (object@parallel$do) {
         numCores <- detectCores()
         cl <- makePSOCKcluster(object@parallel$n_process)

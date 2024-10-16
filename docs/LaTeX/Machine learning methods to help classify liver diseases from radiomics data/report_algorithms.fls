@@ -191,6 +191,10 @@ INPUT /usr/local/share/miktex-texmf/tex/generic/pgf/frontendlayer/tikz/libraries
 INPUT /usr/local/share/miktex-texmf/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarytopaths.code.tex
 INPUT /usr/local/share/miktex-texmf/tex/latex/tools/verbatim.sty
 INPUT /usr/local/share/miktex-texmf/tex/latex/tools/verbatim.sty
+INPUT /home/alexandre/.miktex/texmfs/install/tex/latex/booktabs/booktabs.sty
+INPUT /home/alexandre/.miktex/texmfs/install/tex/latex/booktabs/booktabs.sty
+INPUT /usr/local/share/miktex-texmf/tex/latex/tools/array.sty
+INPUT /usr/local/share/miktex-texmf/tex/latex/tools/array.sty
 INPUT /home/alexandre/.miktex/texmfs/install/tex/latex/fancyhdr/fancyhdr.sty
 INPUT /home/alexandre/.miktex/texmfs/install/tex/latex/fancyhdr/fancyhdr.sty
 INPUT /usr/local/share/miktex-texmf/tex/latex/blindtext/blindtext.sty

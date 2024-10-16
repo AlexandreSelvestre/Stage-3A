@@ -1,0 +1,18 @@
+# Fdb version 4
+["pdflatex"] 1729006475.07147 "/home/alexandre/Documents/Stage-3A/docs/LaTeX/Machine learning methods to help classify liver diseases from radiomics data/tests/test.tex" "test.pdf" "test" 1729006475.28922 0
+  "/home/alexandre/.miktex/texmfs/data/fonts/map/pdftex/pdftex.map" 1729005701.20025 89647 935dc4f5e74bd82e4cc831400ed92539 ""
+  "/home/alexandre/.miktex/texmfs/data/miktex/data/le/pdftex/pdflatex.fmt" 1729005915.22427 11941086 485fb566cad571b0fb2406da06ab0add ""
+  "/home/alexandre/Documents/Stage-3A/docs/LaTeX/Machine learning methods to help classify liver diseases from radiomics data/tests/test.tex" 1729006474.61232 1148 ca40a899d3ead5b8f24f83202855e8cb ""
+  "/usr/local/share/miktex-texmf/fonts/tfm/public/cm/cmbx10.tfm" 1726308370.22982 1328 c834bbb027764024c09d3d2bf908b5f0 ""
+  "/usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmbx10.pfb" 1726308367.21281 34811 78b52f49e893bcba91bd7581cdc144c0 ""
+  "/usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmr10.pfb" 1726308367.24181 35752 024fb6c41858982481f6968b5fc26508 ""
+  "/usr/local/share/miktex-texmf/tex/latex/base/article.cls" 1726308372.51783 20144 67a5f8e0f9e445e8ec6834e595cebdc9 ""
+  "/usr/local/share/miktex-texmf/tex/latex/base/size10.clo" 1726308372.51683 8448 358bf3de18513f057a13bdc6e6770c41 ""
+  "/usr/local/share/miktex-texmf/tex/latex/l3backend/l3backend-pdftex.def" 1726308371.28583 29785 9f93ab201fe5dd053afcc6c1bcf7d266 ""
+  "test.aux" 1729006475.24032 461 7ee356c2edf2032127ca8cd634b9e0b8 "pdflatex"
+  "test.tex" 1729006474.61232 1148 ca40a899d3ead5b8f24f83202855e8cb ""
+  (generated)
+  "test.aux"
+  "test.log"
+  "test.pdf"
+  (rewritten before read)

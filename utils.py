@@ -69,7 +69,7 @@ def get_good_slices_from_li(li_image,li_mask):
             li_good.append(slice_num)
     if len(li_good) == 0:
         print('No good slices')
-        return
+        return []
     else:
         return li_good
 
@@ -132,7 +132,7 @@ def give_ls(ls_image):
     return mask_superpose
 
 
-def mask_superpose_simple(slice_image, slice_mask, other_mask=None, num=1, max_num=1, legend="No legend"):
+def mask_superpose_simple(slice_image, slice_mask, other_mask=None, num=1, max_num=1, legend="No legend", line = 1):
     # Show juste la superposition et attend une slice prédéfinie ainsi qu'une image name
     if isinstance(slice_image, sitk.Image):
         slice_good = sitk.GetArrayFromImage(slice_image)
@@ -150,7 +150,7 @@ def mask_superpose_simple(slice_image, slice_mask, other_mask=None, num=1, max_n
             other_mask = sitk.GetArrayFromImage(other_mask)
         mask_superpose = other_mask != 0
         slice_rgb[mask_superpose == 1, 2] = 255
-    plt.subplot(1, max_num, num)
+    plt.subplot(line, max_num, num)
     plt.imshow(slice_rgb)
     plt.title(legend)
 

@@ -28,13 +28,13 @@
 
 # config_extrac <- config::get(file = "configs/extrac/config_extrac_multi_slice.yml", config = "my_config")
 
-extract_all <- function(config_extrac, sys_name = "Linux") {
+extract_all <- function(config_extrac, sys_name = "Linux", end_name = "") {
     # radiomic_global <- "/radiomiques_global.xlsx"
     radiomic_global <- "/global_excel.xlsx"
     path_data <- config_extrac$path_data
     # if (config_extrac$shape_2D$do) {
     # if (config_extrac$compare_sain) {
-    brute_data <- read_excel(paste0(path_data, "/multislice_excel_with_shape_2D_sain_2.xlsx"))
+    brute_data <- read_excel(paste0(path_data, "/multislice_excel_with_shape_2D_10_min.xlsx"))
     brute_data <- as.data.frame(brute_data)
     # print(brute_data$patient_num)
     # } else {
@@ -336,27 +336,27 @@ extract_all <- function(config_extrac, sys_name = "Linux") {
         # print(li_distance_to_full_slice_per_slice_per_patient[[as.character(patient_num)]])
         vec_indices_to_extrac <- sapply(seq_len(nb_to_extract), function(i) {
             if (config_extrac$area_extrac == FALSE) {
-                frac_to_extract <- i / nb_to_extract
+                frac_to_extract <- i / nb_to_extract - 0.5 / nb_to_extract
                 index_to_extract_float <- frac_to_extract * (true_nb_slices - 1) + 1
-                distances_to_index_float <- data.table::copy(li_distance_to_full_slice_per_slice_per_patient[[as.character(patient_num)]][[round(index_to_extract_float)]]) # le c(avant, après) de la slice qu'on voudrait si elle existait...
-                erreur <- round(index_to_extract_float) - index_to_extract_float
+                distances_to_index_float <- data.table::copy(li_distance_to_full_slice_per_slice_per_patient[[as.character(patient_num)]][[ceiling(index_to_extract_float)]]) # le c(avant, après) de la slice qu'on voudrait si elle existait...
+                erreur <- ceiling(index_to_extract_float) - index_to_extract_float
                 distances_to_index_float_calculus <- data.table::copy(distances_to_index_float)
                 distances_to_index_float_calculus[1] <- distances_to_index_float_calculus[1] + erreur
                 distances_to_index_float_calculus[2] <- distances_to_index_float_calculus[2] - erreur
                 avant_ou_apres <- which.min(distances_to_index_float_calculus)
                 distances_to_index_float[1] <- -distances_to_index_float[1] # valeur algébrique du shift
                 chosen_shift <- distances_to_index_float[avant_ou_apres]
-                chosen_slice_position <- round(index_to_extract_float) + chosen_shift
+                chosen_slice_position <- ceiling(index_to_extract_float) + chosen_shift
                 chosen_slice_num <- true_vec_slices[chosen_slice_position]
-                # print(paste(chosen_slice_num, "min:", true_vec_slices[1], "max:", true_vec_slices[length(true_vec_slices)], "frac:", frac_to_extract))
+                print(paste(chosen_slice_num, "min:", true_vec_slices[1], "max:", true_vec_slices[length(true_vec_slices)], "frac:", frac_to_extract))
             } else {
                 area_tot <- li_area_repartition[[true_nb_slices]]
-                # area_to_extract <- (i / nb_to_extract - 0.5 / nb_to_extract) * area_tot
-                area_to_extract <- ((i + 1) / (nb_to_extract + 1)) * area_tot # New strat??
+                area_to_extract <- (i / nb_to_extract - 0.5 / nb_to_extract) * area_tot
+                # area_to_extract <- ((i + 1) / (nb_to_extract + 1)) * area_tot # New strat??
                 difference_area <- abs(unlist(li_area_repartition) - area_to_extract)
                 index_to_extract <- which.min(difference_area)
                 chosen_slice_num <- true_vec_slices[index_to_extract]
-                # print(paste(chosen_slice_num, "min:", true_vec_slices[1], "max:", true_vec_slices[length(true_vec_slices)]))
+                print(paste(chosen_slice_num, "min:", true_vec_slices[1], "max:", true_vec_slices[length(true_vec_slices)]))
             }
 
 
@@ -624,8 +624,8 @@ extract_all <- function(config_extrac, sys_name = "Linux") {
 
     data_used <- data_used[, setdiff(colnames(data_used), c("key"))]
 
-    write_xlsx(data_used, paste0(path_data, "/data_used.xlsx"))
-    write.csv(data_used, paste0(path_data, "/data_used.csv"), row.names = FALSE)
+    write_xlsx(data_used, paste0(path_data, paste0("/data_used", end_name, ".xlsx")))
+    write.csv(data_used, paste0(path_data, paste0("/data_used", end_name, ".csv")), row.names = FALSE)
 
     ### Créer les autres infos indispensables, notamment pour du traitement multiway multibloc
 
