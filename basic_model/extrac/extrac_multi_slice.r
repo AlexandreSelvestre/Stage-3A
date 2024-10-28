@@ -29,25 +29,12 @@
 # config_extrac <- config::get(file = "configs/extrac/config_extrac_multi_slice.yml", config = "my_config")
 
 extract_all <- function(config_extrac, sys_name = "Linux", end_name = "") {
-    # radiomic_global <- "/radiomiques_global.xlsx"
-    radiomic_global <- "/global_excel.xlsx"
+    radiomic_global <- "/global_excel_resampled.xlsx"
+    path_sain_used <- "/liver_sain_latest.xlsx"
     path_data <- config_extrac$path_data
-    # if (config_extrac$shape_2D$do) {
-    # if (config_extrac$compare_sain) {
-    brute_data <- read_excel(paste0(path_data, "/multislice_excel_with_shape_2D_10_min.xlsx"))
+    brute_data <- read_excel(paste0(path_data, "/multislice_excel_with_shape_2D_10_area.xlsx"))
     brute_data <- as.data.frame(brute_data)
-    # print(brute_data$patient_num)
-    # } else {
-    #     brute_data <- read_excel(paste0(path_data, "/multislice_excel_with_shape_2D.xlsx")) # devrait faire identique a multislice classique!!!! (shape 2d pres)
-    #     brute_data <- as.data.frame(brute_data)
-    # }
-    # } else {
-    #     brute_data <- read_excel(paste0(path_data, "/multislice_excel.xlsx"))
-    #     brute_data <- as.data.frame(brute_data)
-    #     if (config_extrac$compare_sain) {
-    #         stop("Enlever les shape2D est absurde")
-    #     }
-    # }
+
 
 
     ### Degager les colonnes fausses
@@ -336,7 +323,7 @@ extract_all <- function(config_extrac, sys_name = "Linux", end_name = "") {
         # print(li_distance_to_full_slice_per_slice_per_patient[[as.character(patient_num)]])
         vec_indices_to_extrac <- sapply(seq_len(nb_to_extract), function(i) {
             if (config_extrac$area_extrac == FALSE) {
-                frac_to_extract <- i / nb_to_extract - 0.5 / nb_to_extract
+                frac_to_extract <- (i - 1) / (nb_to_extract - 1)
                 index_to_extract_float <- frac_to_extract * (true_nb_slices - 1) + 1
                 distances_to_index_float <- data.table::copy(li_distance_to_full_slice_per_slice_per_patient[[as.character(patient_num)]][[ceiling(index_to_extract_float)]]) # le c(avant, après) de la slice qu'on voudrait si elle existait...
                 erreur <- ceiling(index_to_extract_float) - index_to_extract_float
@@ -517,7 +504,7 @@ extract_all <- function(config_extrac, sys_name = "Linux", end_name = "") {
     write_xlsx(data_radio_in_lines, paste0(path_data, "/data_radio_in_lines.xlsx"))
 
     if (config_extrac$compare_sain) {
-        path_sain <- paste0(path_data, "/liver_sain_go.xlsx")
+        path_sain <- paste0(path_data, path_sain_used)
         data_sain <- read_excel(path_sain)
         data_sain <- as.data.frame(data_sain)
         col_diagnos <- grepl("diagnostics", colnames(data_sain))

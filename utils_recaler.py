@@ -16,7 +16,7 @@ import logging
 import cv2
 import scipy.ndimage as nd
 from natsort import natsorted
-from utils import get_all_good_slices, give_ls, get_good_slice, rescale_image, rescale_image_float, mask_superpose_simple, check_key_num, resample_image_to_reference
+from utils import get_all_good_slices, give_ls, get_good_slice, rescale_image, rescale_image_float, mask_superpose_simple, check_key_num, resample_image_to_reference, get_good_slices_from_li
 
 
 def eliminate_temps(name):
@@ -24,7 +24,7 @@ def eliminate_temps(name):
     return (name[:-useless_part_length])
 
 
-def equalize_slices(ls_image_full_time, dict_image_full_time,force_spacing = None, num=None, key=None, show=False, do_nothing=False):
+def equalize_slices(ls_image_full_time, dict_image_full_time, force_spacing = None, num=None, key=None, show=False, do_nothing=False):
     names = check_key_num(num, key, ls_image_full_time, dict_image_full_time)
     names_masks = [name.replace('_NAT', '').replace(
         '.nii', '_masked.nii') for name in names]
@@ -39,12 +39,11 @@ def equalize_slices(ls_image_full_time, dict_image_full_time,force_spacing = Non
     good_time = np.argmin(differences)
     if not do_nothing:
         for i in range(len(li_images)):
-            ref = False
-            if i == good_time:
-                ref = True
-            li_images[i], resample = resample_image_to_reference(
+            li_images[i] = resample_image_to_reference(
                 li_images[i], li_images[good_time], force_spacing=force_spacing)
-            li_masks[i] = resample.Execute(li_masks[i]) != 0
+            li_masks[i] = resample_image_to_reference(
+                li_masks[i], li_images[good_time], force_spacing=force_spacing, interpolator = "nearest")
+
 
     li_num_slice_tot = np.array([mask.GetSize()[2] for mask in li_masks])
     li_slices_masks = [[sitk.Cast(mask[:, :, z], sitk.sitkUInt8) for z in range(li_num_slice_tot[i])] for i, mask in enumerate(li_masks)]
@@ -189,12 +188,17 @@ def find_best_decal_all_times_short(li_slices, fenetre_z, fenetre_x=None, fenetr
     return li_best_decal
 
 def find_best_all_area(li_masks, fenetre_z, fenetre_x, fenetre_y, ref_num = 0):
-    ####### CONTINUER avec ref_num
     li_slices_x = [[sitk.GetArrayFromImage(li_slices_time_t[x,:,:]) for x in range(li_slices_time_t.GetSize()[0])] for li_slices_time_t in li_masks]
     li_slices_y = [[sitk.GetArrayFromImage(li_slices_time_t[:,y,:]) for y in range(li_slices_time_t.GetSize()[1])] for li_slices_time_t in li_masks]
     li_slices_z = [[sitk.GetArrayFromImage(li_slices_time_t[:,:,z]) for z in range(li_slices_time_t.GetSize()[2])] for li_slices_time_t in li_masks]
-    li_best_decal_x = [find_best_z_decal(li_slices_x[ref_num], li_slices_time_t_other, fenetre_x) if i != ref_num else 0 for i,li_slices_time_t_other in enumerate(li_slices_x)]
-    li_best_decal_y = [find_best_z_decal(li_slices_y[ref_num], li_slices_time_t_other, fenetre_y) if i != ref_num else 0 for i, li_slices_time_t_other in enumerate(li_slices_y)]
+    if fenetre_x is not None:
+        li_best_decal_x = [find_best_z_decal(li_slices_x[ref_num], li_slices_time_t_other, fenetre_x) if i != ref_num else 0 for i,li_slices_time_t_other in enumerate(li_slices_x)]
+    else:
+        li_best_decal_x = [0 for i in range(len(li_masks))]
+    if fenetre_y is not None:
+        li_best_decal_y = [find_best_z_decal(li_slices_y[ref_num], li_slices_time_t_other, fenetre_y) if i != ref_num else 0 for i, li_slices_time_t_other in enumerate(li_slices_y)]
+    else:
+        li_best_decal_y = [0 for i in range(len(li_masks))]
     li_best_decal_z = [find_best_z_decal(li_slices_z[ref_num], li_slices_time_t_other, fenetre_z) if i != ref_num else 0 for i, li_slices_time_t_other in enumerate(li_slices_z)]
     spacing = li_masks[0].GetSpacing()
     li_best_shift_y = [li_best_shift_y * spacing[1] for li_best_shift_y in li_best_decal_y]
@@ -224,4 +228,27 @@ if __name__ == "__main__":
     plt.show()
     
     
+def find_new_scale(li_images, li_masks,n_slices, median_spacing):
+    # retourne les spacings sur z qu'on voudrait pour que chaque tumeur soit de n_slices
+    li_spacings_z = []
+    li_new_num_slices = []
+    li_heights_true_size = []
+    for i, image in enumerate(li_images):
+        spacing_small_z = [median_spacing[0], median_spacing[1], min(median_spacing[2]/2, image.GetSpacing()[2]/2)] #pour être fin sur z
+        image_small_z , resampler = resample_image_to_reference(image, image, spacing_small_z)
+        mask_small_z = resampler.Execute(li_masks[i]) != 0
+        
+        li_image_loc = [image_small_z[:,:,z] for z in range(image_small_z.GetSize()[2])]
+        li_mask_loc = [mask_small_z[:,:,z] for z in range(mask_small_z.GetSize()[2])]
+        li_true_slices_loc = get_good_slices_from_li(li_image_loc, li_mask_loc)
+        height_pixels = li_true_slices_loc[len(li_true_slices_loc) - 1] - li_true_slices_loc[0] #pas de +1 car aucune cance d'être PILE au début de la tumeur sur le première slice
+        spacing_z = image_small_z.GetSpacing()[2]
+        height_true_size = height_pixels*spacing_z
+        better_spacing_z = height_true_size/n_slices #doit garantir n_slices (car on a nécessairement un peu sous-estimé la hauteur de la tumeur à cause du sampling pas infiniment petit)
+        # Il faut potentiellement augmenter le nombre de slices sinon la tumeur peut atterrir out of bounds
+        new_num_slices = int(np.ceil(image.GetSize()[2]*image.GetSpacing()[2]/better_spacing_z))
+        li_spacings_z.append(better_spacing_z)
+        li_new_num_slices.append(new_num_slices)
+        li_heights_true_size.append(height_true_size)
+    return li_spacings_z, li_new_num_slices, li_heights_true_size
     

@@ -195,6 +195,8 @@ INPUT /home/alexandre/.miktex/texmfs/install/tex/latex/booktabs/booktabs.sty
 INPUT /home/alexandre/.miktex/texmfs/install/tex/latex/booktabs/booktabs.sty
 INPUT /usr/local/share/miktex-texmf/tex/latex/tools/array.sty
 INPUT /usr/local/share/miktex-texmf/tex/latex/tools/array.sty
+INPUT /home/alexandre/.miktex/texmfs/install/tex/latex/enumitem/enumitem.sty
+INPUT /home/alexandre/.miktex/texmfs/install/tex/latex/enumitem/enumitem.sty
 INPUT /home/alexandre/.miktex/texmfs/install/tex/latex/fancyhdr/fancyhdr.sty
 INPUT /home/alexandre/.miktex/texmfs/install/tex/latex/fancyhdr/fancyhdr.sty
 INPUT /usr/local/share/miktex-texmf/tex/latex/blindtext/blindtext.sty
@@ -451,6 +453,13 @@ INPUT /home/alexandre/.miktex/texmfs/install/fonts/tfm/public/mnsymbol/MnSymbolD
 INPUT /home/alexandre/.miktex/texmfs/install/fonts/enc/dvips/mnsymbol/MnSymbolF.enc
 INPUT /home/alexandre/.miktex/texmfs/install/fonts/enc/dvips/mnsymbol/MnSymbolA.enc
 INPUT /usr/local/share/miktex-texmf/fonts/tfm/jknappen/ec/tcrm1000.tfm
+INPUT ./images/plot_depth_volume_2.png
+INPUT ./images/plot_depth_volume_2.png
+INPUT ./images/plot_depth_volume_2.png
+INPUT ./images/plot_depth_volume_2.png
+INPUT ./images/plot_depth_volume_2.png
+INPUT ./images/plot_depth_volume_2.png
+INPUT ./images/plot_depth_volume_2.png
 INPUT ./report_algorithms.bbl
 INPUT ./report_algorithms.bbl
 INPUT report_algorithms.bbl

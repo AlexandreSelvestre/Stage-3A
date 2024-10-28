@@ -35,7 +35,7 @@ default:
 
   keep_global: FALSE #garder les features globaux (hors shape)
 
-  compare_sain: TRUE
+  compare_sain: FALSE
   sain_first_order_only: FALSE #comparer
   #Actuellement seul le firstorder est gardé
 

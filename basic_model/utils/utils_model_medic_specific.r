@@ -130,6 +130,7 @@ get_bloc_vec_liver <- function(vec, exist_temps = TRUE, different_clin = FALSE) 
                 }
             }
             if (classed == FALSE) {
+                print(name_col)
                 stop("Erreur de classification des blocs")
             }
         }

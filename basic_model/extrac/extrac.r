@@ -1,10 +1,11 @@
 extract_all <- function(config_extrac, sysname) {
     ##### Importer les données ########
     # radiomic_global <- "/radiomiques_global.xlsx"
-    radiomic_global <- "/global_excel.xlsx"
+    radiomic_global <- "/global_excel_resampled.xlsx"
+    path_sain_used <- "/liver_sain_latest.xlsx"
     path_data <- config_extrac$path_data
     if (sysname == "Linux") {
-        data_radio <- read_excel(paste0(path_data, "/radiomiques_global.xlsx"))
+        data_radio <- read_excel(paste0(path_data, radiomic_global))
         data_patients <- read_excel(paste0(path_data, "/Descriptif_patients.xlsx"))
     } else {
         data_radio <- read_excel("..\\data\\radiomiques_global.xlsx")
@@ -84,13 +85,18 @@ extract_all <- function(config_extrac, sysname) {
     }
 
 
+
     data_patients$Gender <- unname(sapply(data_patients$Gender, change_genre))
 
     former_col_names <- colnames(data_radio)
     unique_col_names <- c("keys", "patient_num", "classe_name")
-    multiple_former_col_names <- former_col_names[setdiff(former_col_names, unique_col_names)]
-    multiple_former_col_names <- setdiff(former_col_names, c("classe_name, temps_inj, patient_num"))
-
+    if (config_extrac$average_shape) {
+        shape_names <- grepl("shape", names(data_radio))
+        shape_names <- names(data_radio)[shape_names]
+        unique_col_names <- c(unique_col_names, shape_names)
+    }
+    multiple_former_col_names <- setdiff(former_col_names, unique_col_names)
+    multiple_former_col_names <- setdiff(multiple_former_col_names, c("classe_name", "temps_inj", "patient_num"))
 
     new_col_names <- unique_col_names
     for (temps_inj in config_extrac$time_inj) {
@@ -98,6 +104,7 @@ extract_all <- function(config_extrac, sysname) {
             new_col_names <- append(new_col_names, glue("{col_name}_{temps_inj}"))
         }
     }
+    # print(new_col_names)
 
     dict_temps <- list()
     for (i in 1:length(config_extrac$time_inj)) {
@@ -122,7 +129,7 @@ extract_all <- function(config_extrac, sysname) {
     for (patient in li_patient) {
         for (type in types) {
             if (any(data_radio$classe_name == type & data_radio$patient_num == patient)) {
-                key <- paste(patient, type, sep = ",")
+                key <- paste(type, patient, sep = "_")
                 new_li <- copy(li_init)
                 new_li[[1]] <- key
                 new_li[[2]] <- patient
@@ -132,14 +139,14 @@ extract_all <- function(config_extrac, sysname) {
         }
     }
 
-    # write_xlsx(data_radio_in_lines, "..\\data\\test.xlsx")
+    # write_xlsx(data_radio_in_lines, paste0(path_data, "/data_radio_avant.xlsx"))
 
 
     ## Remplir les lignes
     # data_radio_in_lines <- read_excel("..\\data\\test.xlsx")
 
     for (i in 1:dim(data_radio)[1]) {
-        key <- paste(data_radio[["patient_num"]][i], data_radio[["classe_name"]][i], sep = ",")
+        key <- paste(data_radio[["classe_name"]][i], data_radio[["patient_num"]][i], sep = "_")
         new_row <- data_radio_in_lines[data_radio_in_lines$keys == key, ]
         short_row <- data_radio[i, ]
         name_time_inj <- short_row[["temps_inj"]][1]
@@ -148,14 +155,93 @@ extract_all <- function(config_extrac, sysname) {
         }
         if (name_time_inj %in% names(dict_temps)) {
             index_temps <- dict_temps[[name_time_inj]]
-            start_index_row <- 4 + index_temps * length(multiple_former_col_names)
-            new_row[1, start_index_row:(start_index_row + length(multiple_former_col_names) - 1)] <- short_row[, setdiff(colnames(short_row), c("classe_name", "temps_inj", "patient_num"))]
+            start_index_row <- length(unique_col_names) + 1 + index_temps * length(multiple_former_col_names)
+            new_row[1, start_index_row:(start_index_row + length(multiple_former_col_names) - 1)] <- short_row[, setdiff(colnames(short_row), c("classe_name", "temps_inj", "patient_num", unique_col_names))]
             data_radio_in_lines[data_radio_in_lines$keys == key, ] <- new_row
+        }
+    }
+    if (config_extrac$average_shape) {
+        for (i in 1:nrow(data_radio_in_lines)) {
+            key <- data_radio_in_lines$keys[i]
+            classe_name <- data_radio_in_lines$classe_name[i]
+            patient_num <- data_radio_in_lines$patient_num[i]
+            df_patient_shape <- data_radio[data_radio$patient_num == patient_num & data_radio$classe_name == classe_name, shape_names]
+            for (name_col in colnames(df_patient_shape)) {
+                data_radio_in_lines[i, name_col] <- mean(df_patient_shape[[name_col]])
+            }
         }
     }
 
 
-    # write_xlsx(data_radio_in_lines, "..\\data\\radio_in_lines.xlsx")
+    if (config_extrac$compare_sain$do) {
+        path_sain <- paste0(path_data, path_sain_used)
+        data_sain <- read_excel(path_sain)
+        data_sain <- as.data.frame(data_sain)
+        col_diagnos <- grepl("diagnostics", colnames(data_sain))
+        data_sain <- data_sain[, !col_diagnos]
+        chose_firstorder <- grep("firstorder", colnames(data_sain))
+        chose_firstorder <- colnames(data_sain)[chose_firstorder]
+        keep_cols <- c("classe_name", "temps_inj", "patient_num", chose_firstorder)
+        if (config_extrac$compare_sain$first_order_only) {
+            data_sain <- data_sain[, keep_cols]
+        }
+        col_to_examine <- !colnames(data_sain) %in% c("slice_num", "classe_name", "temps_inj", "patient_num")
+        indices_not_examined <- which(col_to_examine == FALSE)
+        vec_sd <- as.vector(apply(data_sain[, col_to_examine], 2, function(x) sd(x, na.rm = TRUE)))
+        col_const <- vec_sd < 10^-6
+        j <- 1
+        # Remettre des FALSE pour les colonnes non examinées aux bons endroits
+        while (j <= ncol(data_sain)) {
+            if (j %in% indices_not_examined) {
+                col_const <- append(col_const, FALSE, after = j - 1)
+            }
+            j <- j + 1
+        }
+        # print(col_const)
+        data_sain <- data_sain[, !col_const]
+
+        # Dégager les mixtes si demandé
+        if (config_extrac$kill_mixtes) {
+            data_sain <- data_sain[data_sain$classe_name != "Mixtes", ]
+        }
+        data_sain <- data_sain[data_sain$temps_inj %in% config_extrac$time_inj_sain_name, ]
+        col_degager <- c("patient_num", "classe_name", "temps_inj")
+        col_to_concatenate <- setdiff(colnames(data_sain), col_degager)
+        data_sain[["keys"]] <- paste0(data_sain$classe_name, "_", data_sain$patient_num)
+        lines <- lapply(unique(data_sain$keys), function(key) {
+            df_sain_key <- data_sain[data_sain$key == key, ]
+            vec_line <- c()
+            if (nrow(df_sain_key) != length(config_extrac$time_inj_sain_name)) {
+                # print(paste("Key", key, "not found in sain data"))
+                return(NULL)
+            } else {
+                for (time in config_extrac$time_inj_sain_name) {
+                    vec_line_time <- unname(unlist(df_sain_key[df_sain_key$temps_inj == time, col_to_concatenate]))
+                    vec_line <- c(vec_line, vec_line_time)
+                }
+                vec_line <- c(key, vec_line)
+                return(vec_line)
+            }
+        })
+        lines <- Filter(Negate(is.null), lines)
+        data_sain_in_lines <- as.data.frame(do.call(rbind, lines))
+        new_col_names <- c()
+
+        # Parcourir chaque élément de config_extrac$new_names_time_inj
+        for (time_name in config_extrac$time_inj) {
+            # Pour chaque élément de col_to_concatenate, créer un nouveau nom de colonne
+            for (col_name in col_to_concatenate) {
+                new_col_names <- c(new_col_names, paste0(col_name, "_sain_", time_name))
+            }
+        }
+        colnames(data_sain_in_lines) <- c("keys", new_col_names)
+        write_xlsx(data_sain_in_lines, paste0(path_data, "/data_sain_in_lines.xlsx"))
+
+        data_radio_in_lines <- merge(data_sain_in_lines, data_radio_in_lines, by = c("keys"), all = FALSE)
+    }
+
+
+    write_xlsx(data_radio_in_lines, paste0(path_data, "/data_radio_in_lines.xlsx"))
     data_used <- merge(data_radio_in_lines, data_patients, by = c("patient_num", "classe_name"))
 
 
@@ -173,7 +259,6 @@ extract_all <- function(config_extrac, sysname) {
         write_xlsx(data_used, "..\\data\\data_used.xlsx")
         write.csv(data_used, "..\\data\\data_used.csv", row.names = FALSE)
     }
-
 
     exclude_cols <- c("patient_num", "keys")
     explained_col <- c("classe_name")

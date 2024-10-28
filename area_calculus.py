@@ -31,7 +31,7 @@ def get_profile(image, mask, spacing):
     extractor_area = featureextractor.RadiomicsFeatureExtractor(**settings)
     extractor_area.disableAllFeatures()
     extractor_area.enableFeaturesByName(**{"shape2D": ["MeshSurface"]})
-    new_image, resampler = resample_image_to_reference(mask, mask, spacing, force_size = None)
+    new_image, resampler = resample_image_to_reference(image, image, spacing, force_size = None)
     new_mask = resampler.Execute(mask)
     dic_areas = {}
     current_sum = 0
@@ -41,6 +41,7 @@ def get_profile(image, mask, spacing):
             feature = extractor_area.execute(new_image[:,:,i], new_mask[:,:,i])
             area = feature['original_shape2D_MeshSurface']
             current_sum = area*spacing[2] + current_sum
+            print(area*spacing[2])
         except Exception as e:
             #print("erreur", e)
             pass
@@ -85,7 +86,7 @@ if __name__ == '__main__':
     new_spacing = np.array(image.GetSpacing())/2
     new_image, resampler  =resample_image_to_reference(image, image, new_spacing, force_size = None)
     new_mask = resampler.Execute(mask)
-    dic_areas = get_profile(image, mask, new_spacing)
+    dic_areas = get_profile(image, mask, new_spacing/2)
     li_depths = from_profile_get_depths(dic_areas, n_slices = 10)
     li_slices_num = from_depths_get_slices(li_depths, new_image)
     print(li_slices_num)

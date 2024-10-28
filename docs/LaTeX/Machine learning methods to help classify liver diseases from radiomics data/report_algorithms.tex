@@ -13,6 +13,7 @@
 \usepackage{verbatim}
 \usepackage{booktabs}
 \usepackage{array}
+\usepackage{enumitem}
 
 \usepackage{fancyhdr}
 \pagestyle{fancy}
@@ -185,38 +186,6 @@ $\bullet \; \;$ We denote $\text{Diag}(\mathbf{u})$ the diagonal matrix whose di
 
 % \indent In order to train models that are not specific to tensor data (like a penalized logistic regression), we unfold the tensor $\underline{\mathbf{X}}$ and transform it into a matrix by placing each slice at a fixed $k$ next to the other. This gives the following matrix: $\mathbf{X}_{(1)} = [\mathbf{X}_{:\,:1}, \ldots, \mathbf{X}_{:\,:K}]$. However, in doing so, the model is no longer informed that $\underline{\mathbf{X}}$ is made up of the same quantities observed at different times. One of the reason for which this is important is that there is a non negligeable correlation between variables describing the same quantity of interest at different times. We'll still use the group lasso to restore this information to the model by grouping together variables belonging to the same time, but this is not enough to recover the full tensor aspect of the initial data. Furthermore, as pointed out by Le Brusquet et al. \cite{multi_rank_1}, unfolding the matrix greatly increases the number of predictors compared to tensor methods, which can increase computation times. However, given that in our dataset, $K$ is small ($K = 4$), this increase in computation time is not observed with our data.\\
 
-
-\subsection{Features extraction}
-
-\subsubsection{Presentation of real data}
-
-Les données sur lesquelles nous travaillons sont issues d'une cohorte de 147 patients atteints de tumeurs du foie. 87 d'entre eux sont atteints d'une tumeur CHC, 23 d'entre eux d'une tumeur CCK et 37 d'entre eux d'une tumeurs mixtes. Ces proportions reflètent les proportions réelles des différentes classes de tumeur chez les patients atteints de cancer du foie. Chaque patient a réalisé quatre radios du foie, par IRM, une par temps après injection de produit contrastant. Ces quatre temps sont: artériel, portal, veineux et tardif. Cependant, toutes les radios ne sont pas exploitables. En effet, il arrive que le patient bouge durant la radio, ce qui la rend inutilisable. Un tableau récapitulatif (Table \ref{tab:nb_tumeurs}) est fourni en afin de préciser le nombre de radios exploitables par temporalité 
-
-\begin{table}[tbp]
-    \centering
-    \caption{Nombre de patients ayant des radios exploitables aux temporalités mentionnées en colonne pour chaque classe de tumeur. Dans la colonne total on écrit le nombre total de patients atteint de chaque classe de tumeur.}
-    \label{tab:nb_tumeurs}
-    \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
-        \cline{1-8} \cline{10-10}
-        classe & Total patient & Artériel & Portal & Veineux & Tardif & tous temps & tous temps sauf Veineux & & total \\
-        \cline{1-8} \cline{10-10}
-        CHC & Oui & Oui & Non & Oui & & & & & 87\\
-        \cline{1-8} \cline{10-10}
-        CCK & Non & Oui & Oui & Oui & & & & & 23\\
-        \cline{1-8} \cline{10-10}
-        Mixtes & Oui & Non & Oui & Non & & & & & 37\\
-        \cline{1-8} \cline{10-10}
-    \end{tabular}
-\end{table}
-
-Sur chacune des radios, Sébastien Mulé a segmenté la partie tumorale et l'a enregistrée comme un masque superposable à la radio. Les radios et les masques sont au format .nii. Bien qu'étant prise à quatre instants différents, les quatre radios se ressemblent beaucoup. En particulier, les radios aux temps veineux et tardif sont extrêmement similaires et souvent redondantes aux yeux des radiologues. On en profitera donc pour éliminer les radios du temps veineux étant donné qu'il s'agit du temps pour lequel il y a le plus de radios manquates..\\
-\indent On dispose aussi de données cliniques: âge, sexe et taux d'alpha foetoprotéine (AFP) du patient. Cependant, étant donné qu'il manque dans les données les taux d'AFP de $22\%$ des patients, nous avons décidé d'exclure cette variable clinique.\\
-
-\subsubsection{feature extraction in 3D}
-
-\subsubsection{Feature extraction in 2D}
-
-\subsection{Simulated data}
 
 \subsection{Machine learning models}
 
@@ -409,8 +378,57 @@ In order to clarify the algorithm that we use, we give here the pseudo-code of o
     \textbf{Return} $(\beta_0^{(q)},\bm{\beta}^{K(q)}, \bm{\beta}^{J(q)})$
 \end{mdframed}
 
+\newpage
+
+\subsection{Features extraction on real data}
+
+\subsubsection{Presentation of real data}
+
+Les données réelles sur lesquelles nous travaillons sont issues d'une cohorte de 145 patients atteints de tumeurs du foie. 86 d'entre eux sont atteints d'une tumeur CHC, 22 d'entre eux d'une tumeur CCK et 37 d'entre eux d'une tumeurs mixtes. Ces proportions reflètent les proportions réelles des différentes classes de tumeur chez les patients atteints de cancer du foie. Chaque patient a réalisé quatre radios du foie, par IRM, une par temps après injection de produit contrastant. Ces quatre temps sont: artériel, portal, veineux et tardif. Cependant, toutes les radios ne sont pas exploitables. En effet, il arrive que le patient bouge durant la radio, ce qui la rend inutilisable. Un tableau récapitulatif (Table \ref{tab:nb_tumeurs}) est fourni en afin de préciser le nombre de radios exploitables par temporalité.\\
+\indent On dispose aussi de données cliniques: âge lors de la détection de la tumeur, sexe et taux d'alpha foetoprotéine (AFP) du patient. Cependant, étant donné qu'il manque dans les données les taux d'AFP de $22\%$ des patients, nous avons décidé d'exclure cette variable clinique. Le sexe de certains patients (un atteint de tumeur CHC, l'autre atteint de tumeur CCK) étant inconnu, ceux-ci ont préalablement été exclus de l'étude. Les chiffres présentés ici ainsi que dans le tableau récapitulatif Table \ref{tab:nb_tumeurs} ne présentent que les patients dont on connaît l'âge de déclaration de la tumeur et le sexe\\
+
+\begin{table}[tbp]
+    \centering
+    \caption{Nombre de patients ayant des radios exploitables aux temporalités mentionnées en colonne pour chaque classe de tumeur. Dans la colonne total on écrit le nombre total de patients atteint de chaque classe de tumeur.}
+    \label{tab:nb_tumeurs}
+    \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+        \cline{1-7} \cline{9-9}
+        classe & Artériel & Portal & Veineux & Tardif & tous temps & tous temps sauf Veineux & & total \\
+        \cline{1-7} \cline{9-9}
+        CHC & 84 & 81 & 83 & 78 & 72 & 74 & & 86\\
+        \cline{1-7} \cline{9-9}
+        CCK & 21 & 21 & 17 & 21 & 15 & 19 & & 22\\
+        \cline{1-7} \cline{9-9}
+        Mixtes & 35 & 36 & 32 & 34 & 29 & 31 & & 37\\
+        \cline{1-7} \cline{9-9}
+    \end{tabular}
+\end{table}
+
+Sur chacune des radios, on dispose de la partie tumorale et l'a enregistrée comme un masque superposable à la radio. Les radios et les masques sont au format .nii. Bien qu'étant prise à quatre instants différents, les quatre radios se ressemblent beaucoup. En particulier, les radios aux temps veineux et tardif sont extrêmement similaires et souvent redondantes aux yeux des radiologues. On en profitera donc pour éliminer les radios du temps veineux étant donné qu'il s'agit du temps pour lequel il y a le plus de radios manquates.\\
+On propose deux extractions possibles pour les features. Une extraction en 3D, où l'on extrait des features sur l'ensemble du volume de la tumeur, et une extraction en 2D, où l'on extrait des features sur chaque coupe de la tumeur.\\
+
+\subsubsection{feature extraction in 3D}
+
+On utilise le package pyradiomics \cite{pyradio} pour extraire un tableau de caractristiques 3D pour chaque tumeur. On utilise seulement l'image originale (sans filtre) pour l'extraction de ces features. On extrait l'ensemble des paramètres de premier ordre (relatifs aux niveaux de gris), de forme 3D (volume, surface, etc.), et de texture (basés sur la matrice de cooccurrence, la matrice de gradient, etc.) proposés par le package (sauf ceux qui sont considérés comme deprecated ou faisant doublon: ainsi, on élimine glcm joint average car il est redondant avec glcm sum average). On obtient ainsi ??? features pour chaque radio. On moyenne les paramètres de forme sur l'ensemble des temporalités extraites car on considère que la forme d'une tumeur n'a pas de raison de changer entre les différentes radios.\\
+\indent Les paramètres exacts utilisés pour l'extraction de pyradiomics sont donnés en annexe \ref{annexeA}. Ils nous ont été conseillés par ... . Afin de s'assurer que l'extraction est cohérente d'une tumeur à l'autre nous avons préalablement remis à la même échelle toutes les tumeurs. Sur chaque axe $(x,y,z)$, le spacing utilisé est la moitié du spacing médian sur cette axe. L'idée derrière ce spaing est de ne pas perdre trop d'information en augmentant la taille des voxels des radios de plus haute résolution sans devoir complètement interpôler les radios de plus basse résolution. Les interpolations des images sont faites avec des splines cubiques et celles des masques sont basées sur la méthode de l'interpolation la plus proche (afin de garantir la connexité du masque).\\
+
+\subsubsection{Feature extraction in 2D}
+Dans cette extraction, il faut commencer par déterminer les coupes que l'on souhaite extraire de ma tumeur. On choisit le plan axial pour les coupes car c'est celui utilisé par les radiologues lors de l'analyse d'une tumeur. Pour ce qui concerne les paramètres d'extraction, ils sont à nouveau donnés en Annexe \ref{annexeA}. Cependant, on ne peut pas simplement extraire les coupes à intervales régulier selon l'axe vertical pour deux raisons:
+\indent Premièrement, la taille des tumeurs varie d'un patient à l'autre. Ainsi, un certain espacement entre les slices conduira à extraire 3 slices de tumeurs chez certains patients et 10 slices chez d'autres. Or les modèles de machine learning que nous employonsont besoin de comparer les mêmes features chez tous les patients. Deuxièmement, les slices avec un très petit morceau de tumeur ne sont pas très significatives pour notre analyse. Or, extraire à intervalle régulier conduira à l'extraction de telles slices au début et à la fin de certaines tumeurs de forme allongée. On aimerait donc donner plus d'importace aux slices où la tumeur est la plus présente (sans pour autant complètement ignorer les slices avec moins de tumeur dessus)\\
+On propose donc une extraction où l'on spécifie au préalable le nombre de slices $n_{\text{slices}}$ à extraire de chaque tumeur. On commence par reconstituer la distribution cumulée du volume de la tumeur selon la profondeur (selon l'axe vertical) pour chaque tumeur (cf Fig. \ref{fig:depth_volume}). Puis on inverse cette courbe pour obtenir la distribution de la profondeur en fonction du volume cumulé de tumeur parcouru. On extrait alors une slice à chacune des profondeurs suivantes:
+\begin{equation}
+(i-0.5) \displaystyle{\frac{\text{area}_{\text{max}}}{n_{\text{slices}}}} \hspace{1.5 cm} \text{for i } \in \llbracket 1,n_{\text{slices}}  \rrbracket
+\end{equation}
+
+\begin{figure}[tbp]
+    \centering
+    \includegraphics[scale = 0.3]{./images/plot_depth_volume_2.png}
+    \caption{graphique de la distribution cumulée du volume (en $mm^3$) de la tumeur selon la profondeur (en $mm$) pour une tumeur donnée. Les points correspondent aux slices enregistrées dans l'image sitk (avec son spacing initial). La courbe est obtenue par interpolation de ces points via des splines cubiques de Hermite.}
+    \label{fig:depth_volume}
+\end{figure}
 
 
+\subsection{Simulated data}
 
 
 \vspace{10 pt}
@@ -443,23 +461,27 @@ In order to clarify the algorithm that we use, we give here the pseudo-code of o
 \bibliographystyle{ieeetr} %alpha, apalike, ieeetr
 \bibliography{bibliography.bib}
 
-%\begin{thebibliography}{99} % Bibliography - this is %intentionally simple in this template
+\newpage
 
-%\bibitem{andreotti1997studying} B. Andreotti, \emph{Studying Burgers' models to investigate the physical meaning of the alignments statistically observed in turbulence}, Phys. Fluids \textbf{9} : 3, March (1997)
+\appendix
 
-%\bibitem{cohl1999compact} Cohl, Howard S., and Joel E. Tohline, \emph{A compact cylindrical Green's function expansion for the solution of potential problems}, The astrophysical journal \textbf{527} : 86 - 101 (1999) %DOI: https://doi.org/10.1086/308062
+\section{Annexe A: Paramètres utilisés pour l'extraction de features par pyradiomics}
+\label{annexeA}
 
-%\bibitem{abramowitz1965handbook} Abramowitz, Milton, and Irene A. Stegun. \emph{Handbook of Mathematical Functions With Formulas, Graphs, and Mathematical Tables.} (1964).
+Liste des paramètres utilisés pour l'extraction de features par pyradiomics:
+
+\subsection{Pour l'extraction 3D de la tumeur}
+ 
+\begin{itemize}[label = $\bullet$]
+    \item Bin width : 25
+    \item Resampled Pixel Spacing : $[2,2,2]$
+    \item interpolator : sitkBSpline
+    \item force2D : True
+    \item force2Ddimension : 2
+\end{itemize}
 
 
-%\end{thebibliography}
 
-%croos section karlie
-%GOOD: http://www.eumetrain.org/satmanu/CMs/TrCyAt/print.htm 
-%https://physics.stackexchange.com/questions/275799/why-is-the-eye-of-a-cyclone-a-forced-vortex
-%http://www.chanthaburi.buu.ac.th/~wirote/met/tropical/textbook_2nd_edition/navmenu.php_tab_9_page_7.1.0.htm
-%http://www.atmos.umd.edu/~dalin/andrew/part2.html
-%https://nptel.ac.in/courses/119102007/2
-%http://www.911omissionreport.com/steering_hurricanes.html
-%https://www.youtube.com/watch?v=_brY_9ME8iE brooks
+
+
 \end{document}

@@ -169,10 +169,13 @@ def check_key_num(num, key, ls, d):
     return names
 
 
-def resample_image_to_reference(image, reference_image, force_spacing):
+def resample_image_to_reference(image, reference_image, force_spacing, force_size = None, interpolator= "bspline"):
     # Obtenir l'espacement de l'image de référence
     if force_spacing is not None:
-        reference_spacing = tuple(np.copy(force_spacing))
+        reference_spacing = np.copy(force_spacing)
+        if len(reference_spacing) == 2: #on utilise selon z le spacing de image_ref
+            reference_spacing = [reference_spacing[0], reference_spacing[1], reference_image.GetSpacing()[2]]
+        reference_spacing = tuple(reference_spacing)
     else:
         reference_spacing = reference_image.GetSpacing()
 
@@ -181,6 +184,9 @@ def resample_image_to_reference(image, reference_image, force_spacing):
     
     #nouvelle référence size
     reference_size = [int(np.ceil(reference_size_initial[i] * (reference_image.GetSpacing()[i] / reference_spacing[i]))) for i in range(len(reference_size_initial))]
+    
+    if force_size is not None:
+        reference_size = list(force_size)
 
     # Obtenir l'origine de l'image de référence
     reference_origin = reference_image.GetOrigin()
@@ -200,9 +206,16 @@ def resample_image_to_reference(image, reference_image, force_spacing):
     resample.SetSize(reference_size)
     resample.SetOutputOrigin(reference_origin)
     resample.SetOutputDirection(reference_direction)
-    resample.SetInterpolator(sitk.sitkLinear)
+    if interpolator == "bspline":
+        resample.SetInterpolator(sitk.sitkBSpline)
+    if interpolator == "linear":
+        resample.SetInterpolator(sitk.sitkLinear)
+    if interpolator == "nearest":
+        resample.SetInterpolator(sitk.sitkNearestNeighbor)
 
     # Appliquer la resegmentation
     resampled_image = resample.Execute(image)
 
-    return resampled_image, resample
+    return resampled_image
+
+

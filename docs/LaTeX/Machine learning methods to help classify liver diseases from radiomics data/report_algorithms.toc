@@ -3,13 +3,15 @@
 \contentsline {section}{\numberline {1}Introduction}{4}{section.1}%
 \contentsline {section}{\numberline {2}Methodology}{5}{section.2}%
 \contentsline {subsection}{\numberline {2.1}Notations and introdution to tensorial data}{5}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}Features extraction}{6}{subsection.2.2}%
-\contentsline {subsubsection}{\numberline {2.2.1}Presentation of real data}{6}{subsubsection.2.2.1}%
-\contentsline {subsubsection}{\numberline {2.2.2}feature extraction in 3D}{6}{subsubsection.2.2.2}%
-\contentsline {subsubsection}{\numberline {2.2.3}Feature extraction in 2D}{6}{subsubsection.2.2.3}%
-\contentsline {subsection}{\numberline {2.3}Simulated data}{6}{subsection.2.3}%
-\contentsline {subsection}{\numberline {2.4}Machine learning models}{6}{subsection.2.4}%
-\contentsline {subsubsection}{\numberline {2.4.1}Non tensorial methods}{7}{subsubsection.2.4.1}%
-\contentsline {subsubsection}{\numberline {2.4.2}Multiway logistic regression with lasso}{7}{subsubsection.2.4.2}%
-\contentsline {subsubsection}{\numberline {2.4.3}Multiway and multibloc logistic regression with lasso}{9}{subsubsection.2.4.3}%
-\contentsline {section}{\numberline {3}results}{12}{section.3}%
+\contentsline {subsection}{\numberline {2.2}Machine learning models}{6}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Non tensorial methods}{6}{subsubsection.2.2.1}%
+\contentsline {subsubsection}{\numberline {2.2.2}Multiway logistic regression with lasso}{6}{subsubsection.2.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.3}Multiway and multibloc logistic regression with lasso}{8}{subsubsection.2.2.3}%
+\contentsline {subsection}{\numberline {2.3}Features extraction on real data}{12}{subsection.2.3}%
+\contentsline {subsubsection}{\numberline {2.3.1}Presentation of real data}{12}{subsubsection.2.3.1}%
+\contentsline {subsubsection}{\numberline {2.3.2}feature extraction in 3D}{12}{subsubsection.2.3.2}%
+\contentsline {subsubsection}{\numberline {2.3.3}Feature extraction in 2D}{13}{subsubsection.2.3.3}%
+\contentsline {subsection}{\numberline {2.4}Simulated data}{14}{subsection.2.4}%
+\contentsline {section}{\numberline {3}results}{14}{section.3}%
+\contentsline {section}{\numberline {A}Annexe A: Paramètres utilisés pour l'extraction de features par pyradiomics}{16}{appendix.A}%
+\contentsline {subsection}{\numberline {A.1}Pour l'extraction 3D de la tumeur}{16}{subsection.A.1}%
