@@ -11,7 +11,8 @@
 \contentsline {subsubsection}{\numberline {2.3.1}Presentation of real data}{12}{subsubsection.2.3.1}%
 \contentsline {subsubsection}{\numberline {2.3.2}feature extraction in 3D}{12}{subsubsection.2.3.2}%
 \contentsline {subsubsection}{\numberline {2.3.3}Feature extraction in 2D}{13}{subsubsection.2.3.3}%
-\contentsline {subsection}{\numberline {2.4}Simulated data}{14}{subsection.2.4}%
-\contentsline {section}{\numberline {3}results}{14}{section.3}%
-\contentsline {section}{\numberline {A}Annexe A: Paramètres utilisés pour l'extraction de features par pyradiomics}{16}{appendix.A}%
-\contentsline {subsection}{\numberline {A.1}Pour l'extraction 3D de la tumeur}{16}{subsection.A.1}%
+\contentsline {subsubsection}{\numberline {2.3.4}Extraction de partie de foie saine}{14}{subsubsection.2.3.4}%
+\contentsline {subsection}{\numberline {2.4}Simulated data}{15}{subsection.2.4}%
+\contentsline {section}{\numberline {3}results}{15}{section.3}%
+\contentsline {section}{\numberline {A}Annexe A: Paramètres utilisés pour l'extraction de features par pyradiomics}{17}{appendix.A}%
+\contentsline {subsection}{\numberline {A.1}Pour l'extraction 3D de la tumeur}{17}{subsection.A.1}%

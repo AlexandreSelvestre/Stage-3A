@@ -128,6 +128,7 @@ setMethod("train_method", "apply_model", function(object) {
             index <- object@index_mode
         }
     }
+    # print(index)
 
 
     for (i in 1:length(index)) {

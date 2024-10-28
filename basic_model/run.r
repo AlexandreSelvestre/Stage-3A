@@ -39,9 +39,9 @@ library(gglasso)
 sysname <- Sys.info()["sysname"]
 set.seed(10) ## seed du modèle
 seed_model <- .Random.seed
-set.seed(5) # seed pour la cross validation
+set.seed(4) # seed pour la cross validation #5
 seed_cv <- .Random.seed
-set.seed(4) ## seed pour la partition des données
+set.seed(3) ## seed pour la partition des données #4 pb au 11e. On etait à 0.8
 seed_partition <- .Random.seed
 .Random.seed <- seed_model
 

@@ -93,15 +93,22 @@ extract_all <- function(config_extrac, sysname) {
     if (config_extrac$average_shape) {
         shape_names <- grepl("shape", names(data_radio))
         shape_names <- names(data_radio)[shape_names]
-        unique_col_names <- c(unique_col_names, shape_names)
     }
     multiple_former_col_names <- setdiff(former_col_names, unique_col_names)
     multiple_former_col_names <- setdiff(multiple_former_col_names, c("classe_name", "temps_inj", "patient_num"))
+    if (config_extrac$average_shape) {
+        multiple_former_col_names <- setdiff(multiple_former_col_names, shape_names)
+    }
 
     new_col_names <- unique_col_names
     for (temps_inj in config_extrac$time_inj) {
         for (col_name in multiple_former_col_names) {
             new_col_names <- append(new_col_names, glue("{col_name}_{temps_inj}"))
+        }
+    }
+    if (config_extrac$average_shape) {
+        for (col_name in shape_names) {
+            new_col_names <- append(new_col_names, col_name)
         }
     }
     # print(new_col_names)
@@ -155,8 +162,12 @@ extract_all <- function(config_extrac, sysname) {
         }
         if (name_time_inj %in% names(dict_temps)) {
             index_temps <- dict_temps[[name_time_inj]]
-            start_index_row <- length(unique_col_names) + 1 + index_temps * length(multiple_former_col_names)
-            new_row[1, start_index_row:(start_index_row + length(multiple_former_col_names) - 1)] <- short_row[, setdiff(colnames(short_row), c("classe_name", "temps_inj", "patient_num", unique_col_names))]
+            start_index_row <- 4 + index_temps * length(multiple_former_col_names)
+            if (config$average_shape) {
+                new_row[1, start_index_row:(start_index_row + length(multiple_former_col_names) - 1)] <- short_row[, setdiff(colnames(short_row), c("classe_name", "temps_inj", "patient_num", unique_col_names, shape_names))]
+            } else {
+                new_row[1, start_index_row:(start_index_row + length(multiple_former_col_names) - 1)] <- short_row[, setdiff(colnames(short_row), c("classe_name", "temps_inj", "patient_num", unique_col_names))]
+            }
             data_radio_in_lines[data_radio_in_lines$keys == key, ] <- new_row
         }
     }

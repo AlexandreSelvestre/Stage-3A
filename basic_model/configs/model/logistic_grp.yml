@@ -4,7 +4,7 @@ default:
 radio:
   lambda_min: 0.001 #en factor!
   tuneLength: 10
-  index_type: "var" #"bloc" , "mode" ou "var" : par quoi on groupe
+  index_type: "bloc" #"bloc" , "mode" ou "var" : par quoi on groupe
 
 radio_big:
   lambda_min: 0.001 #en factor!

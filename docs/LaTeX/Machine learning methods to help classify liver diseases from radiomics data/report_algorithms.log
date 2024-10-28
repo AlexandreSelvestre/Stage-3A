@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.10.15)  28 OCT 2024 15:49
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.10.15)  28 OCT 2024 18:15
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1091,20 +1091,37 @@ Underfull \hbox (badness 10000) in paragraph at lines 412--414
 
 
 [12]
-<./images/plot_depth_volume_2.png, id=238, 1339.8858pt x 706.0779pt>
+Underfull \hbox (badness 10000) in paragraph at lines 421--424
+
+ []
+
+
+
+[13]
+<./images/plot_depth_volume_2.png, id=250, 1339.8858pt x 706.0779pt>
 File: ./images/plot_depth_volume_2.png Graphic file (type png)
 <use ./images/plot_depth_volume_2.png>
-Package pdftex.def Info: ./images/plot_depth_volume_2.png  used on input line 425.
-(pdftex.def)             Requested size: 401.96884pt x 211.825pt.
+Package pdftex.def Info: ./images/plot_depth_volume_2.png  used on input line 427.
+(pdftex.def)             Requested size: 334.97063pt x 176.51903pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 433--437
+
+ []
+
+<./images/sain.png, id=253, 1360.08125pt x 244.915pt>
+File: ./images/sain.png Graphic file (type png)
+<use ./images/sain.png>
+Package pdftex.def Info: ./images/sain.png  used on input line 440.
+(pdftex.def)             Requested size: 408.02753pt x 73.47505pt.
 
 
-[13] (report_algorithms.bbl
+[14 <./images/plot_depth_volume_2.png>] (report_algorithms.bbl
 
-[14 <./images/plot_depth_volume_2.png>])
+[15 <./images/sain.png>])
 
-[15]
+[16]
 
-[16] (report_algorithms.aux)
+[17] (report_algorithms.aux)
  ***********
 LaTeX2e <2024-06-01> patch level 2
 L3 programming layer <2024-08-30>
@@ -1114,20 +1131,20 @@ L3 programming layer <2024-08-30>
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
 Package rerunfilecheck Info: File `report_algorithms.out' has not changed.
-(rerunfilecheck)             Checksum: 67B7FB277488706F9E13B169EB317F18;3194.
+(rerunfilecheck)             Checksum: C601E2C84E84F21358B58CCBD894DEB1;3447.
  ) 
 Here is how much of TeX's memory you used:
- 30667 strings out of 473900
- 558014 string characters out of 5733583
+ 30680 strings out of 473900
+ 558285 string characters out of 5733583
  924608 words of memory out of 5000000
- 52867 multiletter control sequences out of 15000+600000
+ 52877 multiletter control sequences out of 15000+600000
  592503 words of font info for 141 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  102i,17n,133p,1560b,592s stack positions out of 10000i,1000n,20000p,200000b,200000s
  </home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/ecti1000.pk> </home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1000.pk> </home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/ecrm0500.pk> </home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/public/bbm/dpi600/bbm10.pk> </home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/ecrm0700.pk> </home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/ecbx1200.pk> </home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/ecbx1000.pk> </home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/ecbx1440.pk> </home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/ecrm1000.pk> </home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/ecrm0800.pk> </home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/ecrm1200.pk> </home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/ecrm1728.pk></home/alexandre/.miktex/texmfs/install/fonts/type1/public/mnsymbol/MnSymbol10.pfb></home/alexandre/.miktex/texmfs/install/fonts/type1/public/mnsymbol/MnSymbol5.pfb></home/alexandre/.miktex/texmfs/install/fonts/type1/public/mnsymbol/MnSymbol7.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmbx7.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmmib10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cmextra/cmmib7.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/symbols/msbm7.pfb></home/alexandre/.miktex/texmfs/install/fonts/type1/public/hoekwater/stmary10.pfb></home/alexandre/.miktex/texmfs/install/fonts/type1/public/hoekwater/stmary7.pfb>
-Output written on report_algorithms.pdf (16 pages, 421297 bytes).
+Output written on report_algorithms.pdf (17 pages, 475193 bytes).
 PDF statistics:
- 722 PDF objects out of 1000 (max. 8388607)
- 83 named destinations out of 1000 (max. 500000)
- 138 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 738 PDF objects out of 1000 (max. 8388607)
+ 86 named destinations out of 1000 (max. 500000)
+ 151 words of extra memory for PDF output out of 10000 (max. 10000000)
 

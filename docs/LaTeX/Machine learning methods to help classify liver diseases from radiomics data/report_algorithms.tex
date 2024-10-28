@@ -405,7 +405,7 @@ Les données réelles sur lesquelles nous travaillons sont issues d'une cohorte 
 \end{table}
 
 Sur chacune des radios, on dispose de la partie tumorale et l'a enregistrée comme un masque superposable à la radio. Les radios et les masques sont au format .nii. Bien qu'étant prise à quatre instants différents, les quatre radios se ressemblent beaucoup. En particulier, les radios aux temps veineux et tardif sont extrêmement similaires et souvent redondantes aux yeux des radiologues. On en profitera donc pour éliminer les radios du temps veineux étant donné qu'il s'agit du temps pour lequel il y a le plus de radios manquates.\\
-On propose deux extractions possibles pour les features. Une extraction en 3D, où l'on extrait des features sur l'ensemble du volume de la tumeur, et une extraction en 2D, où l'on extrait des features sur chaque coupe de la tumeur.\\
+On propose deux extractions possibles pour les features. Une extraction en 3D, où l'on extrait des features sur l'ensemble du volume de la tumeur, et une extraction en 2D, où l'on extrait des features sur chaque coupe de la tumeur. Ces extractions sont le résultat d'un tatonnement dans lequel nous avons utilisé comme référence (pour savoir quels features ajouter ou retirer) les performances d'un modèle logistique pénalisé au lasso.\\
 
 \subsubsection{feature extraction in 3D}
 
@@ -415,16 +415,31 @@ On utilise le package pyradiomics \cite{pyradio} pour extraire un tableau de car
 \subsubsection{Feature extraction in 2D}
 Dans cette extraction, il faut commencer par déterminer les coupes que l'on souhaite extraire de ma tumeur. On choisit le plan axial pour les coupes car c'est celui utilisé par les radiologues lors de l'analyse d'une tumeur. Pour ce qui concerne les paramètres d'extraction, ils sont à nouveau donnés en Annexe \ref{annexeA}. Cependant, on ne peut pas simplement extraire les coupes à intervales régulier selon l'axe vertical pour deux raisons:
 \indent Premièrement, la taille des tumeurs varie d'un patient à l'autre. Ainsi, un certain espacement entre les slices conduira à extraire 3 slices de tumeurs chez certains patients et 10 slices chez d'autres. Or les modèles de machine learning que nous employonsont besoin de comparer les mêmes features chez tous les patients. Deuxièmement, les slices avec un très petit morceau de tumeur ne sont pas très significatives pour notre analyse. Or, extraire à intervalle régulier conduira à l'extraction de telles slices au début et à la fin de certaines tumeurs de forme allongée. On aimerait donc donner plus d'importace aux slices où la tumeur est la plus présente (sans pour autant complètement ignorer les slices avec moins de tumeur dessus)\\
-On propose donc une extraction où l'on spécifie au préalable le nombre de slices $n_{\text{slices}}$ à extraire de chaque tumeur. On commence par reconstituer la distribution cumulée du volume de la tumeur selon la profondeur (selon l'axe vertical) pour chaque tumeur (cf Fig. \ref{fig:depth_volume}). Puis on inverse cette courbe pour obtenir la distribution de la profondeur en fonction du volume cumulé de tumeur parcouru. On extrait alors une slice à chacune des profondeurs suivantes:
+\indent On propose donc une extraction où l'on spécifie au préalable le nombre de slices $n_{\text{slices}}$ à extraire de chaque tumeur. On commence par reconstituer la distribution cumulée du volume de la tumeur selon la profondeur (selon l'axe vertical) pour chaque tumeur (cf Fig. \ref{fig:depth_volume}). Puis on inverse cette courbe pour obtenir la distribution de la profondeur en fonction du volume cumulé de tumeur parcouru. On extrait alors une slice à chacune des profondeurs suivantes: 
 \begin{equation}
 (i-0.5) \displaystyle{\frac{\text{area}_{\text{max}}}{n_{\text{slices}}}} \hspace{1.5 cm} \text{for i } \in \llbracket 1,n_{\text{slices}}  \rrbracket
 \end{equation}
+Nous avons tenté d'autres méthodes d'extraction, en essayant notamment d'extraire précisément les mêmes profondeurs pour chaque radio d'une même tumeur et en tenant compte du fait que le patient a pu légèrement bouger entre deux radios. Toutefois, les résultats étant de moins bonne qualité, nous ne développerons pas ces approches ici.\\
+\indent Les features utilisés lors de cette extraction sont les mêmes que pour l'extraction 3D sauf pour les paramètres de forme. En effet, ce sont désormais les paramètres de forme 2D qui sont extraits slice par slice. Toutefois, afin de conserver des informations importantes sur la forme globale de la tumeur, on gardera les paramètres de forme 3D issus de l'extraction précédente. En effet, ceux-ci ne peuvent se réduire à des paramètres extraits slice par slice. Que ce soit pour les paramètre de forme 2D ou 3D, ceux-ci sont toujours moyennés sur l'ensemble des radios d'une même tumeur (les variations de forme de la tumeur entre les radios résultent uniquement des changement dans la manière de découper les masques par les radiologues et n'informent donc pas sur la tumeur elle-même)\\
 
 \begin{figure}[tbp]
     \centering
-    \includegraphics[scale = 0.3]{./images/plot_depth_volume_2.png}
-    \caption{graphique de la distribution cumulée du volume (en $mm^3$) de la tumeur selon la profondeur (en $mm$) pour une tumeur donnée. Les points correspondent aux slices enregistrées dans l'image sitk (avec son spacing initial). La courbe est obtenue par interpolation de ces points via des splines cubiques de Hermite.}
+    \includegraphics[scale = 0.25]{./images/plot_depth_volume_2.png}
+    \caption{graphique de la distribution cumulée du volume (en $mm^3$) de la tumeur du troisième patient CCK selon la profondeur (en $mm$) pour une tumeur donnée. Les points correspondent aux slices enregistrées dans l'image sitk (avec son spacing initial). La courbe est obtenue par interpolation de ces points via des splines cubiques de Hermite.}
     \label{fig:depth_volume}
+\end{figure}
+
+\subsubsection{Extraction de partie de foie saine}
+Nous avons voulu rajouter les features obtenue en réalisant l'extraction sur des portions de foie sain. En effet, les radiologues comparent généralement la luminosité de la zone tumorale au reste du foie et il nous semblait donc pertinent de faire de même avec notre modèle.\\
+\indent Pour ce faire, on a extrait autour de la zone tumorale un petit liseret de tissus. Afin d'être cetain de ne pas englober de zone hors du foie ou traversée par un vaisseau sanguin, nous avons décidé de n'extraire que des zones de faible variance locale et dont la luminosité est plus grande que celle de l'arrière plan noir. En ajoutant un critère de connexité 3D, on peut extraire une zone 3D de foie sain assez conséquente pour y réaliser une extraction 3D des features de firstorder et de texture (la forme de la zone extraite n'ayant pas d'intérêt).\\
+\indent Afin d'être certain d'extraire la même zone de tissu sain dans les différentes radios d'une même tumeur, on a décidé de ne détourer le tissu sain que sur la radio tardive (c'était à ce temps que, visuellement, notre méthode d'extraction réussissait le mieux). Puis on a appliqué le même détourage sur les autres radios, en décalant légèrement la zone extraite pour tenir compte des mouvements du patient. Ces mouvements étaient estimés en comparant les aires tumorales sur chaque slice et en essayant d'augmenter autant que possible l'intercorrélation des courbes d'aire entre chaque radio et la radio tardive. Cette procédure est effectuée selon les trois axes de l'espace. Finalement, on peut visualiser la zone extraite, comme en Fig. \ref{fig:healthy_zone} afin de contrôler que l'extraction se passe correctement.\\
+\indent Cependant, nous n'avons pas perçu d'amélioration dans les performances de nos modèles en rajoutant ces features. Nous avons donc décidé de ne pas les inclure dans la suite de notre étude.\\
+
+\begin{figure}[tbp]
+    \centering
+    \includegraphics[scale = 0.3]{./images/sain.png}
+    \caption{Radios d'une slice d'une tumeur CCK avec en rouge la zone tumorale et en bleu la zone périphérique de foie sain extraite. De gauche à droite on a la radio au temps artériel, la radio au temps portal et la radio au temps tardif. Les axes sont gradués en mm}
+    \label{fig:healthy_zone}
 \end{figure}
 
 

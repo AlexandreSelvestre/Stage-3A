@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex report_algorithms"] 1730126865.9544 "report_algorithms.aux" "report_algorithms.bbl" "report_algorithms" 1730126964.55268 0
+["bibtex report_algorithms"] 1730135709.34784 "report_algorithms.aux" "report_algorithms.bbl" "report_algorithms" 1730135711.08778 0
   "./bibliography.bib" 1728661166.71462 6872 0e1f40a6dcfb7a5c1541d560d044c126 ""
   "/usr/local/share/miktex-texmf/bibtex/bst/bibtex/ieeetr.bst" 1726308370.06082 18361 1a00e58565e7f19bf2b3e1bfb82254ae ""
-  "report_algorithms.aux" 1730126964.23323 5870 5d234a02d35267441e050a71dee486dc "pdflatex"
+  "report_algorithms.aux" 1730135710.52469 6843 c82a3ea8bcb63cb85addcd9937c18c7e "pdflatex"
   (generated)
   "report_algorithms.bbl"
   "report_algorithms.blg"
   (rewritten before read)
-["pdflatex"] 1730126963.66107 "/home/alexandre/Documents/Stage-3A/docs/LaTeX/Machine learning methods to help classify liver diseases from radiomics data/report_algorithms.tex" "report_algorithms.pdf" "report_algorithms" 1730126964.55278 0
+["pdflatex"] 1730135709.53132 "/home/alexandre/Documents/Stage-3A/docs/LaTeX/Machine learning methods to help classify liver diseases from radiomics data/report_algorithms.tex" "report_algorithms.pdf" "report_algorithms" 1730135711.088 0
   "/home/alexandre/.miktex/texmfs/data/fonts/map/pdftex/pdftex.map" 1730123414.42693 89647 935dc4f5e74bd82e4cc831400ed92539 ""
   "/home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/ecbx1000.pk" 1726308709.94649 25420 d886a27782c377a5dd237d74a89f1b46 ""
   "/home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/ecbx1200.pk" 1726308708.6315 31952 a848510f8e923ecb115e01ff94fe33a8 ""
@@ -149,7 +149,7 @@
   "/home/alexandre/.miktex/texmfs/install/tex/latex/subfig/subfig.sty" 1121281010 22049 adc8323c809ccc2c21f05c93c1fe6ff3 ""
   "/home/alexandre/.miktex/texmfs/install/tex/latex/zref/zref-abspage.sty" 1726308686.84291 2269 4fe6fb3396214c91f164d45faf9bec45 ""
   "/home/alexandre/.miktex/texmfs/install/tex/latex/zref/zref-base.sty" 1726308686.84291 20785 f7d1133a287929598a897c93f8f4c44b ""
-  "/home/alexandre/Documents/Stage-3A/docs/LaTeX/Machine learning methods to help classify liver diseases from radiomics data/report_algorithms.tex" 1730126963.35023 48642 d83a6f3977a3211228c75497c31b1fa1 ""
+  "/home/alexandre/Documents/Stage-3A/docs/LaTeX/Machine learning methods to help classify liver diseases from radiomics data/report_algorithms.tex" 1730135707.51969 52425 778ce19ab7ecb644b7154aa9303b0ae5 ""
   "/usr/local/share/miktex-texmf/fonts/tfm/jknappen/ec/ecbx1000.tfm" 1726308370.54583 3200 328792ff19833a39406f06fa0555a6dc ""
   "/usr/local/share/miktex-texmf/fonts/tfm/jknappen/ec/ecbx1200.tfm" 1726308370.54583 3200 b8d69bc738e5ef3e08cefeef3109ff56 ""
   "/usr/local/share/miktex-texmf/fonts/tfm/jknappen/ec/ecbx1440.tfm" 1726308370.54583 3196 0b37fa3083e15c57cfa8c4ff52f2807a ""
@@ -309,11 +309,12 @@
   "/usr/local/share/miktex-texmf/tex/latex/xkeyval/xkeyval.sty" 1726308374.80884 4937 4ce600ce9bd4ec84d0250eb6892fcf4f ""
   "doiCmd.tex" 1721046753.23 1551 1f1d103949ee2f8a554bc4d29cf04c62 ""
   "images/plot_depth_volume_2.png" 1730125961.61915 44986 bd39336638919853dfeec2a67653d575 ""
-  "report_algorithms.aux" 1730126964.23323 5870 5d234a02d35267441e050a71dee486dc "pdflatex"
-  "report_algorithms.bbl" 1730126866.02422 1676 d1da5b31d833540697cd2b17798b27aa "bibtex report_algorithms"
-  "report_algorithms.out" 1730126964.23323 3194 67b7fb277488706f9e13b169eb317f18 "pdflatex"
-  "report_algorithms.tex" 1730126963.35023 48642 d83a6f3977a3211228c75497c31b1fa1 ""
-  "report_algorithms.toc" 1730126964.23423 1576 7d5097975aa7b297e3a8607d352e8b03 "pdflatex"
+  "images/sain.png" 1730135666.38168 47900 b47dd73e64fbab5a56b5d70fcfded981 ""
+  "report_algorithms.aux" 1730135710.52469 6843 c82a3ea8bcb63cb85addcd9937c18c7e "pdflatex"
+  "report_algorithms.bbl" 1730135709.47569 1676 d1da5b31d833540697cd2b17798b27aa "bibtex report_algorithms"
+  "report_algorithms.out" 1730135710.52569 3447 c601e2c84e84f21358b58ccbd894deb1 "pdflatex"
+  "report_algorithms.tex" 1730135707.51969 52425 778ce19ab7ecb644b7154aa9303b0ae5 ""
+  "report_algorithms.toc" 1730135710.52569 1687 eba83f92b4eefe656c50fd796eaa6936 "pdflatex"
   (generated)
   "report_algorithms.aux"
   "report_algorithms.log"
