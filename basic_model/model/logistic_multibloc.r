@@ -184,11 +184,11 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         simplest_mode <- indices_non_zero[simplest_mode_contracted]
         return(simplest_mode)
     })
-
     names(li_least_slices_mode_per_bloc) <- as.character(different_blocs) # util pour compléter les modes manquants dans certains blocs sans exploser les temps de calcul
     li_x_multi_bloc_pos <- list()
     col_num <- 0
     # Hyper important: on crée une liste avec pour chaque bloc un array représentant le tenseur avec les colonnes dans le bon ordre (lexicographique vs indices tensoriels)
+
     for (l_num in different_blocs) {
         l_char <- as.character(l_num)
         li_x_multi_bloc_pos[[l_char]] <- reorder_local(as.matrix(x)[, index_bloc == l_num], li_index_modes, li_dim[[l_char]], which(index_bloc == l_num))
@@ -198,7 +198,6 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
         }
         col_num <- col_num + ncol(li_x_multi_bloc_pos[[l_char]]$mat) # Sert seulement pour le test
     }
-
     if (col_num != ncol(mat_x_tens)) {
         print(col_num)
         stop("Problème de correspondance des colonnes des blocs!")

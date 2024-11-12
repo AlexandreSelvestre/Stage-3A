@@ -102,7 +102,8 @@ extract_all <- function(config_extrac, sysname) {
         write.csv(data_used, paste0(path_data, "/data_used.csv"), row.names = FALSE)
         write_xlsx(data_used, paste0(path_data, "/data_used.xlsx"))
         write_xlsx(as.data.frame(beta_matrix), paste0(path_data, "/beta_picto/big_picto.xlsx"))
-        create_heatmap(paste0(path_data, "/beta_picto/big_picto.xlsx"), paste0(path_data, "/beta_picto/big_picto_heatmap.png"))
+        create_heatmap(paste0(path_data, "/beta_picto/big_picto_", config_extrac$nom_spe, ".xlsx"), paste0(path_data, "/beta_picto/big_picto_heatmap_", config_extrac$nom_spe, ".png"), as.data.frame(beta_matrix))
+        matrix_big_beta <- as.matrix(beta_matrix)
     } else {
         write.csv(data_used, "..\\data\\data_used.csv", row.names = FALSE)
         write_xlsx(data_used, "..\\data\\data_used.xlsx")
@@ -124,10 +125,18 @@ extract_all <- function(config_extrac, sysname) {
         }))
         return(vec_local)
     })))
+    value_max <- 0
     index_variable <- unname(unlist(lapply(1:length(li_beta_matrix), function(l) {
         beta_matrix <- li_beta_matrix[[l]]
+        if (l == 1) {
+            n_col_previous <- 0
+        } else {
+            n_col_previous <- sum(sapply(1:(l - 1), function(i) {
+                return(ncol(li_beta_matrix[[i]]))
+            }))
+        }
         vec_local <- unlist(lapply(1:nrow(beta_matrix), function(i) {
-            return(1:ncol(beta_matrix))
+            return(1:ncol(beta_matrix) + n_col_previous)
         }))
     })))
 
@@ -152,6 +161,9 @@ extract_all <- function(config_extrac, sysname) {
     })))
 
 
+
+    # print(index_variable)
+
     saveRDS(info_cols, file = paste0(path_data, "/RDS/info_cols.rds"))
     saveRDS(is_binary, file = paste0(path_data, "/RDS/is_binary.rds"))
     saveRDS(index_mode, file = paste0(path_data, "/RDS/index_mode.rds"))
@@ -161,4 +173,5 @@ extract_all <- function(config_extrac, sysname) {
     saveRDS(name_mode, file = paste0(path_data, "/RDS/name_mode.rds"))
     saveRDS(name_bloc, file = paste0(path_data, "/RDS/name_bloc.rds"))
     saveRDS(name_variable, file = paste0(path_data, "/RDS/name_variable.rds"))
+    return(list(index_bloc = index_bloc, name_bloc = name_bloc, index_mode = index_mode, name_mode = name_mode, index_variable = index_variable, name_variable = name_variable, is_binary = is_binary, info_cols = info_cols, data_used = data_used, matrix_big_beta = matrix_big_beta))
 }

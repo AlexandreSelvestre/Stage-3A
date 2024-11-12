@@ -28,7 +28,7 @@ setMethod("analyse_data", "apply_model", function(object) {
         )$class
         print("fait accompli")
     } else {
-        li_clust <- NbClust(data = var_to_clust, distance = "euclidean", min.nc = 2, max.nc = 3, method = "ward.D2", index = "kl")
+        li_clust <- NbClust(data = var_to_clust, distance = "euclidean", min.nc = 2, max.nc = 2, method = "ward.D2", index = "kl")
         cat("Meilleur nombre de clusters", li_clust$Best.nc)
     }
     ## Attention à 46 et 22 chez les CCK
@@ -57,14 +57,14 @@ setMethod("analyse_data", "apply_model", function(object) {
     # Création du plot PCA
     image <- ggplot(pca_data, aes(x = PC1, y = PC2, color = as.factor(Classe))) +
         geom_point() +
-        geom_text(aes(label = number), hjust = -0.3, vjust = 0.5, size = 2) + # Ajout des numéros des points
+        # geom_text(aes(label = number), hjust = -0.3, vjust = 0.5, size = 2) + # Ajout des numéros des points
         labs(
             title = "PCA - 2D Representation of Data",
             x = "First Principal Component",
             y = "Second Principal Component",
             color = "Classe"
         ) +
-        scale_color_discrete(name = "Classe") +
+        scale_color_discrete(name = "Class") +
         scale_x_continuous(limits = x_limits) + # Ajustement des limites des axes x
         scale_y_continuous(limits = y_limits) + # Ajustement des limites des axes y
         theme_classic() + # Utilisation d'un thème classique pour assurer la visibilité des axes
@@ -79,5 +79,5 @@ setMethod("analyse_data", "apply_model", function(object) {
         )
 
     # Utilisation de ggsave pour sauvegarder l'image
-    ggsave("./plots/clusters.png", image, width = 8, height = 6, dpi = 300)
+    ggsave("../data/plots/clusters.png", image, width = 8, height = 6, dpi = 300)
 })

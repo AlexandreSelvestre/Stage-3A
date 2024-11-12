@@ -13,6 +13,8 @@ setClass(
     is_binary = "logical", #      input: vecteur logique des variables explicatives binaires
     path_data = "character", #         input: chemin du fichier de données
     config = "ANY", # input: configuration du modèle
+    li_extrac = "ANY",
+    nom_spe = "ANY",
     name_y = "character", #       variable: nom de la variable expliquée
     class_maj_min = "character", # variable: c(nom_class_maj, nom_class_min)
     col_x = "character", #        variable: noms de colonnes de variables explicatives
@@ -100,25 +102,31 @@ setMethod("init", "apply_model", function(object) {
   object@class_maj_min <- c(class_majoritaire, class_minoritaire)
   object@data_used[, object@col_x] <- na.roughfix(object@data_used[, object@col_x])
 
-  object@index_mode <- readRDS(file = paste0(path_data, "/RDS/index_mode.rds"))
-  object@index_bloc <- readRDS(file = paste0(path_data, "/RDS/index_bloc.rds"))
-  object@index_variable <- readRDS(file = paste0(path_data, "/RDS/index_variable.rds"))
-  object@is_binary <- readRDS(file = paste0(path_data, "/RDS/is_binary.rds"))
-  object@name_mode <- readRDS(file = paste0(path_data, "/RDS/name_mode.rds"))
-  object@name_bloc <- readRDS(file = paste0(path_data, "/RDS/name_bloc.rds"))
-  object@name_variable <- readRDS(file = paste0(path_data, "/RDS/name_variable.rds"))
+
+  object@index_bloc <- li_extrac$index_bloc
+  object@index_variable <- li_extrac$index_variable
+  object@is_binary <- li_extrac$is_binary
+  object@name_bloc <- li_extrac$name_bloc
+  object@name_variable <- li_extrac$name_variable
+
 
   if (object@use_li_index_modes) {
-    object@li_index_modes <- readRDS(file = paste0(path_data, "/RDS/li_index_modes.rds"))
-    object@li_name_modes <- readRDS(file = paste0(path_data, "/RDS/li_name_modes.rds"))
+    object@li_index_modes <- li_extrac$li_index_modes
+    object@li_name_modes <- li_extrac$li_name_modes
   } else {
     object@li_index_modes <- list()
     object@li_name_modes <- list()
+    object@index_mode <- li_extrac$index_mode
+    object@name_mode <- li_extrac$name_mode
   }
-
   object@df_measures <- as.data.frame(matrix(ncol = 5, nrow = 0))
 
+  if (object@config$do_multiway == TRUE) {
+    object@index_bloc <- ifelse(object@index_bloc == -1, -1, 1)
+    object@name_bloc <- ifelse(object@index_bloc == -1, "univariate", "bloc_1")
+  }
 
+  # print(object@index_bloc)
   return(object)
 })
 

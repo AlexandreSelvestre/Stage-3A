@@ -33,15 +33,15 @@ library(DMwR)
 library(themis)
 library(reshape2)
 library(rlang)
-library(gglasso)
-
+# library(gglasso)
+# Changer index variable dans multibloc: join picto: c'est fait de façon débile...
 
 sysname <- Sys.info()["sysname"]
-set.seed(10) ## seed du modèle
+set.seed(23) ## seed du modèle
 seed_model <- .Random.seed
-set.seed(4) # seed pour la cross validation #5
+set.seed(8) # seed pour la cross validation #5
 seed_cv <- .Random.seed
-set.seed(3) ## seed pour la partition des données #4 pb au 11e. On etait à 0.8
+set.seed(15) ## seed pour la partition des données #4 pb au 11e. On etait à 0.8
 seed_partition <- .Random.seed
 .Random.seed <- seed_model
 
@@ -83,12 +83,16 @@ li_model_configs <- list(
 )
 
 model_config <- li_model_configs[[model_name]]
+print(model_name)
+print(config_run$nom_spe)
+print(config_model$do_multiway)
 config <- modifyList(config_model, config_extrac)
 config <- modifyList(config, model_config)
 config$path_data <- path_data
+config$nom_spe <- config_run$nom_spe
 regression <- config$regression
 
-
+cluster
 
 path_model <- paste0("model/", model_name, ".r")
 if (regression) {
@@ -133,7 +137,18 @@ if (sysname == "Linux") {
 
 
 if (config_run$extrac_first) {
-    extract_all(config, sysname)
+    li_extrac <- extract_all(config, sysname)
+} else {
+    li_extrac <- list()
+    li_extrac$index_mode <- readRDS(file = paste0(path_data, "/RDS/index_mode.rds"))
+    li_extrac$index_bloc <- readRDS(file = paste0(path_data, "/RDS/index_bloc.rds"))
+    li_extrac$index_variable <- readRDS(file = paste0(path_data, "/RDS/index_variable.rds"))
+    li_extrac$is_binary <- readRDS(file = paste0(path_data, "/RDS/is_binary.rds"))
+    li_extrac$name_mode <- readRDS(file = paste0(path_data, "/RDS/name_mode.rds"))
+    li_extrac$name_bloc <- readRDS(file = paste0(path_data, "/RDS/name_bloc.rds"))
+    li_extrac$name_variable <- readRDS(file = paste0(path_data, "/RDS/name_variable.rds"))
+    li_extrac$info_cols <- readRDS(file = paste0(path_data, "/RDS/info_cols.rds"))
+    li_extrac$data_used <- as.data.frame(read.csv(path))
 }
 data_used_local <- as.data.frame(read.csv(path))
 
@@ -149,27 +164,28 @@ data_used_local <- as.data.frame(read.csv(path))
 
 
 if (config$minimal_information) {
-    # Attention, en minimal info, on ne récupère pas la moyenne des résultats des pictos...
-    for (id_term in id_li) {
-        ite <- ite + 1
-        list_execute <- execute(config, config_run, as.character(id_term), seed_cv, seed_partition, sysname)
-        inference <- list_execute$inference
-        seed_cv <- list_execute$seed_cv
-        seed_partition <- list_execute$seed_partition
-        test_result <- inference@df_measures[["AUC_test"]]
-        sum_test <- test_result + sum_test
-        val_result <- inference@df_measures[["AUC_val"]]
-        sum_val <- val_result + sum_val
-        print(paste("actuelle moyenne AUC test", sum_test / ite, "ite:", ite))
-        print(paste("actuelle moyenne AUC val", sum_val / ite, "ite:", ite))
-        unregister_dopar()
-    }
-    print(paste("moyenne AUC test", sum_test / length(id_li)))
-    print(paste("moyenne AUC val", sum_val / length(id_li)))
+    stop("to reimplement without save files")
+    # # Attention, en minimal info, on ne récupère pas la moyenne des résultats des pictos...
+    # for (id_term in id_li) {
+    #     ite <- ite + 1
+    #     list_execute <- execute(config, config_run, as.character(id_term), seed_cv, seed_partition, sysname)
+    #     inference <- list_execute$inference
+    #     seed_cv <- list_execute$seed_cv
+    #     seed_partition <- list_execute$seed_partition
+    #     test_result <- inference@df_measures[["AUC_test"]]
+    #     sum_test <- test_result + sum_test
+    #     val_result <- inference@df_measures[["AUC_val"]]
+    #     sum_val <- val_result + sum_val
+    #     print(paste("actuelle moyenne AUC test", sum_test / ite, "ite:", ite))
+    #     print(paste("actuelle moyenne AUC val", sum_val / ite, "ite:", ite))
+    #     unregister_dopar()
+    # }
+    # print(paste("moyenne AUC test", sum_test / length(id_li)))
+    # print(paste("moyenne AUC val", sum_val / length(id_li)))
 } else {
     for (id_term in id_li) {
         ite <- ite + 1
-        list_execute <- execute(config, config_run, as.character(id_term), seed_cv, seed_partition, sysname)
+        list_execute <- execute(config, config_run, as.character(id_term), seed_cv, seed_partition, sysname, li_extrac)
         inference <- list_execute$inference
         seed_cv <- list_execute$seed_cv
         seed_partition <- list_execute$seed_partition
@@ -178,27 +194,8 @@ if (config$minimal_information) {
         performance <- li_intermediaire$performance
         li_confus <- li_intermediaire$li_confus
         is_null <- li_intermediaire$is_null
-
-
-        # inference <- compare(inference)
-        # df_danger_loc <- inference@df_danger
-        # df_danger[rownames(df_danger_loc), ] <- df_danger[rownames(df_danger_loc), ] + df_danger_loc
-        # print("Les stats des individus CCK sont")
-        # print(df_danger)
-        # new_lambda <- inference@model$bestTune[[1]]
-        # print(new_lambda)
-        # if (performance$AUC_test[[length(performance$AUC_test)]] < 0.62) {
-        #     vec_bad_lambda <- c(vec_bad_lambda, new_lambda)
-        #     cat("moyenne des lambdas catastrophiques:", mean(vec_bad_lambda), "leur liste est", "\n")
-        #     print(vec_bad_lambda)
-        # }
-        # if (performance$AUC_test[[length(performance$AUC_test)]] > 0.8) {
-        #     vec_good_lambda <- c(vec_bad_lambda, new_lambda)
-        #     cat("moyenne des lambdas très bons:", mean(vec_good_lambda), "leur liste est", "\n")
-        #     print(vec_good_lambda)
-        # }
         unregister_dopar()
     }
 
-    run_imp_extra(imp_li, performance, li_confus, is_null, length(id_li), path_plot, inference)
+    run_imp_extra(imp_li, performance, li_confus, is_null, length(id_li), path_plot, inference, nom_spe = config_run$nom_spe)
 }

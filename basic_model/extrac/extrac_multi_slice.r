@@ -32,7 +32,7 @@ extract_all <- function(config_extrac, sys_name = "Linux", end_name = "") {
     radiomic_global <- "/global_excel_resampled.xlsx"
     path_sain_used <- "/liver_sain_latest.xlsx"
     path_data <- config_extrac$path_data
-    brute_data <- read_excel(paste0(path_data, "/multislice_excel_with_shape_2D_10_area.xlsx"))
+    brute_data <- read_excel(paste0(path_data, "/multislice_excel_with_shape_2D_5_area_tot.xlsx"))
     brute_data <- as.data.frame(brute_data)
 
 
@@ -671,6 +671,7 @@ extract_all <- function(config_extrac, sys_name = "Linux", end_name = "") {
 
     li_index_modes$mode_slice <- index_slice
     li_name_modes$mode_slice <- name_slice
+    # print(index_bloc)
 
 
     saveRDS(index_bloc, file = paste0(path_data, "/RDS/index_bloc.rds"))
@@ -687,4 +688,5 @@ extract_all <- function(config_extrac, sys_name = "Linux", end_name = "") {
 
     # print(index_bloc)
     print("Fin extraction multislice")
+    return(list(index_bloc = index_bloc, name_bloc = name_bloc, li_index_modes = li_index_modes, li_name_modes = li_name_modes, index_variable = index_variable, name_variable = name_variable, is_binary = is_binary, info_cols = info_cols, data_used = data_used))
 }

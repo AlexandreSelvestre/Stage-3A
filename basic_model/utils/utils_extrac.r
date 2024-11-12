@@ -16,11 +16,15 @@ normal <- function(x) {
 
 convert_to_num <- function(x) {
     if (is.character(x)) {
-        y <- as.numeric(x)
-        if (all(is.na(y))) {
+        if (all(grepl("^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$", x))) {
+            y <- as.numeric(x)
+            if (any(is.na(y))) {
+                stop("generation de NA")
+            }
+            return(y)
+        } else {
             return(x)
         }
-        x <- y
     }
     if (is.numeric(x)) {
         return(x)

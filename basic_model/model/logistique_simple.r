@@ -180,7 +180,7 @@ setMethod("train_method", "logistique_simple", function(object) {
         clusterEvalQ(cl, {
             current_dir <- getwd()
             if (current_dir == "/gpfs/users/selvestra/basic_model") {
-                .libPaths("/gpfs/workdir/selvestra/R_packages")
+                # .libPaths("/gpfs/workdir/selvestra/R_packages")
             }
             files <- list.files("./utils", full.names = TRUE, pattern = "\\.r$")
             for (file in files) {

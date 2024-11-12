@@ -10,9 +10,9 @@ radio:
   lambda_min: 0.00000001
   lambda_max: 0.1
   R_min: 1
-  R_max: 2
-  tuneLength: 8
-  tune_R: 2
+  R_max: 3
+  tuneLength: 10
+  tune_R: 3
   same_R: FALSE
 
   weights:
@@ -24,14 +24,13 @@ radio_big:
   lambda_max: 0.1
   R_min: 1
   R_max: 20
-  tuneLength: 10
+  tuneLength: 7
   tune_R: 4
   same_R: FALSE
   li_R:
-    block_1: [1, 7]
-    block_2: [5, 10]
-    block_3: [5, 15]
-    block_4: [2]
+    block_1: [1, 7, 15]
+    # block_2: [5, 10]
+    # block_3: [5, 10]
 
   weights:
     "CCK": 1
@@ -44,11 +43,11 @@ simu:
   R_max: 12
   same_R: FALSE
   li_R:
-    #block_1: [1]
+    #block_1: [1, 10, 20]
     block_1: [1, 6, 10]
     block_2: [1]
     block_3: [10]
-  tuneLength: 4
+  tuneLength: 6
   #vec_modes: [66,66,66]
 
   weights:

@@ -5,10 +5,11 @@ default:
   num_runs: 1
   simple_generation: FALSE
   keep_partition: FALSE
+  nom_spe: "reel_multislice_multiway"
 
 my_config:
   do_extract: FALSE #réextraire ou non après la première fois
   extrac_first: TRUE #extraire ou non la toute première fois
   simulated_data: FALSE
-  big_data: FALSE #utiliser li_index_modes? et la big version des données si elle existe? Interdit sur simulmted_data!!
-  num_runs: 40
+  big_data: TRUE #utiliser li_index_modes? et la big version des données si elle existe? Interdit sur simulmted_data!!
+  num_runs: 50

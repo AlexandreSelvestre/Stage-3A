@@ -311,4 +311,5 @@ extract_all <- function(config_extrac, sysname) {
     saveRDS(name_variable, file = paste0(path_data, "/RDS/name_variable.rds"))
 
     saveRDS(is_binary, file = paste0(path_data, "/RDS/is_binary.rds"))
+    return(list(index_bloc = index_bloc, name_bloc = name_bloc, index_mode = index_mode, name_mode = name_mode, index_variable = index_variable, name_variable = name_variable, is_binary = is_binary, info_cols = info_cols, data_used = data_used))
 }

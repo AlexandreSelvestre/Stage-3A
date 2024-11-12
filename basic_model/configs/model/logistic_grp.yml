@@ -3,13 +3,13 @@ default:
 
 radio:
   lambda_min: 0.001 #en factor!
-  tuneLength: 10
+  tuneLength: 20
   index_type: "bloc" #"bloc" , "mode" ou "var" : par quoi on groupe
 
 radio_big:
   lambda_min: 0.001 #en factor!
   tuneLength: 10
-  index_type: "bloc" #"var","bloc", "mode_slice", "mode_temps" en
+  index_type: "mode_slice" #"var","bloc", "mode_slice", "mode_temps" en
 
 simu:
   lambda_min: 0.001 #en factor!

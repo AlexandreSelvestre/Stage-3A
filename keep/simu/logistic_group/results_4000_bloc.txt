@@ -1,0 +1,75 @@
+1] "logistic_grp"
+[1] "simu_4000_bloc"
+[1] FALSE
+function (x, ...) 
+UseMethod("cluster")
+<bytecode: 0x9fe3cf8>
+<environment: namespace:caret>
+[1] "start gene"
+[1] "QR done"
+[1] "first batch"
+[1] "second batch"
+[1] "gene done"
+[1] "end gene"
+[1] "dimensions data used" "4000"                 "7789"                
+nombre de la classe majoritaire dans train 1500 
+nombre de la classe minoritaire dans train 1500 
+nombre de la classe majoritaire dans test 500 
+nombre de la classe minoritaire dans test 500 
+rapport nb_minoritaire/nb_majoritaire en training 1 
+rapport nb_minoritaire/nb_majoritaire  en testing 1 
+[1] "tuneGrid created"
+Aggregating results
+Selecting tuning parameters
+Fitting lambda = 0.000298 on full training set
+[1] "End of learning phase"
+[1] "End of prediction phase"
+[1] "start imp"
+[1] "Le nombre de donn\303\251es est 4000 dont 1000 dans le testing dataset et le jeu de donn\303\251 de la grid search: "
+         lambda
+10 0.0002981355
+Setting levels: control = Classe_0, case = Classe_1
+Setting direction: controls > cases
+[1] "La valeur de l'AUC de test est de 0.85882"
+[1] "La valeur de l'AUC de validation sur chaque fold est de 0.842922222222222"
+[2] "La valeur de l'AUC de validation sur chaque fold est de 0.827055555555556"
+[3] "La valeur de l'AUC de validation sur chaque fold est de 0.827388888888889"
+[4] "La valeur de l'AUC de validation sur chaque fold est de 0.8254"           
+[5] "La valeur de l'AUC de validation sur chaque fold est de 0.824722222222222"
+[1] "Ce qui donne une moyenne d'AUC de 0.829497777777778"
+Setting levels: control = Classe_0, case = Classe_1
+Setting direction: controls > cases
+[1] "La valeur de l'AUC de train est de 1"
+[1] "End of analysis phase"
+[1] "L'erreur moyenne de reconstruction du pictogramme est de 0.247507348290752"
+[1] "actuelle moyenne AUC test 0.85882 ite: 1"
+[1] "actuel ecart type AUC test NA ite: 1"
+[1] "actuelle moyenne AUC val 0.829497777777778 ite: 1"
+[1] "actuelle moyenne Accuracy test 0.772 ite: 1"
+[1] "actuelle somme des confusion matrix ite: 1 :"
+[1] "actuelle moyenne du macro F1 test 0.771985407066052 ite: 1"
+[1] "actuelle moyenne du F1 Classe_0 test 0.770161290322581 ite: 1"
+[1] "actuelle moyenne du F1 Classe_1 test 0.773809523809524 ite: 1"
+          Reference
+Prediction Classe_0 Classe_1
+  Classe_0      382      110
+  Classe_1      118      390
+[1] "actuelle moyenne score_recons 0.247507348290752 ite: 1"
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+[1] "Voil\303\240 la matrice de confusion somm\303\251e"
+          Reference
+Prediction Classe_0 Classe_1
+  Classe_0      382      110
+  Classe_1      118      390
+[1] "voil\303\240 la matrice de confusion en pourcentage: ... % de classe 1 ont \303\251t\303\251 bien class\303\251s vs ... % mal class\303\251s"
+         Classe_0 Classe_1
+Classe_0    0.764     0.22
+Classe_1    0.236     0.78
+[1] "La balanced accuracy sur l'\303\251chantillon total vaut: 0.772069649830357"
+le f1 score Classe_0 sur l'échantillon entier vaut: 0.7701613 
+le f1 score Classe_1 sur l'échantillon entier vaut: 0.7738095 
+[1] "Le f1 macro sur l'\303\251chantillon total vaut: 0.771985407066052"
+[1] "La moyenne des scores de reconstruction vaut 0.247507348290752"

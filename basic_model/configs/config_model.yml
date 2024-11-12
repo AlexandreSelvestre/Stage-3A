@@ -11,7 +11,7 @@ default:
   search: "grid" #grid ou random
   parallel:
     do: TRUE
-    n_process: 8
+    n_process: 20
     forking: FALSE #useless
   analyse_data:
     do: FALSE
@@ -19,14 +19,15 @@ default:
 
   penalty_adapt: FALSE #Seulement sur logistique_simple
 
+  do_multiway: TRUE
   #name_model: "logistique_simple"
   #name_model: "logistic_grp"
-  #name_model: "logistic_multiway"
   name_model: "logistic_multibloc"
 
-  #2 modèles trop vieux:
+  #3 modèles trop vieux:
   #name_model: "logistic_select"
   #name_model: "random_forest"
+  #name_model: "logistic_multiway"
 
 radio:
   minimal_information: FALSE #pour tester

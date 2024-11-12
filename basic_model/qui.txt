@@ -1,0 +1,8 @@
+regression_fast.o8915533 : vieux (global) multibloc
+simple fait
+regression_fast.o8915709: multibloc
+regression_fast.o8915719: group bloc
+regression_fast.o8915722: group var
+regression_fast.o8915737: group mode temps
+regression_fast.o8915741: group mode slice
+regression_fast.o8915826: multiway

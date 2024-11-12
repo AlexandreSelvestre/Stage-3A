@@ -34,7 +34,7 @@ create_grid_sgl <- function(x, y, len = NULL, search = "grid") {
 
 li_caret_sgl$grid <- create_grid_sgl
 
-fit_sgl <- function(x, y, wts, param, lev, last, weights, classProbs, index, k_smote, sampling_choice, index_variable, is_binary, index_bloc) {
+fit_sgl <- function(x, y, wts, param, lev, last, weights, classProbs, index, k_smote, sampling_choice, index_variable, is_binary, index_bloc, classe_1) {
     li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, index_bloc, is_binary)
     x <- li_norm$new_x
     classe_min <- names(which.min(table(y)))
@@ -53,7 +53,7 @@ fit_sgl <- function(x, y, wts, param, lev, last, weights, classProbs, index, k_s
     }
 
     lambda <- param$lambda
-    y_numeric <- ifelse(y == classe_min, 1, -1)
+    y_numeric <- ifelse(y == classe_1, 1, -1)
     fited <- gglasso::gglasso(
         as.matrix(x), y_numeric,
         group = index, loss = "logit", lambda = lambda
@@ -66,6 +66,8 @@ fit_sgl <- function(x, y, wts, param, lev, last, weights, classProbs, index, k_s
     fited$intercept <- fited$b0
     fited$classe_min <- classe_min
     fited$classe_maj <- classe_maj
+    fited$classe_1 <- classe_1
+    fited$classe_0 <- setdiff(levels(y), classe_1)
     return(fited)
 }
 li_caret_sgl$fit <- fit_sgl
@@ -73,15 +75,15 @@ li_caret_sgl$fit <- fit_sgl
 li_caret_sgl$predict <- function(modelFit, newdata, preProc = NULL, submodels = NULL) {
     df_mu <- modelFit$li_norm$df_mu
     df_sigma <- modelFit$li_norm$df_sigma
-    classe_min <- modelFit$classe_min
-    classe_maj <- modelFit$classe_maj
+    classe_1 <- modelFit$classe_1
+    classe_0 <- modelFit$classe_0
     newdata <- renormalize_in_model_pred_index_mode(newdata, df_mu, df_sigma)
     beta_fited <- as.vector(modelFit$beta)
     value <- apply(newdata, 1, function(ligne) {
         ligne %*% beta_fited + modelFit$intercept
     })
     proba <- 1 / (1 + exp(-value))
-    predicted_labels <- ifelse(proba > 0.5, classe_min, classe_maj)
+    predicted_labels <- ifelse(proba > 0.5, classe_1, classe_0)
 
     return(predicted_labels)
 }
@@ -90,8 +92,8 @@ li_caret_sgl$predict <- function(modelFit, newdata, preProc = NULL, submodels = 
 li_caret_sgl$prob <- function(modelFit, newdata, preProc = NULL, submodels = NULL) {
     df_mu <- modelFit$li_norm$df_mu
     df_sigma <- modelFit$li_norm$df_sigma
-    classe_min <- modelFit$classe_min
-    classe_maj <- modelFit$classe_maj
+    classe_1 <- modelFit$classe_1
+    classe_0 <- modelFit$classe_0
     newdata <- renormalize_in_model_pred_index_mode(newdata, df_mu, df_sigma)
     beta_fited <- as.vector(modelFit$beta)
     value <- apply(newdata, 1, function(ligne) {
@@ -99,8 +101,8 @@ li_caret_sgl$prob <- function(modelFit, newdata, preProc = NULL, submodels = NUL
     })
     proba_class_1 <- 1 / (1 + exp(-value))
     proba_class_0 <- 1 - proba_class_1
-    str_min <- as.character(classe_min)
-    str_maj <- as.character(classe_maj)
+    str_min <- as.character(classe_1)
+    str_maj <- as.character(classe_0)
     return(setNames(data.frame(proba_class_0, proba_class_1), c(str_maj, str_min)))
 }
 
@@ -160,7 +162,7 @@ setMethod("train_method", "apply_model", function(object) {
     }
 
     ### Générer les alphas suboptimaux (vis-à-vis de la liste des lambda) de manière aléatoire ou non
-    y_numeric <- ifelse(y == classe_min, 1, -1)
+    y_numeric <- ifelse(y == object@classe_1, 1, -1)
     seq_lambda <- gglasso::gglasso(
         as.matrix(x), y_numeric,
         group = index, loss = "logit",
@@ -185,7 +187,7 @@ setMethod("train_method", "apply_model", function(object) {
     object@model <- caret::train(
         y = object@y_train, x = as.matrix(object@train_cols[, object@col_x]),
         method = li_caret_sgl, trControl = object@cv, metric = "AUC", tuneGrid = tuneGrid, index = index, k_smote = object@k_smote, sampling_choice = object@sampling,
-        index_variable = object@index_variable, is_binary = object@is_binary, index_bloc = object@index_bloc
+        index_variable = object@index_variable, is_binary = object@is_binary, index_bloc = object@index_bloc, classe_1 = object@classe_1
     )
     if (object@parallel$do) {
         stopCluster(cl)
@@ -257,5 +259,9 @@ setMethod("importance_method", "apply_model", function(object) {
 })
 
 setMethod("get_df_imp", "apply_model", function(object) {
+    object@beta_final <- object@model$finalModel$beta
+    vec_importance <- abs(object@model$finalModel$beta)
+    variable_importance <- data.frame(Variable = object@col_x, Overall = vec_importance)
+    object@li_df_var_imp <- variable_importance
     return(object@li_df_var_imp)
 })

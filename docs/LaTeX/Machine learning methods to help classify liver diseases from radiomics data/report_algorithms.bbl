@@ -36,4 +36,9 @@ R.~Tibshirani, T.~Hastie, and J.~Friedman, ``Regularized paths for generalized
   linear models via coordinate descent,'' {\em Journal of Statistical
   Software}, vol.~33, 02 2010.
 
+\bibitem{picto}
+H.~Zhou, L.~Li, and H.~Zhu, ``Tensor regression with applications in
+  neuroimaging data analysis,'' {\em Journal of the American Statistical
+  Association}, vol.~108, pp.~540--552, 06 2013.
+
 \end{thebibliography}
