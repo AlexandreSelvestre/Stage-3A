@@ -4,7 +4,7 @@ default:
     - 6
     - 1
     - 2
-  n_sample: 1500
+  n_sample: 2500
   resample: FALSE #ignoré pour l'instant
   ecart_class: 1 #ecart entre les moyennes des classes
   dist_sepa: 0.1

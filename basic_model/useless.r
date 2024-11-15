@@ -50,5 +50,5 @@ df <- merge(df, df_tard, by = "key")
 
 
 df <- na.omit(df)
-write_xlsx(df, "../data/radiomiques_global_check.xlsx")
+# write_xlsx(df, "../data/radiomiques_global_check.xlsx")
 print(nrow(df))

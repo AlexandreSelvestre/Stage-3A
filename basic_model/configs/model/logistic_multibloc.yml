@@ -29,8 +29,8 @@ radio_big:
   same_R: FALSE
   li_R:
     block_1: [1, 7, 15]
-    # block_2: [5, 10]
-    # block_3: [5, 10]
+    block_2: [5, 10]
+    block_3: [5, 10]
 
   weights:
     "CCK": 1

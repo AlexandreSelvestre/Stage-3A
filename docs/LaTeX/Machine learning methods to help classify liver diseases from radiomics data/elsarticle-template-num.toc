@@ -1,27 +1,30 @@
 \contentsline {section}{\numberline {1}Introduction}{5}{section.1}%
-\contentsline {section}{\numberline {2}Methodology}{6}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Tensorial data and notations}{6}{subsection.2.1}%
+\contentsline {section}{\numberline {2}Methodology}{7}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Tensorial data and notations}{7}{subsection.2.1}%
 \contentsline {subsection}{\numberline {2.2}Machine learning models}{7}{subsection.2.2}%
-\contentsline {subsubsection}{\numberline {2.2.1}Non tensorial methods}{7}{subsubsection.2.2.1}%
-\contentsline {subsubsection}{\numberline {2.2.2}Multiway logistic regression with lasso}{7}{subsubsection.2.2.2}%
-\contentsline {subsubsection}{\numberline {2.2.3}Multiway and multibloc logistic regression with lasso}{9}{subsubsection.2.2.3}%
-\contentsline {subsection}{\numberline {2.3}Simulated data generation}{12}{subsection.2.3}%
-\contentsline {subsubsection}{\numberline {2.3.1}Regression parameter structure}{12}{subsubsection.2.3.1}%
-\contentsline {subsubsection}{\numberline {2.3.2}Generation of explanatory variables}{13}{subsubsection.2.3.2}%
-\contentsline {section}{\numberline {3}Real dataset}{17}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Presentation of real data}{17}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}feature extraction in 3D}{18}{subsection.3.2}%
-\contentsline {subsection}{\numberline {3.3}Feature extraction in 2D}{18}{subsection.3.3}%
-\contentsline {subsection}{\numberline {3.4}Extraction of healthy liver parts}{20}{subsection.3.4}%
-\contentsline {section}{\numberline {4}results}{21}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Simulated data}{21}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}real data}{21}{subsection.4.2}%
-\contentsline {section}{\numberline {5}Conclusion de l'article}{22}{section.5}%
+\contentsline {subsubsection}{\numberline {2.2.1}Non tensorial methods}{8}{subsubsection.2.2.1}%
+\contentsline {subsubsection}{\numberline {2.2.2}Multiway logistic regression with lasso}{8}{subsubsection.2.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.3}Multiway and multibloc logistic regression with lasso}{10}{subsubsection.2.2.3}%
+\contentsline {subsection}{\numberline {2.3}Simulated data generation}{13}{subsection.2.3}%
+\contentsline {subsubsection}{\numberline {2.3.1}Regression parameter structure}{13}{subsubsection.2.3.1}%
+\contentsline {subsubsection}{\numberline {2.3.2}Generation of explanatory variables}{14}{subsubsection.2.3.2}%
+\contentsline {section}{\numberline {3}Real dataset}{18}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Presentation of real data}{18}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}feature extraction in 3D}{19}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Feature extraction in 2D}{19}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Extraction of healthy liver parts}{21}{subsection.3.4}%
+\contentsline {section}{\numberline {4}results}{22}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Simulated data}{22}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}real data}{23}{subsection.4.2}%
+\contentsline {section}{\numberline {5}Conclusion of the article}{24}{section.5}%
+\contentsline {section}{\numberline {6}Latest results: not mentioned in the article}{25}{section.6}%
+\contentsline {section}{\numberline {7}Pipot}{26}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Prolongements possibles}{26}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Bilan et prise de recul}{26}{subsection.7.2}%
 \let \numberline \tmptocnumberline 
-\contentsline {section}{\numberline {Appendix~A}Pseudo-code for multiblock multivariate logistic regression with lasso}{24}{appendix.A}%
-\contentsline {section}{\numberline {Appendix~B}Hyperparameters for simulated data}{25}{appendix.B}%
-\contentsline {subsection}{\numberline {Appendix~B.1}Data generation}{25}{subsection.B.1}%
-\contentsline {subsection}{\numberline {Appendix~B.2}Cross validation of models}{25}{subsection.B.2}%
-\contentsline {section}{\numberline {Appendix~C}Parameters used for feature extraction with pyradiomics}{26}{appendix.C}%
-\contentsline {section}{\numberline {Appendix~D}Reconstructed pictograms}{27}{appendix.D}%
-\contentsline {section}{\numberline {Appendix~E}Importance of features}{29}{appendix.E}%
+\contentsline {section}{\numberline {Appendix~A}Hyperparameters for simulated data}{28}{appendix.A}%
+\contentsline {subsection}{\numberline {Appendix~A.1}Data generation}{28}{subsection.A.1}%
+\contentsline {subsection}{\numberline {Appendix~A.2}Cross validation of models}{28}{subsection.A.2}%
+\contentsline {section}{\numberline {Appendix~B}Parameters used for feature extraction with pyradiomics}{29}{appendix.B}%
+\contentsline {section}{\numberline {Appendix~C}Reconstructed pictograms}{30}{appendix.C}%
+\contentsline {section}{\numberline {Appendix~D}Importance of features}{32}{appendix.D}%

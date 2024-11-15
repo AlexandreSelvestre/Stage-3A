@@ -1,52 +1,17 @@
-library(readxl)
-library(writexl)
-source("utils/utils_extrac.r")
+# Définir les paramètres
+alpha <- 0.05
+n <- 50
+s <- 0.161 # Écart type de l'échantillon
+mean <- 0.876 # Moyenne de l'échantillon
 
-original <- read_excel("../data/radiomiques_global.xlsx")
-mine <- read_excel("../data/radiomic_global_refit.xlsx")
+# Calculer la valeur critique de la t-distribution
+t_critical <- qt(1 - alpha / 2, df = n - 1)
 
-col_names_diagnos <- c()
-for (col_name in names(original)) {
-    if (substr(col_name, 1, 11) == "diagnostics") {
-        col_names_diagnos <- append(col_names_diagnos, col_name)
-    }
-}
+# Calculer l'intervalle de confiance
+margin_of_error <- t_critical * (s / sqrt(n))
+lower_bound <- mean - margin_of_error
+upper_bound <- mean + margin_of_error
 
-original <- original[, setdiff(names(original), col_names_diagnos)]
-
-col_names_diagnos <- c()
-for (col_name in names(mine)) {
-    if (substr(col_name, 1, 11) == "diagnostics") {
-        col_names_diagnos <- append(col_names_diagnos, col_name)
-    }
-}
-
-mine <- mine[, setdiff(names(mine), col_names_diagnos)]
-original <- original[, setdiff(names(original), "original_glcm_JointAverage")]
-
-# ordre alphabetique colonnes
-mine <- mine[, order(names(mine))]
-original <- original[, order(names(original))]
-
-# Gérer les types des colonnes (sinon mess up with order)
-mine[] <- lapply(mine, convert_to_num)
-original[] <- lapply(original, convert_to_num)
-
-# ordre alphabetique lignes
-mine <- mine[order(mine$classe_name, mine$patient_num, mine$temps_inj), ]
-original <- original[order(original$classe_name, original$patient_num, original$temps_inj), ]
-
-# Checker différences sur character
-mine_char <- mine[, sapply(mine, is.character)]
-original_char <- original[, sapply(original, is.character)]
-mine_char <- as.matrix(mine_char)
-original_char <- as.matrix(original_char)
-num_differences <- sum(mine_char != original_char)
-
-# Checker différences sur num
-mine_num <- mine[, sapply(mine, is.numeric)]
-original_num <- original[, sapply(original, is.numeric)]
-mine_num <- as.matrix(mine_num)
-original_num <- as.matrix(original_num)
-val_difference <- sum(abs(mine_num - original_num))
-print(val_difference)
+intervalle_de_confiance <- c(lower_bound, upper_bound)
+print(intervalle_de_confiance)
+print(margin_of_error)

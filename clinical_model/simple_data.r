@@ -134,7 +134,7 @@ df <- data.frame(lapply(df, as.numeric))
 df <- df[df$Tumeur != 2, ]
 df$Tumeur <- ifelse(df$Tumeur == 1, "CHC", "CCK")
 write_xlsx(df, paste0(path_data, "/stat_analysed.xlsx"))
-n_runs <- 40
+n_runs <- 50
 li_roc <- c()
 vec_accu <- c()
 beta_global <- rep(0, ncol(df) - 1)
@@ -168,6 +168,7 @@ for (i in seq_len(n_runs)) {
     vec_accu <- c(vec_accu, balanced_acc)
     print(paste("current AUC", roc_test, "current balanced accuracy", balanced_acc))
     print(paste("mean AUC", mean(li_roc), "mean balanced accuracy", mean(vec_accu)))
+    print(paste("std AUC", sd(li_roc), "std balanced accuracy", sd(vec_accu)))
     beta_global <- beta_global + abs(beta)
     non_zero_local <- ifelse(abs(beta) > 1e-5, 1, 0)
     beta_non_zero <- beta_non_zero + non_zero_local

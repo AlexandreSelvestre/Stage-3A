@@ -4,8 +4,8 @@
 #SBATCH --ntasks=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=40
-#SBATCH --time=10:00:00
-#SBATCH --partition=cpu_long
+#SBATCH --time=4:00:00
+#SBATCH --partition=cpu_med
 #SBATCH --job-name=regression_fast
 #SBATCH --output=%x.o%j
 #SBATCH --export=PATH,LD_LIBRARY_PATH,FONTCONFIG_PATH,HOME,USER

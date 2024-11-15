@@ -4,14 +4,14 @@ default:
   calc_probs: TRUE
 
   k: 5
-  p: 0.75 #Séparation entre train et test
+  p: 0.6 #Séparation entre train et test
   rep: 1
   k_smote: 3
   sampling: "up" # "up","smote", NULL
   search: "grid" #grid ou random
   parallel:
     do: TRUE
-    n_process: 20
+    n_process: 8
     forking: FALSE #useless
   analyse_data:
     do: FALSE
@@ -19,7 +19,7 @@ default:
 
   penalty_adapt: FALSE #Seulement sur logistique_simple
 
-  do_multiway: TRUE
+  do_multiway: FALSE
   #name_model: "logistique_simple"
   #name_model: "logistic_grp"
   name_model: "logistic_multibloc"
