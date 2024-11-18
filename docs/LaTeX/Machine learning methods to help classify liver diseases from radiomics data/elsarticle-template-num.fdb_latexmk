@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex elsarticle-template-num"] 1731693266.59733 "elsarticle-template-num.aux" "elsarticle-template-num.bbl" "elsarticle-template-num" 1731693278.08533 0
+["bibtex elsarticle-template-num"] 1731940996.32182 "elsarticle-template-num.aux" "elsarticle-template-num.bbl" "elsarticle-template-num" 1731942443.7292 0
   "./bibliography.bib" 1731692263.64095 7534 2ec5c87ac8035dde392c85ed31085289 ""
   "./elsarticle-num.bst" 1712401086 29462 d2b5b1799e10c2334c188d78937e1ac9 ""
-  "elsarticle-template-num.aux" 1731693277.25167 22745 3b8eca4ed9aedcb213fe9bac13568dc9 "pdflatex"
+  "elsarticle-template-num.aux" 1731942443.33897 24188 db924cad9596df8a2b6904e05ad83e48 "pdflatex"
   (generated)
   "elsarticle-template-num.bbl"
   "elsarticle-template-num.blg"
   (rewritten before read)
-["pdflatex"] 1731693273.81143 "/home/alexandre/Documents/Stage-3A/docs/LaTeX/Machine learning methods to help classify liver diseases from radiomics data/elsarticle-template-num.tex" "elsarticle-template-num.pdf" "elsarticle-template-num" 1731693278.08562 0
+["pdflatex"] 1731942441.89385 "/home/alexandre/Documents/Stage-3A/docs/LaTeX/Machine learning methods to help classify liver diseases from radiomics data/elsarticle-template-num.tex" "elsarticle-template-num.pdf" "elsarticle-template-num" 1731942443.72933 0
   "/home/alexandre/.miktex/texmfs/data/fonts/map/pdftex/pdftex.map" 1731076541.26569 90188 4c1b04c61c519198fc17a1f863f9aa94 ""
   "/home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/ecbx1200.pk" 1726308708.6315 31952 a848510f8e923ecb115e01ff94fe33a8 ""
   "/home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/ecbx2074.pk" 1730804149.23765 59008 8097ca4b55ad7b6ee7f6067ffa012bb5 ""
@@ -197,7 +197,7 @@
   "/home/alexandre/.miktex/texmfs/install/tex/latex/varwidth/varwidth.sty" 1731076540.80071 10894 d359a13923460b2a73d4312d613554c8 ""
   "/home/alexandre/.miktex/texmfs/install/tex/latex/zref/zref-abspage.sty" 1726308686.84291 2269 4fe6fb3396214c91f164d45faf9bec45 ""
   "/home/alexandre/.miktex/texmfs/install/tex/latex/zref/zref-base.sty" 1726308686.84291 20785 f7d1133a287929598a897c93f8f4c44b ""
-  "/home/alexandre/Documents/Stage-3A/docs/LaTeX/Machine learning methods to help classify liver diseases from radiomics data/elsarticle-template-num.tex" 1731693273.18395 93440 ee5df40c70b7c4446d048d9ed19c49fe ""
+  "/home/alexandre/Documents/Stage-3A/docs/LaTeX/Machine learning methods to help classify liver diseases from radiomics data/elsarticle-template-num.tex" 1731942441.58197 118854 2a235a45e63871fba1b34dd7e28aa197 ""
   "/usr/local/share/miktex-texmf/fonts/tfm/jknappen/ec/ecbx1200.tfm" 1726308370.54583 3200 b8d69bc738e5ef3e08cefeef3109ff56 ""
   "/usr/local/share/miktex-texmf/fonts/tfm/jknappen/ec/ecbx2074.tfm" 1726308370.54583 3208 da5ec29ca7c2f5f55c296dd6713d4a74 ""
   "/usr/local/share/miktex-texmf/fonts/tfm/jknappen/ec/ecrm0500.tfm" 1726308370.54683 3160 7643a152c0e9200a0a8161b2bb3a452d ""
@@ -370,12 +370,12 @@
   "/usr/local/share/miktex-texmf/tex/latex/xcolor/xcolor.sty" 1726308374.73784 55487 80a65caedd3722f4c20a14a69e785d8f ""
   "/usr/local/share/miktex-texmf/tex/latex/xkeyval/xkeyval.sty" 1726308374.80884 4937 4ce600ce9bd4ec84d0250eb6892fcf4f ""
   "doiCmd.tex" 1721046753.23 1551 1f1d103949ee2f8a554bc4d29cf04c62 ""
-  "elsarticle-template-num.aux" 1731693277.25167 22745 3b8eca4ed9aedcb213fe9bac13568dc9 "pdflatex"
-  "elsarticle-template-num.bbl" 1731693266.76927 3740 191a5f9fa608050df2863645f76cf72e "bibtex elsarticle-template-num"
-  "elsarticle-template-num.out" 1731693277.25467 5390 1ac73ddad766b29c2afe51cf093640e8 "pdflatex"
-  "elsarticle-template-num.spl" 1731693274.06833 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "elsarticle-template-num.tex" 1731693273.18395 93440 ee5df40c70b7c4446d048d9ed19c49fe ""
-  "elsarticle-template-num.toc" 1731693277.25467 2692 b42eef895aba7ad226763b1434fa691f "pdflatex"
+  "elsarticle-template-num.aux" 1731942443.33897 24188 db924cad9596df8a2b6904e05ad83e48 "pdflatex"
+  "elsarticle-template-num.bbl" 1731940996.40485 3740 191a5f9fa608050df2863645f76cf72e "bibtex elsarticle-template-num"
+  "elsarticle-template-num.out" 1731942443.33997 7000 f32184a7eb7c04652fc2b21c11e340a3 "pdflatex"
+  "elsarticle-template-num.spl" 1731942442.00097 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "elsarticle-template-num.tex" 1731942441.58197 118854 2a235a45e63871fba1b34dd7e28aa197 ""
+  "elsarticle-template-num.toc" 1731942443.34097 3684 508013a9c7970c5b17fedca5a4129bd2 "pdflatex"
   "images/3_picto.png" 1730216137.88196 2453 b9ae2356cb58cf0a01ae1bf793fd9422 ""
   "images/clusters.png" 1731669349.90716 80781 9645eee23a9460005517d2a573603c0a ""
   "images/fourchette.png" 1730214006.22978 2239 96126ac93c71a1c412f172218dbfe250 ""
