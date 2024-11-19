@@ -1,4 +1,5 @@
 To do:
+-PBDMPI not master worker MAIS data distribution
 
 -  Checker multivoie seul. Bug dans keep global en multislice? 
 

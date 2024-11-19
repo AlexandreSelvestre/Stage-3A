@@ -43,10 +43,10 @@ simu:
   R_max: 12
   same_R: FALSE
   li_R:
-    #block_1: [1, 10, 20]
-    block_1: [1, 6, 10]
-    block_2: [1]
-    block_3: [10]
+    block_1: [1, 10, 20]
+    # block_1: [1, 6, 12]
+    # block_2: [1]
+    # block_3: [1, 10]
   tuneLength: 6
   #vec_modes: [66,66,66]
 
