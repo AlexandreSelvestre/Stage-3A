@@ -16,11 +16,15 @@ normal <- function(x) {
 
 convert_to_num <- function(x) {
     if (is.character(x)) {
-        y <- as.numeric(x)
-        if (all(is.na(y))) {
+        if (all(grepl("^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$", x))) {
+            y <- as.numeric(x)
+            if (any(is.na(y))) {
+                stop("generation de NA")
+            }
+            return(y)
+        } else {
             return(x)
         }
-        x <- y
     }
     if (is.numeric(x)) {
         return(x)
@@ -73,4 +77,66 @@ name_product_terms <- function(x, small_groups = FALSE) {
     } else {
         paste(type_col, extension, sep = "_")
     }
+}
+
+assainir <- function(df, config_extrac, no_multivariate_col, crushed_cols) {
+    time_inj <- config_extrac$time_inj
+    col_diagnos <- grepl("diagnostics", colnames(df))
+    df <- df[, !col_diagnos]
+    col_to_examine <- !colnames(df) %in% c("slice_num", "classe_name", "temps_inj", "patient_num")
+    indices_not_examined <- which(col_to_examine == FALSE)
+    vec_sd <- as.vector(apply(df[, col_to_examine], 2, function(x) sd(x, na.rm = TRUE)))
+    col_const <- vec_sd < 10^-6
+    j <- 1
+    # Remettre des FALSE pour les colonnes non examinées aux bons endroits
+    while (j <= ncol(df)) {
+        if (j %in% indices_not_examined) {
+            col_const <- append(col_const, FALSE, after = j - 1)
+        }
+        j <- j + 1
+    }
+    # print(col_const)
+    df <- df[, !col_const]
+
+    # Dégager les mixtes si demandé
+    if (config_extrac$kill_mixtes) {
+        df <- df[df$classe_name != "Mixtes", ]
+    }
+    df <- df[df$temps_inj %in% time_inj, ]
+    col_to_concatenate <- setdiff(colnames(df), c(no_multivariate_col, crushed_cols))
+    df[["key"]] <- paste0(df$classe_name, "_", df$patient_num)
+    return(df)
+}
+
+make_in_lines <- function(df_to_join, config_extrac, no_multivariate_col, crushed_cols, special_name_col = "_") {
+    time_inj <- config_extrac$time_inj
+    col_to_concatenate <- setdiff(colnames(df_to_join), c(no_multivariate_col, crushed_cols))
+    lines <- lapply(unique(df_to_join$key), function(key) {
+        df_to_join_key <- df_to_join[df_to_join$key == key, ]
+        vec_line <- c()
+        if (nrow(df_to_join_key) != length(time_inj)) {
+            # print(paste("Key", key, "not found in sain data"))
+            return(NULL)
+        } else {
+            for (time in time_inj) {
+                vec_line_time <- unname(unlist(df_to_join_key[df_to_join_key$temps_inj == time, col_to_concatenate]))
+                vec_line <- c(vec_line, vec_line_time)
+            }
+            vec_line <- c(key, vec_line)
+            return(vec_line)
+        }
+    })
+    lines <- Filter(Negate(is.null), lines)
+    df_to_join_in_lines <- as.data.frame(do.call(rbind, lines))
+    new_col_names <- c()
+
+    # Parcourir chaque élément de config_extrac$new_names_time_inj
+    for (time_name in config_extrac$new_names_time_inj) {
+        # Pour chaque élément de col_to_concatenate, créer un nouveau nom de colonne
+        for (col_name in col_to_concatenate) {
+            new_col_names <- c(new_col_names, paste0(col_name, special_name_col, time_name))
+        }
+    }
+    colnames(df_to_join_in_lines) <- c("key", new_col_names)
+    return(df_to_join_in_lines)
 }

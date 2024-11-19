@@ -13,9 +13,9 @@ gene_x_scalar <- function(config_extrac, beta_vec) {
     if (config_extrac$do_QR) {
         print("start QR")
         P <- complete_orthonormal_basis(beta_vec)
-        write_xlsx(as.data.frame(P), "..//data//beta_picto//P.xlsx")
+        write_xlsx(as.data.frame(P), paste0(path_data, "/beta_picto/P.xlsx"))
     } else {
-        P <- as.matrix(read_xlsx("..//data//beta_picto//P.xlsx"))
+        P <- as.matrix(read_xlsx(paste0(path_data, "/beta_picto/P.xlsx")))
     }
     print("QR done")
     if (config_extrac$do_product | config_extrac$do_QR) {
@@ -28,9 +28,9 @@ gene_x_scalar <- function(config_extrac, beta_vec) {
         print("intermidiate")
         Sigma <- Tcrossprod(inside, P)
         print(Sys.time() - start_time)
-        saveRDS(Sigma, file = "../data/RDS/Sigma_simu.rds")
+        saveRDS(Sigma, file = paste0(path_data, "/RDS/Sigma_simu.rds"))
     } else {
-        Sigma <- readRDS("../data/RDS/Sigma_simu.rds")
+        Sigma <- readRDS(paste0(path_data, "/RDS/Sigma_simu.rds"))
     }
     print("first batch")
     X_1 <- rmvn(round(prop * n_sample), mu_1, Sigma, ncores = numCores - 1)

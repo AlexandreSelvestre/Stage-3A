@@ -1,5 +1,4 @@
 default:
-
   time_inj:
     - "ART"
     - "PORT"
@@ -18,13 +17,41 @@ default:
     - "Gender"
     - "Age_at_disease"
 
-  max_prop_consecutif_acceptable : 0.05
+  max_prop_consecutif_acceptable: 0.1
   max_prop_acceptable: 0.99
   #ici c'est à chaque fois la proportion d'absents acceptable
   kill_mixtes: TRUE
   kill_outliers: TRUE
-  n_slices: 10
+  n_slices: 5
   strong_exclusion: FALSE #Est-ce que la présence d'une seule temporalité suffit à faire commencer la tumeur (TRUE = oui)
 
+  shape_3D:
+    do: FALSE
+    average: FALSE
+
+  shape_2D:
+    do: TRUE
+    average: FALSE #juste pour multiway!!!!!!!!!!!!
+
+  keep_global: FALSE #garder les features globaux (hors shape)
+
+  compare_sain: FALSE
+  sain_first_order_only: FALSE #comparer
+  #Actuellement seul le firstorder est gardé
+
+  area_extrac: FALSE
+
+  keep_features_slice:
+    first_order: TRUE
+    texture: TRUE
+
+  # li_data_cross_val:
+  #   n_slices:
+  #     - 3
+  #     - 5
+  #     - 8
+  #   do_decal:
+  #     - TRUE
+  #     - FALSE
 
 my_config:

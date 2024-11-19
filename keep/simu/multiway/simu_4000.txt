@@ -1,0 +1,88 @@
+[1] "logistic_multibloc"
+[1] "simu_4000_multiway"
+[1] TRUE
+function (x, ...) 
+UseMethod("cluster")
+<bytecode: 0x8bb1bb0>
+<environment: namespace:caret>
+[1] "start gene"
+[1] "QR done"
+[1] "first batch"
+[1] "second batch"
+[1] "gene done"
+[1] "end gene"
+[1] "dimensions data used" "4000"                 "7789"                
+nombre de la classe majoritaire dans train 1500 
+nombre de la classe minoritaire dans train 1500 
+nombre de la classe majoritaire dans test 500 
+nombre de la classe minoritaire dans test 500 
+rapport nb_minoritaire/nb_majoritaire en training 1 
+rapport nb_minoritaire/nb_majoritaire  en testing 1 
+Aggregating results
+Selecting tuning parameters
+Fitting R_1 = 10, lambda = 0.001 on full training set
+[1] TRUE
+[1] -0.650309040312
+[1] "crit_compare -0.667114128096518"
+[1] TRUE
+[1] -0.394737850936
+[1] "crit_compare -0.43320015874975"
+[1] TRUE
+[1] -0.27275696975
+[1] "crit_compare -0.300427030007981"
+[1] TRUE
+[1] -0.222567037681
+[1] "crit_compare -0.230701191711114"
+[1] "Warning, temps de calcul trop long"
+[1] "Le rapport vaut: 0.184009714272691"
+[1] "End of learning phase"
+[1] "End of prediction phase"
+[1] "Le nombre de donn\303\251es est 4000 dont 1000 dans le testing dataset et le jeu de donn\303\251 de la grid search: "
+   R_1 lambda
+10  10  0.001
+Setting levels: control = Classe_0, case = Classe_1
+Setting direction: controls > cases
+[1] "La valeur de l'AUC de test est de 0.994476"
+[1] "La valeur de l'AUC de validation sur chaque fold est de 0.998588888888889"
+[2] "La valeur de l'AUC de validation sur chaque fold est de 0.992411111111111"
+[3] "La valeur de l'AUC de validation sur chaque fold est de 0.997611111111111"
+[4] "La valeur de l'AUC de validation sur chaque fold est de 0.994533333333333"
+[5] "La valeur de l'AUC de validation sur chaque fold est de 0.9972"           
+[1] "Ce qui donne une moyenne d'AUC de 0.996068888888889"
+Setting levels: control = Classe_0, case = Classe_1
+Setting direction: controls > cases
+[1] "La valeur de l'AUC de train est de 0.999985777777778"
+[1] "End of analysis phase"
+[1] "L'erreur moyenne de reconstruction du pictogramme est de 0.214740178664533"
+[1] "actuelle moyenne AUC test 0.994476 ite: 1"
+[1] "actuel ecart type AUC test NA ite: 1"
+[1] "actuelle moyenne AUC val 0.996068888888889 ite: 1"
+[1] "actuelle moyenne Accuracy test 0.97 ite: 1"
+[1] "actuelle somme des confusion matrix ite: 1 :"
+[1] "actuelle moyenne du macro F1 test 0.96999987999952 ite: 1"
+[1] "actuelle moyenne du F1 Classe_0 test 0.969939879759519 ite: 1"
+[1] "actuelle moyenne du F1 Classe_1 test 0.970059880239521 ite: 1"
+          Reference
+Prediction Classe_0 Classe_1
+  Classe_0      484       14
+  Classe_1       16      486
+[1] "actuelle moyenne score_recons 0.214740178664533 ite: 1"
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+[1] "Voil\303\240 la matrice de confusion somm\303\251e"
+          Reference
+Prediction Classe_0 Classe_1
+  Classe_0      484       14
+  Classe_1       16      486
+[1] "voil\303\240 la matrice de confusion en pourcentage: ... % de classe 1 ont \303\251t\303\251 bien class\303\251s vs ... % mal class\303\251s"
+         Classe_0 Classe_1
+Classe_0    0.968    0.028
+Classe_1    0.032    0.972
+[1] "La balanced accuracy sur l'\303\251chantillon total vaut: 0.970007520120322"
+le f1 score Classe_0 sur l'échantillon entier vaut: 0.96993987976 
+le f1 score Classe_1 sur l'échantillon entier vaut: 0.97005988024 
+[1] "Le f1 macro sur l'\303\251chantillon total vaut: 0.96999987999952"
+[1] "La moyenne des scores de reconstruction vaut 0.214740178664533"
+

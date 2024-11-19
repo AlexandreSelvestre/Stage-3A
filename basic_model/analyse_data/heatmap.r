@@ -2,10 +2,12 @@ library(writexl)
 library(readxl)
 
 # Fonction pour créer une heatmap avec une palette de couleurs personnalisée
-create_heatmap <- function(file_path, output_png) {
+create_heatmap <- function(file_path, output_png, mat) {
+    mat <- as.matrix(mat)
     png(output_png, width = 800, height = 600)
-    mat <- as.matrix(silent_run(read_excel, file_path))
-    mat <- mat[nrow(mat):1, ] # Inverser l'ordre des lignes
+    # mat <- as.matrix(silent_run(read_excel, file_path))
+    # write_xlsx(as.data.frame(mat), paste0(file_path, "_reform_oui.xlsx"))
+    mat <- mat[nrow(mat):1, ] # Inverser l'ordre des lignes OUILLLLLLLE
 
     # Définir les couleurs et les breaks
     couleurs <- colorRampPalette(c("blue", "white", "red"))(n = 299)

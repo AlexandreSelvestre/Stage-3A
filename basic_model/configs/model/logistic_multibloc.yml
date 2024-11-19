@@ -6,16 +6,14 @@ default:
   max_temps: 30 #secondes
   ## C'est TROP PEU (passer à 30)
 
-
 radio:
   lambda_min: 0.00000001
   lambda_max: 0.1
   R_min: 1
-  R_max: 2 
-  tuneLength: 8
-  tune_R: 2
+  R_max: 3
+  tuneLength: 10
+  tune_R: 3
   same_R: FALSE
-  #vec_modes: [3,3,3]
 
   weights:
     "CCK": 1
@@ -26,10 +24,13 @@ radio_big:
   lambda_max: 0.1
   R_min: 1
   R_max: 20
-  tuneLength: 10
+  tuneLength: 7
   tune_R: 4
   same_R: FALSE
-  #vec_modes: [3,3,3]
+  li_R:
+    block_1: [1, 7, 15]
+    block_2: [5, 10]
+    block_3: [5, 10]
 
   weights:
     "CCK": 1
@@ -42,24 +43,16 @@ simu:
   R_max: 12
   same_R: FALSE
   li_R:
-    #block_1: [1]
-    block_1: [1,6,10]
-    block_2: [1]
-    block_3: [10]
-  tuneLength: 4
+    block_1: [1, 10, 20]
+    # block_1: [1, 6, 12]
+    # block_2: [1]
+    # block_3: [1, 10]
+  tuneLength: 6
   #vec_modes: [66,66,66]
 
   weights:
     "Classe_0": 1
     "Classe_1": 1
-
-
-
-
-
-
-
-
 # R = 2; 20 iterations. AUC moyenne test 0.767361111111111", moyenne AUC val 0.751666666666667".
 # R = 3; 20 iterations, AUC moyenne test 0.809722222222222, moyenne AUC val 0.731830808080808.
 # R = 4; 20 iterations, AUC moyenne test ________________, moyenne AUC val ________________.

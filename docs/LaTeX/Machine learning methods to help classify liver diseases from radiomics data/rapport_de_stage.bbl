@@ -1,0 +1,76 @@
+\begin{thebibliography}{1}
+\expandafter\ifx\csname url\endcsname\relax
+  \def\url#1{\texttt{#1}}\fi
+\expandafter\ifx\csname urlprefix\endcsname\relax\def\urlprefix{URL }\fi
+\expandafter\ifx\csname href\endcsname\relax
+  \def\href#1#2{#2} \def\path#1{#1}\fi
+
+\bibitem{multi_rank_1}
+L.~Le~Brusquet, G.~Lechuga, A.~Tenenhaus,
+  \href{https://centralesupelec.hal.science/hal-01056558}{{R{\'e}gression
+  Logistique Multivoie}}, in: {JdS 2014}, Rennes, France, 2014, p. 6 pages.
+\newline\urlprefix\url{https://centralesupelec.hal.science/hal-01056558}
+
+\bibitem{multi_rank_r}
+F.~Girka, P.~Chevaillier, A.~Gloaguen, G.~Gennari, G.~Dehaene-Lambertz,
+  L.~Le~Brusquet, A.~Tenenhaus,
+  \href{https://centralesupelec.hal.science/hal-03051752}{{Rank-R Multiway
+  Logistic Regression}}, in: {52{\`e}mes Journ{\'e}es de Statistique}, Nice,
+  France, 2021, les 52{\`e}mes journ{\'e}es de Statistique 2020 sont
+  report{\'e}es ! Elles auront lieu du 7 au 11 Juin 2021.
+\newline\urlprefix\url{https://centralesupelec.hal.science/hal-03051752}
+
+\bibitem{grp_lasso}
+L.~Meier, S.~Van De~Geer, P.~Bühlmann,
+  \href{https://doi.org/10.1111/j.1467-9868.2007.00627.x}{{The Group Lasso for
+  Logistic Regression}}, Journal of the Royal Statistical Society Series B:
+  Statistical Methodology 70~(1) (2008) 53--71.
+\newblock \href
+  {http://arxiv.org/abs/https://academic.oup.com/jrsssb/article-pdf/70/1/53/49796502/jrsssb\_70\_1\_53.pdf}
+  {\path{arXiv:https://academic.oup.com/jrsssb/article-pdf/70/1/53/49796502/jrsssb\_70\_1\_53.pdf}},
+  \href {https://doi.org/10.1111/j.1467-9868.2007.00627.x}
+  {\path{doi:10.1111/j.1467-9868.2007.00627.x}}.
+\newline\urlprefix\url{https://doi.org/10.1111/j.1467-9868.2007.00627.x}
+
+\bibitem{conventions}
+T.~G. Kolda, B.~W. Bader, \href{https://doi.org/10.1137/07070111X}{Tensor
+  decompositions and applications}, SIAM Review 51~(3) (2009) 455--500.
+\newblock \href {http://arxiv.org/abs/https://doi.org/10.1137/07070111X}
+  {\path{arXiv:https://doi.org/10.1137/07070111X}}, \href
+  {https://doi.org/10.1137/07070111X} {\path{doi:10.1137/07070111X}}.
+\newline\urlprefix\url{https://doi.org/10.1137/07070111X}
+
+\bibitem{glmnet}
+R.~Tibshirani, T.~Hastie, J.~Friedman, Regularized paths for generalized linear
+  models via coordinate descent, Journal of Statistical Software 33 (02 2010).
+\newblock \href {https://doi.org/10.1163/ej.9789004178922.i-328.7}
+  {\path{doi:10.1163/ej.9789004178922.i-328.7}}.
+
+\bibitem{picto}
+H.~Zhou, L.~Li, H.~Zhu, Tensor regression with applications in neuroimaging
+  data analysis, Journal of the American Statistical Association 108 (2013)
+  540--552.
+\newblock \href {https://doi.org/10.1080/01621459.2013.776499}
+  {\path{doi:10.1080/01621459.2013.776499}}.
+
+\bibitem{pyradio}
+J.~J. van Griethuysen, A.~Fedorov, C.~Parmar, A.~Hosny, N.~Aucoin, V.~Narayan,
+  R.~G. Beets-Tan, J.-C. Fillion-Robin, S.~Pieper, H.~J. Aerts,
+  \href{https://doi.org/10.1158/0008-5472.CAN-17-0339}{{Computational Radiomics
+  System to Decode the Radiographic Phenotype}}, Cancer Research 77~(21) (2017)
+  e104--e107.
+\newblock \href
+  {http://arxiv.org/abs/https://aacrjournals.org/cancerres/article-pdf/77/21/e104/2934659/e104.pdf}
+  {\path{arXiv:https://aacrjournals.org/cancerres/article-pdf/77/21/e104/2934659/e104.pdf}},
+  \href {https://doi.org/10.1158/0008-5472.CAN-17-0339}
+  {\path{doi:10.1158/0008-5472.CAN-17-0339}}.
+\newline\urlprefix\url{https://doi.org/10.1158/0008-5472.CAN-17-0339}
+
+\bibitem{sis}
+J.~Fan, J.~Lv, \href{https://arxiv.org/abs/math/0612857}{Sure independence
+  screening for ultra-high dimensional feature space} (2008).
+\newblock \href {http://arxiv.org/abs/math/0612857}
+  {\path{arXiv:math/0612857}}.
+\newline\urlprefix\url{https://arxiv.org/abs/math/0612857}
+
+\end{thebibliography}

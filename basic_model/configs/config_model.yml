@@ -9,26 +9,25 @@ default:
   k_smote: 3
   sampling: "up" # "up","smote", NULL
   search: "grid" #grid ou random
-  parallel: 
+  parallel:
     do: TRUE
-    n_process: 8
+    n_process: 6
     forking: FALSE #useless
-  analyse_data: 
+  analyse_data:
     do: FALSE
     EM: FALSE
 
   penalty_adapt: FALSE #Seulement sur logistique_simple
-  
 
-  name_model: "logistique_simple"
+  do_multiway: TRUE
+  #name_model: "logistique_simple"
   #name_model: "logistic_grp"
-  #name_model: "logistic_multiway"
-  #name_model: "logistic_multibloc"
+  name_model: "logistic_multibloc"
 
-  #2 modèles trop vieux:
+  #3 modèles trop vieux:
   #name_model: "logistic_select"
-  #name_model: "random_forest" 
-
+  #name_model: "random_forest"
+  #name_model: "logistic_multiway"
 
 radio:
   minimal_information: FALSE #pour tester
@@ -41,4 +40,3 @@ radio_big:
 simu:
   minimal_information: FALSE
   classe_1: "Classe_1"
-

@@ -25,7 +25,7 @@ setClass("logistique_simple",
 
 li_caret_simple <- list()
 
-li_caret_simple$library <- "varclust"
+li_caret_simple$library <- "glmnet"
 
 li_caret_simple$type <- "Classification"
 
@@ -45,8 +45,24 @@ create_grid_simple <- function(x, y, len = NULL, search = "grid") {
 
 li_caret_simple$grid <- create_grid_simple
 
-fit_simple <- function(x, y, wts, param, lev, last, weights_dict, classProbs, k_smote, sampling_choice, index_variable, index_bloc, is_binary, classe_1 = NULL, penalty_adapt) {
+fit_simple <- function(x, y, wts, param, lev, last, weights_dict, classProbs, k_smote, sampling_choice, index_variable, index_bloc, is_binary, penalty_adapt, config, classe_1 = NULL) {
+    # if (length(param) > 1) {
+    #     for (name in names(param)) {
+    #         config[[name]] <- param[[name]]
+    #     }
+    #     li_param_data <- param[names(param) %in% names(config$li_data_cross_val)]
+    #     pairs <- sapply(names(), function(name) {
+    #         paste(name, li_param_data[[name]], sep = "_")
+    #     })
+    #     end_name <- paste(pairs, collapse = "_")
+
+    #     path_data_used <- paste0(config$path_data, paste0("/data_used", end_name, ".xlsx"))
+    #     data_used_loc <- as.data.frame(read.csv(path_data_used, check.names = FALSE))
+    #     x <-
+    # }
     li_norm <- renormalize_in_model_fit_index_mode(x, index_variable, index_bloc, is_binary)
+
+
     ######## THE GOOD LINE FOR NORMALIZATION
     x <- li_norm$new_x
     classe_min <- names(which.min(table(y)))
@@ -152,12 +168,20 @@ li_caret_simple$loop <- NULL
 
 setMethod("train_method", "logistique_simple", function(object) {
     tuneGrid <- expand.grid(lambda = exp(log(10) * seq(log10(object@lambda_min), log10(object@lambda_max), length = object@tuneLength)))
+    if (length(object@li_data_cross_val) > 0) {
+        li_tune <- c(as.list(tuneGrid), object@li_data_cross_val)
+        tuneGrid <- expand.grid(li_tune)
+    }
     if (object@parallel$do) {
         numCores <- detectCores()
         cl <- makePSOCKcluster(object@parallel$n_process)
         # cl <- makePSOCKcluster(2)
         registerDoParallel(cl)
         clusterEvalQ(cl, {
+            current_dir <- getwd()
+            if (current_dir == "/gpfs/users/selvestra/basic_model") {
+                # .libPaths("/gpfs/workdir/selvestra/R_packages")
+            }
             files <- list.files("./utils", full.names = TRUE, pattern = "\\.r$")
             for (file in files) {
                 source(file)
@@ -167,11 +191,11 @@ setMethod("train_method", "logistique_simple", function(object) {
     print(dim(object@train_cols[, object@col_x]))
     object@model <- caret::train(
         y = object@y_train, x = object@train_cols[, object@col_x],
-        method = li_caret_simple, trControl = object@cv, metric = "AUC",
-        tuneLength = 8, tuneGrid = tuneGrid,
+        method = li_caret_simple, trControl = object@cv, metric = "AUC", tuneGrid = tuneGrid,
         weights_dict = object@weights, k_smote = object@k_smote, sampling_choice = object@sampling,
         index_variable = object@index_variable, index_bloc = object@index_bloc, is_binary = object@is_binary,
-        classe_1 = object@classe_1, penalty_adapt = object@penalty_adapt
+        classe_1 = object@classe_1, penalty_adapt = object@penalty_adapt, config = object@config
+        # , tuneLength = object@tuneLength
     )
     if (object@parallel$do) {
         stopCluster(cl)
@@ -188,60 +212,60 @@ setMethod("train_method", "logistique_simple", function(object) {
 setMethod("importance_method", "apply_model", function(object) {
     object@beta_final <- object@model$finalModel$beta
     vec_importance <- abs(object@model$finalModel$beta) ##### SUITE
-    variable_importance <- data.frame(Variable = object@col_x, Overall = vec_importance)
-    object@li_df_var_imp <- variable_importance
+    # variable_importance <- data.frame(Variable = object@col_x, Overall = vec_importance)
+    # object@li_df_var_imp <- variable_importance
 
-    variable_importance$Group <- object@name_mode
-    variable_importance$small_Group <- object@name_variable
-
-
-    variable_importance_grouped <- aggregate(Overall ~ Group, data = variable_importance, FUN = mean)
-    variable_importance_small_grouped <- aggregate(Overall ~ small_Group, data = variable_importance, FUN = mean)
-    variable_importance <- subset(variable_importance, Overall > 0.0001)
-    variable_importance_grouped <- subset(variable_importance_grouped, Overall > 0.0001)
-    variable_importance_small_grouped <- subset(variable_importance_small_grouped, Overall > 0.0001)
+    # variable_importance$Group <- object@name_mode
+    # variable_importance$small_Group <- object@name_variable
 
 
-
-    image <- ggplot2::ggplot(variable_importance, aes(x = reorder(Variable, Overall), y = Overall)) +
-        geom_bar(stat = "identity") +
-        coord_flip() +
-        theme_light() +
-        xlab("Variable") +
-        ylab("Importance") +
-        ggtitle("Variable Importance")
-    # + theme(axis.text.y = element_text(size = 3)) # Adjust the size as needed
-    ggsave(paste0("plots/logistique_simple/importance", "_", object@id_term, ".png"), image)
-
-    image <- ggplot(variable_importance_grouped, aes(x = reorder(Group, Overall), y = Overall)) +
-        geom_bar(stat = "identity") +
-        coord_flip() +
-        theme_light() +
-        xlab("Variable") +
-        ylab("Importance") +
-        ggtitle("Variable Importance")
-    ggsave(paste0("plots/logistique_simple/big_groups_importance", "_", object@id_term, ".png"), image)
+    # variable_importance_grouped <- aggregate(Overall ~ Group, data = variable_importance, FUN = mean)
+    # variable_importance_small_grouped <- aggregate(Overall ~ small_Group, data = variable_importance, FUN = mean)
+    # variable_importance <- subset(variable_importance, Overall > 0.0001)
+    # variable_importance_grouped <- subset(variable_importance_grouped, Overall > 0.0001)
+    # variable_importance_small_grouped <- subset(variable_importance_small_grouped, Overall > 0.0001)
 
 
-    image <- ggplot(variable_importance_small_grouped, aes(x = reorder(small_Group, Overall), y = Overall)) +
-        geom_bar(stat = "identity") +
-        coord_flip() +
-        theme_light() +
-        xlab("Variable") +
-        ylab("Importance") +
-        ggtitle("Variable Importance")
-    ggsave(paste0("plots/logistique_simple/small_groups_importance", "_", object@id_term, ".png"), image)
-    #######################################
 
-    image <- df_cv <- object@model$resample
-    df_cv <- df_cv[, setdiff(names(df_cv), "Resample")]
-    df_long <- melt(df_cv)
-    # print(df_long)
-    box_plots_stats <- ggplot(df_long, aes(x = variable, y = value)) +
-        stat_summary(fun = median, geom = "point", shape = 20, size = 3, color = "red") +
-        geom_boxplot() +
-        theme(axis.text.x = element_text(angle = 90, hjust = 1)) # Rotate x-axis labels for readability
-    ggsave(paste0("plots/logistique_simple/box_plots_stats", "_", object@id_term, ".png"), box_plots_stats)
+    # image <- ggplot2::ggplot(variable_importance, aes(x = reorder(Variable, Overall), y = Overall)) +
+    #     geom_bar(stat = "identity") +
+    #     coord_flip() +
+    #     theme_light() +
+    #     xlab("Variable") +
+    #     ylab("Importance") +
+    #     ggtitle("Variable Importance")
+    # # + theme(axis.text.y = element_text(size = 3)) # Adjust the size as needed
+    # ggsave(paste0("plots/logistique_simple/importance", "_", object@id_term, ".png"), image)
+
+    # image <- ggplot(variable_importance_grouped, aes(x = reorder(Group, Overall), y = Overall)) +
+    #     geom_bar(stat = "identity") +
+    #     coord_flip() +
+    #     theme_light() +
+    #     xlab("Variable") +
+    #     ylab("Importance") +
+    #     ggtitle("Variable Importance")
+    # ggsave(paste0("plots/logistique_simple/big_groups_importance", "_", object@id_term, ".png"), image)
+
+
+    # image <- ggplot(variable_importance_small_grouped, aes(x = reorder(small_Group, Overall), y = Overall)) +
+    #     geom_bar(stat = "identity") +
+    #     coord_flip() +
+    #     theme_light() +
+    #     xlab("Variable") +
+    #     ylab("Importance") +
+    #     ggtitle("Variable Importance")
+    # ggsave(paste0("plots/logistique_simple/small_groups_importance", "_", object@id_term, ".png"), image)
+    # #######################################
+
+    # image <- df_cv <- object@model$resample
+    # df_cv <- df_cv[, setdiff(names(df_cv), "Resample")]
+    # df_long <- melt(df_cv)
+    # # print(df_long)
+    # box_plots_stats <- ggplot(df_long, aes(x = variable, y = value)) +
+    #     stat_summary(fun = median, geom = "point", shape = 20, size = 3, color = "red") +
+    #     geom_boxplot() +
+    #     theme(axis.text.x = element_text(angle = 90, hjust = 1)) # Rotate x-axis labels for readability
+    # ggsave(paste0("plots/logistique_simple/box_plots_stats", "_", object@id_term, ".png"), box_plots_stats)
     return(object)
 })
 

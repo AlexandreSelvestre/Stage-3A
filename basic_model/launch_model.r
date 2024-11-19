@@ -11,6 +11,10 @@ setClass(
     name_mode = "character", #    input: vecteur des noms des modes des explicatives
     name_variable = "character", # input: vecteur des noms des variables des explicatives
     is_binary = "logical", #      input: vecteur logique des variables explicatives binaires
+    path_data = "character", #         input: chemin du fichier de données
+    config = "ANY", # input: configuration du modèle
+    li_extrac = "ANY",
+    nom_spe = "ANY",
     name_y = "character", #       variable: nom de la variable expliquée
     class_maj_min = "character", # variable: c(nom_class_maj, nom_class_min)
     col_x = "character", #        variable: noms de colonnes de variables explicatives
@@ -63,6 +67,7 @@ setClass(
     classe_1 = "character", #       input: Définit qui est la classe 1
     analyse_data = "list", #        input: liste sur post analyse data (faire clusters?)
     do_product = "logical", #       input: indique si réutiliser ou non le Sigma picto
+    li_data_cross_val = "list", #   input: liste des données pour la cross validation sur l'extraction des données. Si vide: pas fait
     df_measures = "ANY", #          variable: dataframe des perfoemances
     li_df_var_imp = "ANY", #        variable: dataframe imp variables (pas tous les modèles)
     confus_mat = "ANY", #           variable: matrice de confusion
@@ -76,7 +81,8 @@ setClass(
     rep = 1,
     show_logs = TRUE,
     name_model = "logistique_simple",
-    id_term = "1"
+    id_term = "1",
+    li_data_cross_val = list()
   )
 )
 
@@ -86,6 +92,7 @@ setGeneric("init", function(object) {
 })
 
 setMethod("init", "apply_model", function(object) {
+  path_data <- object@path_data
   object@name_y <- object@info_cols$explained_col
   object@col_x <- setdiff(names(object@data_used), c(object@info_cols$exclude_cols, object@name_y))
   object@data_used[[object@name_y]] <- as.factor(object@data_used[[object@name_y]])
@@ -95,25 +102,31 @@ setMethod("init", "apply_model", function(object) {
   object@class_maj_min <- c(class_majoritaire, class_minoritaire)
   object@data_used[, object@col_x] <- na.roughfix(object@data_used[, object@col_x])
 
-  object@index_mode <- readRDS(file = "../data/RDS/index_mode.rds")
-  object@index_bloc <- readRDS(file = "../data/RDS/index_bloc.rds")
-  object@index_variable <- readRDS(file = "../data/RDS/index_variable.rds")
-  object@is_binary <- readRDS(file = "../data/RDS/is_binary.rds")
-  object@name_mode <- readRDS(file = "../data/RDS/name_mode.rds")
-  object@name_bloc <- readRDS(file = "../data/RDS/name_bloc.rds")
-  object@name_variable <- readRDS(file = "../data/RDS/name_variable.rds")
+
+  object@index_bloc <- li_extrac$index_bloc
+  object@index_variable <- li_extrac$index_variable
+  object@is_binary <- li_extrac$is_binary
+  object@name_bloc <- li_extrac$name_bloc
+  object@name_variable <- li_extrac$name_variable
+
 
   if (object@use_li_index_modes) {
-    object@li_index_modes <- readRDS(file = "../data/RDS/li_index_modes.rds")
-    object@li_name_modes <- readRDS(file = "../data/RDS/li_name_modes.rds")
+    object@li_index_modes <- li_extrac$li_index_modes
+    object@li_name_modes <- li_extrac$li_name_modes
   } else {
     object@li_index_modes <- list()
     object@li_name_modes <- list()
+    object@index_mode <- li_extrac$index_mode
+    object@name_mode <- li_extrac$name_mode
   }
-
   object@df_measures <- as.data.frame(matrix(ncol = 5, nrow = 0))
 
+  if (object@config$do_multiway == TRUE) {
+    object@index_bloc <- ifelse(object@index_bloc == -1, -1, 1)
+    object@name_bloc <- ifelse(object@index_bloc == -1, "univariate", "bloc_1")
+  }
 
+  # print(object@index_bloc)
   return(object)
 })
 
@@ -165,8 +178,6 @@ setMethod("get_results", "apply_model", function(object) {
   object@predictions <- as.vector(predict(object@model, newdata = as.matrix(object@test_set[, object@col_x])))
   object@predictions_proba <- predict(object@model, newdata = as.matrix(object@test_set[, object@col_x]), type = "prob")
   object@predictions_train_proba <- predict(object@model, newdata = as.matrix(object@train_cols[, object@col_x]), type = "prob")
-  print("GOGOGOGOGOG")
-  print(as.matrix(object@test_set[, object@col_x])[1, 5])
   return(object)
 })
 
@@ -248,7 +259,7 @@ setMethod("analyse_results", "apply_model", function(object) {
   print(best_params)
   vec_roc_res <- c(0, 0, 0, 0, 0)
 
-  pdf("plots/ROC_curves.pdf")
+  pdf(paste0(object@path_data, "/plots/ROC_curves.pdf"))
   par(mfrow = c(2, 1))
   roc_test <- pROC::roc(response = object@test_set[[object@name_y]], predictor = object@predictions_proba[, 1])
   ##### Changer et checker structure

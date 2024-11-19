@@ -2,7 +2,7 @@ default:
   regression: TRUE
 
 radio:
-  lambda_min: 0.00001
+  lambda_min: 0.000001
   lambda_max: 0.2
   tuneLength: 20
 
@@ -11,8 +11,8 @@ radio:
     "CHC": 1
 
 radio_big:
-  lambda_min: 0.001
-  lambda_max: 2
+  lambda_min: 0.0001
+  lambda_max: 1
   tuneLength: 20
 
   weights:
@@ -27,5 +27,3 @@ simu:
   weights:
     "Classe_0": 1
     "Classe_1": 1
-
-

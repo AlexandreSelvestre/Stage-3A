@@ -1,5 +1,4 @@
 default:
-
   patients_col:
     - "patient_num"
     - "classe_name"
@@ -24,6 +23,12 @@ my_config:
     - "TARD"
     #- "VEIN"
 
+  time_inj_sain_name:
+    - "ART"
+    - "PORT"
+    - "TARD"
+    #- "VEIN"
+
   kill_empty: TRUE
   kill_mixtes: TRUE
   include_products: FALSE
@@ -32,6 +37,11 @@ my_config:
   shape_only: FALSE
   texture_only: FALSE
   other_only: FALSE #Pas de first order
+
+  average_shape: TRUE
+  compare_sain:
+    do: FALSE
+    first_order_only: FALSE
 
   kill_col:
     - "Column1"

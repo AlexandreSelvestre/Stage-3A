@@ -214,3 +214,266 @@ le f1 score CHC sur l'échantillon entier vaut: 0.837010676157
 [1] "Le f1 macro sur l'échantillon total vaut: 0.595970126810686"
 There were 50 or more warnings (use warnings() to see the first 50)
 
+Test multibloc en données réelles. Choix param: 262   7  14  14 5.99484250319e-08
+
+
+Avec comparaison région saine, shape 3D et shape2D averaged en multislices: logistic simple
+
+radio_big:
+  lambda_min: 0.001
+  lambda_max: 2
+  tuneLength: 20
+
+et 10 slices (86 individus restants)
+
+
+[1] "La valeur de l'AUC de train est de 1"
+[1] "End of analysis phase"
+[1] "actuelle moyenne AUC test 0.713725490196078 ite: 40"
+[1] "actuel ecart type AUC test 0.113623157440557 ite: 40"
+[1] "actuelle moyenne AUC val 0.77844696969697 ite: 40"
+[1] "actuelle moyenne Accuracy test 0.569362745098039 ite: 40"
+[1] "actuelle somme des confusion matrix ite: 40 :"
+[1] "actuelle moyenne du macro F1 test 0.561114344744859 ite: 40"
+[1] "actuelle moyenne du F1 CCK test 0.240178571428571 ite: 40"
+[1] "actuelle moyenne du F1 CHC test 0.882050118061147 ite: 40"
+          Reference
+Prediction CCK CHC
+       CCK  29  70
+       CHC  91 610
+Saving 7 x 7 in image
+[1] "On va essayer de faire des plots pour les modes"
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+[1] "Voilà la matrice de confusion sommée"
+          Reference
+Prediction CCK CHC
+       CCK  29  70
+       CHC  91 610
+[1] "voilà la matrice de confusion en pourcentage: ... % de classe 1 ont été bien classés vs ... % mal classés"
+          CCK       CHC
+CCK 0.2416667 0.1029412
+CHC 0.7583333 0.8970588
+[1] "La balanced accuracy sur l'échantillon total vaut: 0.581557371143676"
+le f1 score CCK sur l'échantillon entier vaut: 0.2648402 
+le f1 score CHC sur l'échantillon entier vaut: 0.8834178 
+[1] "Le f1 macro sur l'échantillon total vaut: 0.574128997913629"
+
+
+Même chose sans les sains:
+[1] "End of analysis phase"
+[1] "actuelle moyenne AUC test 0.71421568627451 ite: 40"
+[1] "actuel ecart type AUC test 0.147193670369253 ite: 40"
+[1] "actuelle moyenne AUC val 0.7855 ite: 40"
+[1] "actuelle moyenne Accuracy test 0.593382352941176 ite: 40"
+[1] "actuelle somme des confusion matrix ite: 40 :"
+[1] "actuelle moyenne du macro F1 test 0.583530955635735 ite: 40"
+[1] "actuelle moyenne du F1 CCK test 0.298710317460317 ite: 40"
+[1] "actuelle moyenne du F1 CHC test 0.868351593811153 ite: 40"
+          Reference
+Prediction CCK CHC
+       CCK  39  94
+       CHC  81 586
+Saving 7 x 7 in image
+[1] "On va essayer de faire des plots pour les modes"
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+[1] "Voilà la matrice de confusion sommée"
+          Reference
+Prediction CCK CHC
+       CCK  39  94
+       CHC  81 586
+[1] "voilà la matrice de confusion en pourcentage: ... % de classe 1 ont été bien classés vs ... % mal classés"
+      CCK       CHC
+CCK 0.325 0.1382353
+CHC 0.675 0.8617647
+[1] "La balanced accuracy sur l'échantillon total vaut: 0.585896901173473"
+le f1 score CCK sur l'échantillon entier vaut: 0.3083004 
+le f1 score CHC sur l'échantillon entier vaut: 0.8700817 
+[1] "Le f1 macro sur l'échantillon total vaut: 0.589191029105816"
+
+Après remise à la même échelle des radios à l'extraction, avec sain extrait en micro taches mais avec first order seul:
+
+[1] "actuelle moyenne AUC test 0.793055555555556 ite: 40"
+[1] "actuel ecart type AUC test 0.11382893981919 ite: 40"
+[1] "actuelle moyenne AUC val 0.827651515151515 ite: 40"
+[1] "actuelle moyenne Accuracy test 0.642361111111111 ite: 40"
+[1] "actuelle somme des confusion matrix ite: 40 :"
+[1] "actuelle moyenne du macro F1 test 0.642489175244109 ite: 40"
+[1] "actuelle moyenne du F1 CCK test 0.398300865800866 ite: 40"
+[1] "actuelle moyenne du F1 CHC test 0.886677484687353 ite: 40"
+          Reference
+Prediction CCK CHC
+       CCK  60  65
+       CHC 100 655
+Saving 7 x 7 in image
+[1] "On va essayer de faire des plots pour les modes"
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+[1] "Voilà la matrice de confusion sommée"
+          Reference
+Prediction CCK CHC
+       CCK  60  65
+       CHC 100 655
+[1] "voilà la matrice de confusion en pourcentage: ... % de classe 1 ont été bien classés vs ... % mal classés"
+      CCK        CHC
+CCK 0.375 0.09027778
+CHC 0.625 0.90972222
+[1] "La balanced accuracy sur l'échantillon total vaut: 0.673774834437086"
+le f1 score CCK sur l'échantillon entier vaut: 0.4210526 
+le f1 score CHC sur l'échantillon entier vaut: 0.8881356 
+[1] "Le f1 macro sur l'échantillon total vaut: 0.654594112399643"
+There were 14 warnings (use warnings() to see them)
+
+ 
+Et en logistic group avec goup = bloc sur 8 entrainements (bug de pas aller plus loin?) avec sain en firstorder only, ancienne version des sains et multislices et extraction sans aires:
+
+Setting direction: controls > cases
+[1] "La valeur de l'AUC de train est de 1"
+[1] "End of analysis phase"
+[1] "actuelle moyenne AUC test 0.868055555555556 ite: 8"
+[1] "actuel ecart type AUC test 0.0634300292188325 ite: 8"
+[1] "actuelle moyenne AUC val 0.778787878787879 ite: 8"
+[1] "actuelle moyenne Accuracy test 0.744791666666667 ite: 8"
+[1] "actuelle somme des confusion matrix ite: 8 :"
+[1] "actuelle moyenne du macro F1 test 0.720212325398084 ite: 8"
+[1] "actuelle moyenne du F1 CCK test 0.538852813852814 ite: 8"
+[1] "actuelle moyenne du F1 CHC test 0.901571836943354 ite: 8"
+          Reference
+Prediction CCK CHC
+       CCK  19  15
+       CHC  13 129
+[1] "dimensions data used" "89"  
+
+approfondir...
+
+scores à battre: 0.75 en log simple du global averaged sans sain
+0.77 du logistic lasso ou logistic multibloc sur ces mêmes données
+
+
+binary:
+   1    1    1    1    2    1    2    1    1    1    1    1    2    1    1    1  
+   1    2    1    2    1    1    1    1    2    1    1    1    1    1    2    1 
+   1    2    1    2    1    2    1    1    1    1    1    2    1    2    1    2 
+   1    1    1    1    1    1    1    2    2    1    1    1    2    1    2    1 
+   2    1    2    1    2    1    2    1    2    1    1    1    2    1    1    1 
+   1    1    1    1    1    1    1    1    1    1    2    2    2    1    1    1  
+   2    1    2    1    1    2    1    2    2    2    1    2    1    2    1    1  
+   1    2    1    1    1    2    2    2    1    1    2    2    1    1    2    1 
+   1    2    1    1    1    1    2    1    1    1    2    1    1    1    1    1 
+   1    1    2    1    1    1    1    1    1    1    1    1    2    2    1    1  
+   2    1    1    1    2    1    2    1    1    2    2    2    1    1    1    2 
+   1    1    1    1    1    1    2    1    2    1    1    1    1    2    1    1 
+   1    1    1    2    1    2    1    2    2    1    1    1    1    2    1    2 
+   2    1    2    2    2    2    1    1    2    2    2    1    1    1    1    1 
+   1    1    1    2    1    1    1    1    1    1    1    1    1    2    1    1 
+   2    2    2    2    2    1    2    1    1    2    1    1    1    1    1    1  
+   1    1    2    1    1    2    2    1    2    1    2    2    1    2    2    1  
+   1    1    2    2    2    1    1    1    2    2    2    1    1    2    1    1 
+   2    1    1    2    2    1    2    1    1    1    1    1    1    1    1    1  
+   1    1    1    1    1    1    1    1    2    1    1    2    2    2    1    2  
+   1    2    1    1    1    1    1    2    1    1    1    2    1    1    2    1  
+   1    2    1    2    1    2    2    1    1    1    1    1    1    1    1    1 
+   2    2    2    2    2    1    1    1    1    1    1    2    2    1    1    1  
+   1    1    1    1    1    1    1    1    1    1    1    1    1    1    1    2 
+   2    2    1    1    1    1    2    1    1    1    2    1    2    1    1    1 
+   2    1    1    1    1    1    1    1    2    1    1    2    1    2    1    2  
+   1    2    1    1    2    1    2    1    1    2    2    1    2    1    1    2 
+   1    1    2    2    2    2    2    1    1    2    2    1    1    1    1    2 
+   1    2    1    1    2    1    1    1    1    1    1    2    1    1    1    1 
+   2    1    1    1    1    1    1    1    1    1    1    2    1    1    1    1  
+   1    1    1    2    1    2    1    1    2    1    1    1    2    2    1    2  
+    1    1    1    1
+ 
+ sepa
+
+   1    2    1    2    2    1    1    2    1    1    1    2 
+   1    1    1    1    1    2    1    1    1    1    1    2    1    1    1    1 
+   1    2    1    1    1    2    1    1    1    2    1    2    1    1    1    1 
+   1    1    1    2    2    1    1    1    1    1    2    1    1    1    1    2 
+   1    1    2    2    1    1    2    1    1    1    1    1    1    2    1    1 
+   1    1    1    1    1    1    1    1    1    1    1    2    1    1    1    1 
+   2    2    1    2    1    1    2    1    1    1    1    1    2    1    2    1 
+   1    2    1    2    1    1    1    1    1    2    1    1    1    2    2    2 
+   1    1    1    1    2    1    2    1    2    1    1    1    1    1    1    1 
+   1    1    1    1    1    2    1    1    1    2    1    2    1    1    1    1 
+   1    1    1    1    1    2    1    2    1    1    1    2    1    1    1    1  
+   1    2    2    1    1    1    2    1    2    1    1    2    2    1    1    1 
+   1    1    1    1    1    1    2    1    2    1    1    1    2    1    2    1 
+   2    1    1    2    1    2    2    1    1    2    1    1    2    1    1    2  
+   1    2    2    1    1    2    1    2    1    1    1    2    1    1    1    1 
+   2    1    1    1    1    1    1    1    1    2    1    1    1    1    1    1  
+   1    1    2    2    2    2    1    1    1    1    2    1    1    2    1    2 
+   2    1    2    1    2    1    1    2    1    1    2    2    1    1    1    1  
+   1    2    1    2    1    1    1    1    1    1    1    1    1    2    1    1  
+   1    2    2    1    1    1    1    2    2    1    2    1    2    2    1    1  
+   2    1    1    1    2    1    1    2    1    1    1    1    1    1    1    1  
+   1    1    2    1    1    1    1    2    2    2    1    1    2    1    1    1  
+   1    1    1    1    1    2    1    2    1    1    1    1    2    1    2    1  
+   2    1    1    1    2    1    1    1    2    1    1    1    2    1    1    1  
+   2    2    1    1    1    1    1    1    1    1    2    2    1    2    1    1 
+   1    1    2    1    1    1    1    1    2    1    2    1    1    2    2    1  
+   1    1    1    1    1    1    1    2    1    1    1    1    2    1    2    1 
+   1    1    1    2    1    1    1    1    1    2    2    1    2    1    1    2 
+   1    1    2    2    1    2    1    1    1    1    1    1    1    1    1    1 
+   1    1    2    1    1    2    1    1    1    1    1    1    2    1    1    1 
+   2    1    2    1    1    1    2    1    1    2    2    1    1    1    2    2 
+   2    2    1    1    1    2    1    2 
+
+   Setting direction: controls > cases
+[1] "La valeur de l'AUC de test est de 0.602432"
+[1] "La valeur de l'AUC de validation sur chaque fold est de 0.552533333333333"
+[2] "La valeur de l'AUC de validation sur chaque fold est de 0.639822222222222"
+[3] "La valeur de l'AUC de validation sur chaque fold est de 0.624355555555556"
+[4] "La valeur de l'AUC de validation sur chaque fold est de 0.585244444444444"
+[5] "La valeur de l'AUC de validation sur chaque fold est de 0.546488888888889"
+[1] "Ce qui donne une moyenne d'AUC de 0.589688888888889"
+Setting levels: control = Classe_0, case = Classe_1
+Setting direction: controls > cases
+[1] "La valeur de l'AUC de train est de 1"
+[1] "End of analysis phase"
+[1] 66
+[1] "L'erreur moyenne de reconstruction du pictogramme est de 0.231949180818441"
+[1] "actuelle moyenne AUC test 0.602432 ite: 1"
+[1] "actuel ecart type AUC test NA ite: 1"
+[1] "actuelle moyenne AUC val 0.589688888888889 ite: 1"
+[1] "actuelle moyenne Accuracy test 0.576 ite: 1"
+[1] "actuelle somme des confusion matrix ite: 1 :"
+[1] "actuelle moyenne du macro F1 test 0.57502084803387 ite: 1"
+[1] "actuelle moyenne du F1 Classe_0 test 0.554621848739496 ite: 1"
+[1] "actuelle moyenne du F1 Classe_1 test 0.595419847328244 ite: 1"
+          Reference
+Prediction Classe_0 Classe_1
+  Classe_0       66       47
+  Classe_1       59       78
+[1] "actuelle moyenne score_recons 0.231949180818441 ite: 1"
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+[1] "Voilà la matrice de confusion sommée"
+          Reference
+Prediction Classe_0 Classe_1
+  Classe_0       66       47
+  Classe_1       59       78
+[1] "voilà la matrice de confusion en pourcentage: ... % de classe 1 ont été bien classés vs ... % mal classés"
+         Classe_0 Classe_1
+Classe_0    0.528    0.376
+Classe_1    0.472    0.624
+[1] "La balanced accuracy sur l'échantillon total vaut: 0.576706931076804"
+le f1 score Classe_0 sur l'échantillon entier vaut: 0.5546218 
+le f1 score Classe_1 sur l'échantillon entier vaut: 0.5954198 
+[1] "Le f1 macro sur l'échantillon total vaut: 0.57502084803387"
+[1] "La moyenne des scores de reconstruction vaut 0.231949180818441"
+
+(Fitting lambda = 1.13e-08 on full training set
+[1] TRUE
+[1] "done"
+[1] "End of learning phase"
+[1] "End of prediction phase"
+[1] "Le nombre de données est 1000 dont 250 dans le testing dataset et le jeu de donné de la grid search: "
+         lambda
+13 1.128838e-08)

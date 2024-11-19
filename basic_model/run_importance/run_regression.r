@@ -41,7 +41,7 @@ run_imp_intra <- function(inference, imp_li, performance, li_confus, is_null, it
 
 
 
-run_imp_extra <- function(imp_li, performance, li_confus, is_null, n_samples, path_plot, inference) {
+run_imp_extra <- function(imp_li, performance, li_confus, is_null, n_samples, path_plot, inference, nom_spe = "") {
     imp_sum <- imp_li[[1]]
     if (length(imp_li) > 1) {
         for (i in 2:length(imp_li)) {
@@ -60,7 +60,7 @@ run_imp_extra <- function(imp_li, performance, li_confus, is_null, n_samples, pa
     imp_average$Overall <- imp_average$Overall / sum(imp_average$Overall)
     imp_average$Percentage <- 100 * non_null$Overall / n_samples
 
-    ending_name <- "beta_value"
+    ending_name <- paste0("beta_value", nom_spe)
     ##### Utiliser l'inference pour les index et refaire les plots en général
     plot_global(imp_average, path_plot, ending_name, inference)
     performance_long <- melt_mine(as.data.frame(performance)[, setdiff(names(performance), "AUC_val")])
@@ -71,7 +71,7 @@ run_imp_extra <- function(imp_li, performance, li_confus, is_null, n_samples, pa
         geom_boxplot() +
         ylim(-0.05, 1.05) +
         theme(axis.text.x = element_text(angle = 90, hjust = 1)) # Rotate x-axis labels for readability
-    ggsave(paste0(path_plot, "/global_plot_stats.png"), box_plots_stats)
+    ggsave(paste0(path_plot, "/global_plot_stats_", nom_spe, ".png"), box_plots_stats)
 
     mat_sum <- Reduce("+", li_confus)
     print("Voilà la matrice de confusion sommée")
