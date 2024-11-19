@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex rapport_de_stage"] 1732032530.76012 "rapport_de_stage.aux" "rapport_de_stage.bbl" "rapport_de_stage" 1732032535.31559 0
+["bibtex rapport_de_stage"] 1732033051.54445 "rapport_de_stage.aux" "rapport_de_stage.bbl" "rapport_de_stage" 1732033220.34176 0
   "./bibliography.bib" 1731692263.64095 7534 2ec5c87ac8035dde392c85ed31085289 ""
   "/home/alexandre/.miktex/texmfs/install/bibtex/bst/elsarticle/elsarticle-num.bst" 1730793188.10774 29462 d2b5b1799e10c2334c188d78937e1ac9 ""
-  "rapport_de_stage.aux" 1732032534.45373 24374 48b975e633fad3c75e8fc3fc6e978fcb "pdflatex"
+  "rapport_de_stage.aux" 1732033219.53364 24409 5945ec6207912052652d221f19073eff "pdflatex"
   (generated)
   "rapport_de_stage.bbl"
   "rapport_de_stage.blg"
   (rewritten before read)
-["pdflatex"] 1732032530.98726 "/home/alexandre/Documents/Stage-3A/docs/LaTeX/Machine learning methods to help classify liver diseases from radiomics data/rapport_de_stage.tex" "rapport_de_stage.pdf" "rapport_de_stage" 1732032535.31584 0
+["pdflatex"] 1732033215.87851 "/home/alexandre/Documents/Stage-3A/docs/LaTeX/Machine learning methods to help classify liver diseases from radiomics data/rapport_de_stage.tex" "rapport_de_stage.pdf" "rapport_de_stage" 1732033220.34203 0
   "/home/alexandre/.miktex/texmfs/data/fonts/map/pdftex/pdftex.map" 1731076541.26569 90188 4c1b04c61c519198fc17a1f863f9aa94 ""
   "/home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/ecbx1200.pk" 1726308708.6315 31952 a848510f8e923ecb115e01ff94fe33a8 ""
   "/home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/ecbx2074.pk" 1730804149.23765 59008 8097ca4b55ad7b6ee7f6067ffa012bb5 ""
@@ -197,7 +197,7 @@
   "/home/alexandre/.miktex/texmfs/install/tex/latex/varwidth/varwidth.sty" 1731076540.80071 10894 d359a13923460b2a73d4312d613554c8 ""
   "/home/alexandre/.miktex/texmfs/install/tex/latex/zref/zref-abspage.sty" 1726308686.84291 2269 4fe6fb3396214c91f164d45faf9bec45 ""
   "/home/alexandre/.miktex/texmfs/install/tex/latex/zref/zref-base.sty" 1726308686.84291 20785 f7d1133a287929598a897c93f8f4c44b ""
-  "/home/alexandre/Documents/Stage-3A/docs/LaTeX/Machine learning methods to help classify liver diseases from radiomics data/rapport_de_stage.tex" 1732032525.78703 123462 cfe3c69f72f62f1465af08d82ba1f93d ""
+  "/home/alexandre/Documents/Stage-3A/docs/LaTeX/Machine learning methods to help classify liver diseases from radiomics data/rapport_de_stage.tex" 1732033215.19968 123031 81bd612bb5d260a4f47bc96ea03eb225 ""
   "/usr/local/share/miktex-texmf/fonts/tfm/jknappen/ec/ecbx1200.tfm" 1726308370.54583 3200 b8d69bc738e5ef3e08cefeef3109ff56 ""
   "/usr/local/share/miktex-texmf/fonts/tfm/jknappen/ec/ecbx2074.tfm" 1726308370.54583 3208 da5ec29ca7c2f5f55c296dd6713d4a74 ""
   "/usr/local/share/miktex-texmf/fonts/tfm/jknappen/ec/ecrm0600.tfm" 1726308370.54683 3160 116e21835795bb29209ae8bb4682382f ""
@@ -393,12 +393,12 @@
   "images/resume.pdf" 1731970972.44166 58890 11539cf56a75d9239d7070aab9c91f11 ""
   "images/sain.png" 1731672748.73178 74220 4830eace4129416624e9e3f201070bc5 ""
   "images/tensor.png" 1732019938.2411 54983 1c69603b2205b157a9d4ed7b549708be ""
-  "rapport_de_stage.aux" 1732032534.45373 24374 48b975e633fad3c75e8fc3fc6e978fcb "pdflatex"
-  "rapport_de_stage.bbl" 1732032530.92885 3740 2b1e237610a61c572b623009e4b80544 "bibtex rapport_de_stage"
-  "rapport_de_stage.out" 1732032534.45673 6720 03a7f0b9026860da0daed8b2aa589f49 "pdflatex"
-  "rapport_de_stage.spl" 1732032531.23084 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "rapport_de_stage.tex" 1732032525.78703 123462 cfe3c69f72f62f1465af08d82ba1f93d ""
-  "rapport_de_stage.toc" 1732032534.45673 3570 cee48ce866510e293c3e9aca6cc97c3f "pdflatex"
+  "rapport_de_stage.aux" 1732033219.53364 24409 5945ec6207912052652d221f19073eff "pdflatex"
+  "rapport_de_stage.bbl" 1732033051.70844 3740 2b1e237610a61c572b623009e4b80544 "bibtex rapport_de_stage"
+  "rapport_de_stage.out" 1732033219.53664 6910 bcf8d54efcedd14a51380536843e0a29 "pdflatex"
+  "rapport_de_stage.spl" 1732033216.20367 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "rapport_de_stage.tex" 1732033215.19968 123031 81bd612bb5d260a4f47bc96ea03eb225 ""
+  "rapport_de_stage.toc" 1732033219.53764 3605 1e292e7cc1c3670bf5020742b0d896b7 "pdflatex"
   (generated)
   "rapport_de_stage.aux"
   "rapport_de_stage.log"
