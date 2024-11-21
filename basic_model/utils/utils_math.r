@@ -67,15 +67,47 @@ inverse_diag <- function(mat) {
 }
 
 
-crit_logistic <- function(x, y, beta, intercept, lambda) {
+crit_logistic <- function(x, y, beta, intercept, lambda, index_bloc) {
     options(digits = 12)
     criteria <- 1 / length(y) * (sum(y * (intercept + as.vector(x %*% beta)) - log(1 + exp(intercept + as.vector(x %*% beta))))) - lambda * norm(as.matrix(beta), type = "1")
+    # print(paste("partie like", 1 / length(y) * (sum(y * (intercept + as.vector(x %*% beta)) - log(1 + exp(intercept + as.vector(x %*% beta)))))))
+    # print(paste("partie reg", lambda * norm(as.matrix(beta), type = "1")))
     if (is.na(sum(as.vector(x %*% beta)))) {
         # print(x)
         # print(beta)
     }
     return(criteria)
 }
+
+crit_logistic_tens <- function(x, y, beta, li_beta_modes_per_bloc, intercept, lambda, current_li_R, li_dim, index_bloc) {
+    options(digits = 12)
+    penalization <- 0
+    for (l_char in names(current_li_R)) {
+        for (r in seq_len(current_li_R[[l_char]])) {
+            produit <- 1
+            for (m in seq_along(li_beta_modes_per_bloc[[l_char]])) {
+                dim_loc <- li_dim[[l_char]][m]
+                if (dim_loc > 0) {
+                    beta_m_l_r <- li_beta_modes_per_bloc[[l_char]][[m]][((r - 1) * dim_loc + 1):(r * dim_loc)]
+                    produit <- produit * norm(as.matrix(beta_m_l_r), type = "1")
+                }
+            }
+            penalization <- penalization + produit
+        }
+    }
+    penalization <- penalization + norm(as.matrix(beta[index_bloc < -0.5]), type = "1")
+    penalization <- lambda * penalization
+    criteria <- 1 / length(y) * (sum(y * (intercept + as.vector(x %*% beta)) - log(1 + exp(intercept + as.vector(x %*% beta))))) - penalization
+
+    # print(paste("partie like", 1 / length(y) * (sum(y * (intercept + as.vector(x %*% beta)) - log(1 + exp(intercept + as.vector(x %*% beta)))))))
+    # print(paste("partie reg", penalization))
+    if (is.na(sum(as.vector(x %*% beta)))) {
+        # print(x)
+        # print(beta)
+    }
+    return(criteria)
+}
+
 
 soft_thresh <- function(x, lambda) {
     if (abs(x) < lambda) {

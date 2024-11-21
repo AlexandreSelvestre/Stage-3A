@@ -448,13 +448,13 @@ fit_multiway <- function(x, y, wts, param, lev, last, weights_dict, classProbs, 
             intercept <- li_fit$intercept
             li_beta_modes_per_bloc <- update_li_beta_modes_per_bloc(li_beta_modes_per_bloc, m, new_beta)
             beta_unfolded <- reconstruct_beta_multibloc(li_beta_modes_per_bloc)
-            crit <- crit_logistic(as.matrix(x), y_numeric, beta_unfolded, intercept, param$lambda)
+            crit <- crit_logistic_tens(as.matrix(x), y_numeric, beta_unfolded, li_beta_modes_per_bloc, intercept, param$lambda, current_li_R, li_dim, index_bloc)
             vec_crit[m] <- crit
 
             Q <- li_fit$Q
             Q_inv <- li_fit$Q_inv
             converged <- li_fit$converged
-            crit_compare <- crit_logistic(Z_m %*% Q, y_numeric, Q_inv %*% new_beta, intercept, param$lambda)
+            crit_compare <- crit_logistic(Z_m %*% Q, y_numeric, Q_inv %*% new_beta, intercept, param$lambda, index_bloc)
             print(converged)
             print(crit)
             print(paste("crit_compare", crit_compare))

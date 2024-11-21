@@ -6,6 +6,10 @@ run_imp_intra <- function(inference, imp_li, performance, li_confus, is_null, it
     F1_macro_result <- inference@df_measures[["F1"]]
     Acc_result <- inference@df_measures[["Acc"]]
 
+    nb_features_used_local <- get_nb_features_used(df_imp, inference@index_variable)
+    nb_common_local <- get_common(df_imp, inference@index_variable)
+    performance$nb_features_used <- append(performance$nb_features_used, nb_features_used_local)
+    performance$nb_common <- append(performance$nb_common, nb_common_local)
     performance$AUC_test <- append(performance$AUC_test, test_result)
     performance$AUC_val <- append(performance$AUC_val, val_result)
     performance$F1_macro <- append(performance$F1_macro, F1_macro_result)
@@ -26,6 +30,10 @@ run_imp_intra <- function(inference, imp_li, performance, li_confus, is_null, it
     print(paste("actuelle moyenne du F1", colnames(confus_mat)[1], "test", mean(performance$F1_CCK), "ite:", ite))
     print(paste("actuelle moyenne du F1", colnames(confus_mat)[2], "test", mean(performance$F1_CHC), "ite:", ite))
     print(Reduce("+", li_confus))
+
+    print(paste("actuelle moyenne nb_features_used", mean(performance$nb_features_used), "ite:", ite))
+    print(paste("actuelle moyenne nb_common", mean(performance$nb_common), "ite:", ite))
+
     # Si score_recons est rensigné: l'inclure dans les perfs
     # print(paste("C'est le moment!!", inference@score_recons, length(inference@score_recons)))
     if (length(inference@score_recons) > 0) {
@@ -35,6 +43,8 @@ run_imp_intra <- function(inference, imp_li, performance, li_confus, is_null, it
         performance$score_recons <- append(performance$score_recons, inference@score_recons)
         print(paste("actuelle moyenne score_recons", mean(performance$score_recons), "ite:", ite))
     }
+
+
     li_return <- list(imp_li = imp_li, performance = performance, li_confus = li_confus, is_null = is_null)
     return(li_return)
 }
@@ -63,7 +73,7 @@ run_imp_extra <- function(imp_li, performance, li_confus, is_null, n_samples, pa
     ending_name <- paste0("beta_value", nom_spe)
     ##### Utiliser l'inference pour les index et refaire les plots en général
     plot_global(imp_average, path_plot, ending_name, inference)
-    performance_long <- melt_mine(as.data.frame(performance)[, setdiff(names(performance), "AUC_val")])
+    performance_long <- melt_mine(as.data.frame(performance)[, setdiff(names(performance), c("AUC_val", "nb_features_used", "nb_common"))])
     # print("maintnow!!")
     # print(performance_long$score_recons)
     box_plots_stats <- ggplot(performance_long, aes(x = variable, y = value)) +

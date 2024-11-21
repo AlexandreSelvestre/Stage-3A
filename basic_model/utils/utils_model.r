@@ -508,10 +508,25 @@ reorder_local <- function(matrix_bloc, li_index_mode_global, vec_dim_bloc, index
 }
 
 
+get_nb_features_used <- function(df_imp, index_variable) {
+    nb_features_used_local <- sum(df_imp$Overall > 0.0001 & index_variable > -0.5)
+    # print(index_variable[df_imp$Overall > 0.0001 & index_variable > -0.5])
+    return(nb_features_used_local)
+}
 
-
-
-
+get_common <- function(df_imp, index_variable) {
+    df_imp$var_num <- index_variable
+    df_imp_tens <- df_imp[index_variable > -0.5, ]
+    value <- 0
+    for (i in unique(df_imp_tens$var_num)) {
+        check <- sum(df_imp_tens$Overall > 0.0001 & df_imp_tens$var_num == i)
+        if (check > 1.5) {
+            value <- value + 1
+            # print(i)
+        }
+    }
+    return(value)
+}
 
 
 # data_used <- as.data.frame(read.csv(paste0(path, "data_used.csv")))

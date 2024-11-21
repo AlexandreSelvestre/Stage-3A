@@ -7,10 +7,25 @@ default:
   n_sample: 4000
   resample: FALSE #ignoré pour l'instant
   ecart_class: 1 #ecart entre les moyennes des classes
-  dist_sepa: 0.3
-  dist_non_sepa: 10
+  dist_sepa: 0.1
+  dist_non_sepa: 0.8
   prop_class_1: 0.5
   do_QR: FALSE #Re-decomp QR ou non
   do_product: FALSE #recalculer sigma ou non
 
 my_config:
+  # est top!!!
+  # default:
+  # include_products: FALSE
+  # num_picto:
+  #   - 6
+  #   - 1
+  #   - 2
+  # n_sample: 4000
+  # resample: FALSE #ignoré pour l'instant
+  # ecart_class: 1 #ecart entre les moyennes des classes
+  # dist_sepa: 0.1
+  # dist_non_sepa: 1.4
+  # prop_class_1: 0.5
+  # do_QR: FALSE #Re-decomp QR ou non
+  # do_product: FALSE #re

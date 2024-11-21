@@ -11,7 +11,7 @@ default:
   search: "grid" #grid ou random
   parallel:
     do: TRUE
-    n_process: 6
+    n_process: 1
     forking: FALSE #useless
   analyse_data:
     do: FALSE
@@ -19,7 +19,7 @@ default:
 
   penalty_adapt: FALSE #Seulement sur logistique_simple
 
-  do_multiway: TRUE
+  do_multiway: FALSE
   #name_model: "logistique_simple"
   #name_model: "logistic_grp"
   name_model: "logistic_multibloc"

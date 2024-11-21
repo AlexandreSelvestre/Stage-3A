@@ -20,14 +20,14 @@ my_config:
   time_inj:
     - "ART_"
     - "PORT"
-    - "TARD"
     #- "VEIN"
+    - "TARD"
 
   time_inj_sain_name:
     - "ART"
     - "PORT"
-    - "TARD"
     #- "VEIN"
+    - "TARD"
 
   kill_empty: TRUE
   kill_mixtes: TRUE

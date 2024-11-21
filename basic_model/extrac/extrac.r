@@ -48,7 +48,7 @@ extract_all <- function(config_extrac, sysname) {
         }
         data_radio <- data_radio[, keep_cols]
     }
-
+    write_xlsx(data_radio, paste0(path_data, "/data_testtest.xlsx"))
     if (config_extrac$texture_only) {
         keep_cols <- c("classe_name", "temps_inj", "patient_num")
         for (col_name in names(data_radio)) {

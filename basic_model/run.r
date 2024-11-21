@@ -125,7 +125,7 @@ sum_test <- 0
 sum_val <- 0
 ite <- 0
 ######### Ameliorer pour permettre simulated data
-performance <- list(AUC_test = c(), AUC_val = c(), Acc = c(), F1_macro = c(), F1_CCK = c(), F1_CHC = c())
+performance <- list(AUC_test = c(), AUC_val = c(), Acc = c(), F1_macro = c(), F1_CCK = c(), F1_CHC = c(), nb_features_used = c(), nb_common = c())
 is_null <- list()
 imp_li <- list()
 li_confus <- list()
