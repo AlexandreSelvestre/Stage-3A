@@ -139,8 +139,8 @@ def mask_superpose_simple(slice_image, slice_mask, other_mask=None, num=1, max_n
     else:
         mask_slice_good = slice_mask
     slice_rgb = rescale_image(np.stack([slice_good]*3, axis=-1))
-    slice_rgb[:, :, 0:3:2] = 0  # Seul canal 1 accepté
-    slice_rgb[mask_slice_good == 1, 0] = 255
+    #slice_rgb[:, :, 0:3:2] = 0  # Seul canal 1 accepté
+    #slice_rgb[mask_slice_good == 1, 0] = 255
     if other_mask is not None:
         if isinstance(other_mask, sitk.Image):
             other_mask = sitk.GetArrayFromImage(other_mask)

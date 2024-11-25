@@ -127,7 +127,7 @@ balanced_accuracy_caret <- function(data, lev = NULL, model = NULL) {
 # 1 en sexe= Femme
 path_data <- "../data"
 df <- as.data.frame(readxl::read_xlsx(paste0(path_data, "/stat.xlsx")))
-bad_cols <- c("LR-5", "LR-M")
+bad_cols <- c("LR-5", "LR-M", "rim_APHE")
 df <- df[, setdiff(colnames(df), bad_cols)]
 df <- na.omit(df)
 df <- data.frame(lapply(df, as.numeric))
@@ -173,7 +173,7 @@ for (i in seq_len(n_runs)) {
     non_zero_local <- ifelse(abs(beta) > 1e-5, 1, 0)
     beta_non_zero <- beta_non_zero + non_zero_local
 }
-beta_non_zero <- beta_non_zero / n_runs
+beta_non_zero <- 100 * beta_non_zero / n_runs
 beta_global <- beta_global / n_runs
 names_df <- colnames(df[setdiff(colnames(df), c("Tumeur"))])
 names(beta_global) <- names_df
@@ -182,3 +182,27 @@ print("beta_global")
 print(beta_global)
 print("beta_non_zero")
 print(beta_non_zero)
+
+beta_df <- data.frame(
+    name = gsub("[_.]", " ", names(beta_global)), # Remplacer les underscores et les points par des espaces
+    value = beta_global,
+    percentage = beta_non_zero
+)
+
+# Réorganiser les niveaux du facteur name en fonction des valeurs de beta_global
+beta_df$name <- factor(beta_df$name, levels = beta_df$name[order(beta_df$value, decreasing = FALSE)])
+
+# Créer le barplot avec les axes inversés et les pourcentages en vert fluo
+plot <- ggplot(beta_df, aes(x = name, y = value)) +
+    geom_bar(stat = "identity") +
+    coord_flip() +
+    geom_text(aes(label = paste0(percentage, "%")),
+        color = "limegreen",
+        hjust = -0.1
+    ) +
+    labs(title = "", x = "", y = "") +
+    expand_limits(y = max(beta_df$value) * 1.1) + # Ajuster les limites de l'axe des y
+    theme(axis.text.y = element_text(size = 12)) # Augmenter la taille du texte des noms des barres
+
+
+ggsave("barplot_beta_global.png", plot)

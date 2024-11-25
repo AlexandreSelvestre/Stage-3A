@@ -143,6 +143,8 @@ def recaler_interpolation(li_images,li_masks, discretisation = 99, time_ref = 0)
         x= np.linspace(min_depth, max_depth, discretisation*10)
         y = li_derivative_unbounded[image_num](x)
         # plt.plot(x,y, label = "image_num" + str(image_num))
+        # plt.legend()
+        # plt.show()
         true_min = x[max(np.where(y > 0)[0][0] -1,0)]
         true_max = x[min(np.where(y > 0)[0][-1] + 1, len(x)-1)]
         integral_local, _=  quad(li_derivative_unbounded[image_num], a = true_min, b = true_max, limit = 1000, epsrel = 1e-5, epsabs = 20)
@@ -153,8 +155,6 @@ def recaler_interpolation(li_images,li_masks, discretisation = 99, time_ref = 0)
             return new_f
         li_derivative_bounded[image_num] = create_divide(li_derivative_unbounded[image_num], integral_local)
         li_interpolations.append({"interpolator": interpolator, "min_depth": min_depth, "max_depth": max_depth, "true_min": true_min, "true_max": true_max, "securite_low": securite_low, "securite_high": securite_high, "depths": list(dic_areas.keys()), "areas": list(dic_areas.values())})
-    # plt.legend()
-    # plt.show()
     mean_depth_min = mean_depth_min/len(li_images)
     mean_depth_max = mean_depth_max/len(li_images)
     decalage_autorise = 0.1*(mean_depth_max - mean_depth_min) #en positif et en négatif
@@ -355,6 +355,15 @@ def plot_reciprocals(dic_interpolators):
         plt.plot(areas, depths, label = "image_num" + str(image_num))
     plt.legend()
     plt.show()
+    for image_num in dic_interpolators.keys():
+        interpolator = dic_interpolators[image_num]["interpolator"]
+        min_area = dic_interpolators[image_num]["min_area"]
+        max_area = dic_interpolators[image_num]["max_area"]
+        areas = np.linspace(min_area, max_area, 1000)
+        depths = interpolator.__call__(areas) + 0.001* image_num
+        plt.plot(depths, areas, label = "image_num" + str(image_num))
+    plt.legend()
+    plt.show()
     
 def get_n_depths(dic_interpolators, best_li_decals,n_slices):
     dic_depths_to_extract = {}
@@ -439,7 +448,8 @@ if __name__ == '__main__':
         patient_num = li_names[0].split('/')[-1].split('_')[0]
         dict_image_full_time[(patient_num, classe_name)] = li_true_names
     
-    num = 6
+    num = 50
+    ls_image_full_time[num] = [ls_image_full_time[num][0] , ls_image_full_time[5][0]]
     li_images = [sitk.ReadImage(image_name) for image_name in ls_image_full_time[num]]
     li_masks = [sitk.ReadImage(image_name.replace('_NAT','').replace('.nii','_masked.nii')) != 0 for image_name in ls_image_full_time[num]]
     print("1",datetime.datetime.now())
@@ -448,7 +458,7 @@ if __name__ == '__main__':
     print("best decals:",best_li_decals, "2",datetime.datetime.now())
     dic_points, dic_securite = generate_points_initial_space(li_interpolations, best_li_decals) #change!!
     dic_interpolators = interpolate_all_reciprocals(dic_points, dic_securite) #change!!
-    #plot_reciprocals(dic_interpolators)
+    plot_reciprocals(dic_interpolators)
     depths_to_extract, dic_securite = get_n_depths(dic_interpolators, best_li_decals,10) #change!!
     print(depths_to_extract, "3", datetime.datetime.now())
     #get_n_slices prend un temps fou!!!!

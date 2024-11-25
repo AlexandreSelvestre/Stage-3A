@@ -1,0 +1,17 @@
+\begin{thebibliography}{1}
+
+\bibitem{multi_rank_r}
+Fabien Girka, Pierrick Chevaillier, Arnaud Gloaguen, Giulia Gennari, Ghislaine
+  Dehaene-Lambertz, Laurent Le~Brusquet, and Arthur Tenenhaus.
+\newblock {Rank-R Multiway Logistic Regression}.
+\newblock In {\em {52{\`e}mes Journ{\'e}es de Statistique}}, Nice, France,
+  2021.
+\newblock les 52{\`e}mes journ{\'e}es de Statistique 2020 sont report{\'e}es !
+  Elles auront lieu du 7 au 11 Juin 2021.
+
+\bibitem{multi_rank_1}
+Laurent Le~Brusquet, Gisela Lechuga, and Arthur Tenenhaus.
+\newblock {R{\'e}gression Logistique Multivoie}.
+\newblock In {\em {JdS 2014}}, page 6 pages, Rennes, France, June 2014.
+
+\end{thebibliography}

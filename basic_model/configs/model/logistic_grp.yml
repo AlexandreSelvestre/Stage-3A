@@ -14,5 +14,5 @@ radio_big:
 simu:
   lambda_min: 0.001 #en factor!
   tuneLength: 20
-  index_type: "bloc" #"bloc" , "mode" ou "var" : par quoi on groupe
+  index_type: "var" #"bloc" , "mode" ou "var" : par quoi on groupe
 

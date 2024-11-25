@@ -146,21 +146,22 @@ if __name__ == '__main__':
         dict_image_full_time[(patient_num, classe_name)] = li_true_names
     
     #print("7", datetime.now())
-    num = 5
+    num = 50
+    ls_image_full_time[num] = [ls_image_full_time[num][0]]
     #print(ls_image_full_time[num])
     li_images = [sitk.ReadImage(image_name) for image_name in ls_image_full_time[num]]
     li_masks = [sitk.ReadImage(image_name.replace('_NAT','').replace('.nii','_masked.nii')) != 0 for image_name in ls_image_full_time[num]]
     # print(li_images[0].GetOrigin(),li_images[0].TransformContinuousIndexToPhysicalPoint([0,0,0]) )
     li_interpolations, best_li_decals = recaler_interpolation(li_images, li_masks, discretisation = 3)
     #print("best decals:",best_li_decals)
-    dic_points, dic_securite = generate_points_initial_space(li_interpolations, best_li_decals, show = False) 
+    dic_points, dic_securite = generate_points_initial_space(li_interpolations, best_li_decals, show = True) 
     dic_interpolators = interpolate_all_reciprocals(dic_points, dic_securite, renorm  = True) 
     if show:
         print("ggo")
         plot_reciprocals(dic_interpolators)
     print("8", datetime.datetime.now())
     dic_interpolators = kill_depassement(dic_interpolators, li_interpolations, best_li_decals) 
-    depths_to_extract, dic_securite = get_n_depths_equalized(dic_interpolators, best_li_decals, 10, do_average = False,show = show) #change
+    depths_to_extract, dic_securite = get_n_depths_equalized(dic_interpolators, best_li_decals, 5, do_average = False,show = show) #change
     #print("depths", depths_to_extract)
     dic_slices_to_extract = get_n_slices(li_images, li_masks, depths_to_extract, dic_securite) 
     #print(dic_slices_to_extract)

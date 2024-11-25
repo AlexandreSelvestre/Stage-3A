@@ -5,7 +5,7 @@ default:
   num_runs: 1
   simple_generation: FALSE
   keep_partition: FALSE
-  nom_spe: "reel_test"
+  nom_spe: "simu_modium_easy_var"
 
 my_config:
   do_extract: FALSE #réextraire ou non après la première fois

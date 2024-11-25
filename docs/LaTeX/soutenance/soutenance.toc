@@ -1,0 +1,8 @@
+\beamer@sectionintoc {1}{Machine learning models}{12}{0}{1}
+\beamer@subsectionintoc {1}{1}{tabular models}{12}{0}{1}
+\beamer@subsectionintoc {1}{2}{tensormodels}{16}{0}{1}
+\beamer@sectionintoc {2}{Simulations}{22}{0}{2}
+\beamer@sectionintoc {3}{real data}{28}{0}{3}
+\beamer@subsectionintoc {3}{1}{with pyradiomics}{28}{0}{3}
+\beamer@subsectionintoc {3}{2}{latest data}{34}{0}{3}
+\beamer@sectionintoc {4}{Retrospective Analysis}{37}{0}{4}
