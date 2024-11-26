@@ -31,6 +31,7 @@ n_1 <- 1000
 n_2 <- 1000
 mu_1 <- -beta / (2 * norm(as.matrix(beta), type = "2"))
 mu_2 <- beta / (2 * norm(as.matrix(beta), type = "2"))
+print(mu_2)
 D <- diag(c(0.03, 0.09))
 P <- complete_orthonormal_basis(beta)
 inside <- mat.mult(P, D)

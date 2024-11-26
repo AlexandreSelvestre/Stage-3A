@@ -57,12 +57,9 @@
     \item High alpha-fetoprotein indicate HCC, but not always.\\[15 pt]
     \item Biopsy: invasive and potentially lethal ($0.02 \%$ of patients)\\
     \end{itemize}
-    \onslide<2->{
     \begin{center}
         But a lot of clues even without Biopsy $\rightarrow$ Machine Learning
     \end{center}
-    Specifically: adapting existing methods to the structure of the data (tensors)
-    }
 \end{frame}
 
 \begin{frame}
@@ -70,9 +67,11 @@
 
     $\bullet$ RMI images in 3D of liver tumors (arterial, portal, veinous -not used-, late)\\[5 pt]
     $\bullet$ gender\\[5 pt]
-    $\bullet$ age at disease\\[30 pt]
+    $\bullet$ age at disease\\[15 pt]
 
-    Same variables extracted from each RMI images... 3 times
+    Same variables extracted from each RMI images 3 times (shape, texture, intensity)  $\rightarrow$ specific structure\\[10 pt]
+
+    Need to adapt existing machine learning methods to this structure
 
     
 \end{frame}
@@ -123,7 +122,7 @@
     Features about pixel/voxel intensities, shape and texture: different natures
     \begin{figure}
         \centering
-        \includegraphics[scale = 0.35]{images/blocks.png}
+        \includegraphics[scale = 0.25]{images/blocks.png}
         \caption{Type of data: multibloc}
     \end{figure}
 \end{frame}
@@ -142,55 +141,74 @@
 
 \begin{frame}
     \frametitle{Logistic regression}
-    $I$\\[10 pt]
-    Classical machine learning (few data and explainable)\\[10 pt]
+    Classical machine learning (works with few data and explainable)\\[10 pt]
 
     $$P(Y = 1|x) = \frac{\exp(\beta_0 + \bm{x}^T\hspace{-2 pt}\bm{\beta})}{1 + \exp(\beta_0 + \bm{x}^T\hspace{-2 pt}\bm{\beta})}$$
 
     Defines a likelihood function $\mathcal{L}(\bm{\beta}) = \prod_{i = 1}^n P(Y_i = y_i|x_i)$\\[15 pt]
 
-    function to minimize : $- \log(\mathcal{L}(\bm{\beta})) + \text{penalization}$ \\[15 pt]
+    To much features (vs $n$) $\rightarrow$ need to limit variance of prediction. Penalization with $\lVert \bm{\beta} \rVert_1$: lasso\\[15 pt]
 
-    Penalization to avoid overfitting. In our case L1 norm (lasso)
+    function to minimize : $- \log(\mathcal{L}(\bm{\beta})) + \text{penalization}$ 
+\end{frame}
+
+\begin{frame}
+    \frametitle{Impact of the tensor nature of $\bm{\beta}$}
+    \begin{center}
+    $\bm{\beta} = (\beta_{j,k})_{j \in \llbracket 1, J\rrbracket, k \in \llbracket 1, K\rrbracket}$ so $JK$ parameters to determine\\[15 pt]
+    \end{center}
+    $$x^T \bm{\beta} \leadsto \sum\limits_{k}\sum\limits_{j}  \beta_{j,k} x_{j,k} \hspace{0.5 cm} \text{and} \hspace{0.5 cm} \lVert \bm{\beta} \rVert_1 = \sum\limits_{k}\sum\limits_{j} \lvert \beta_{j,k} \rvert$$
+    \begin{figure}
+        \centering
+        \includegraphics[scale = 0.2]{images/deplier.png}
+        \caption{Unfolding of a tensor}
+    \end{figure}
+
+    
 \end{frame}
 
 \begin{frame}
     \frametitle{Limitations of the logistic regression lasso}
         $\bullet$ Each feature impact considered independently (no link between the times). Adapting penalty would change nothing on this\\[15 pt]
         $\bullet$ Elimination of features without specific considerations for the same feature at other times/ other features at the same time\\[15 pt]
-
     \onslide<2->{
 
     
     2 main solutions:
     \begin{itemize}
-        \item Preprocessing the data so it becomes tabular (equivalent to the approach chosen with latest data). But using only PCA + clustering: bad results
+        \item Preprocessing the data so it becomes tabular. But only using clustering + PCA $\rightarrow$ poor results
         \item Adapting the model to the structure of the data (aim of the internship)
     \end{itemize}
     }
 
 \end{frame}
 
-\subsection{tensormodels}
+\subsection{tensor models}
 \begin{frame}
     \frametitle{Tensor regression models}
     Idea: each variable and mode has its own influence on the prediction (i.e. on $\bm{\beta}$) \cite{multi_rank_1}.\\[10 pt]
-
-    For $J$ variables observed following $M$ modes (time, depth ...)
-    $$\beta_{j,k_1,\hdots,k_M} = \beta_j^J\beta_{k_1}^{K_1} \hdots \beta_{k_m}^{K_M}$$
-    \onslide<2->{
-    reformulation with $\bm{\beta}$ as a vector:
-    \begin{align*}
-        \bm{\beta} &= [\beta_{1,1,\hdots,1}, \beta_{2,1,\hdots,1} \, \hdots \, \beta_{1,2,\hdots,1} \, \hdots \, \beta_{J,K_1,\hdots,K_M} ]^T \hspace{5 pt} (\text{lexicographic order})\\[5 pt]
-        &= \bm{\beta}^{K_M} \otimes \hdots \otimes \bm{\beta}^{K_1} \otimes  \bm{\beta}^{J} \hspace{5 pt} (\text{Kronecker product}) 
-    \end{align*}
-Concatenate non tensor coefficients at the end of the Kronecker structure}
+    \begin{overprint}
+    \onslide<1>
+    \begin{figure}
+        \centering
+        \includegraphics[scale = 0.3]{images/beta_tens.png}
+        \caption{Tensor structure of $\bm{\beta}$}
+    \end{figure}
+    \onslide<2>
+    \vspace{10 pt}
+    For $J$ variables observed following $K$ modalities (e.g. times)
+    $$\beta_{j,k} = \beta_j^J\beta_{k}^{K}$$
+    $\beta_j$ : impact of variable $j$\\[5 pt]
+    $\beta_k$ : impact of modality $k$\\[10 pt]
+    Only $J+K$ parameters to determine (instead of $JK$)
+    
+\end{overprint}
 \end{frame}
 
 \begin{frame}
     \frametitle{Limits of rank $1$}
-    $\bm{\beta}^{K_M} \otimes \hdots \otimes \bm{\beta}^{K_1} \otimes  \bm{\beta}^{J}$  is only rank $1$\\[10 pt]
-    In 2D :
+    \vspace{10 pt}
+    \hspace{60pt} $\beta_{j,k} = \beta_j^J\beta_{k}^{K}$ implies that $\bm{\beta}$ looks like:
     \begin{figure}
         \centering
         \begin{minipage}{0.3\textwidth}
@@ -205,45 +223,78 @@ Concatenate non tensor coefficients at the end of the Kronecker structure}
             \caption{\centering Example of rank 1 matrix (all values allowed)}
         \end{minipage}
     \end{figure}
+    \begin{center}
+        \vspace{5 pt}
+        This can be too simplistic
+    \end{center}
+
 
 \end{frame}
 
 \begin{frame}
-    \frametitle{Rank R multiway logistic regression}
-    Allowing any rank $R$ \cite{multi_rank_r}
-    $$\bm{\beta} = \sum\limits_{r = 1}^R \bm{\beta}_r^{K_M} \otimes \hdots \otimes \bm{\beta}_r^{K_1} \otimes  \bm{\beta}_r^{J}$$
-
-    Chosen penalization: $\sum\limits_{r = 1}^R \lVert \bm{\beta}_r^{K_M} \otimes \hdots \otimes \bm{\beta}_r^{K_1} \otimes  \bm{\beta}_r^{J} \rVert_1$
-    \begin{itemize}
-        \item L1-type penlization: encourage sparsity of each $\bm{\beta}_r^{K_m}$ and $\bm{\beta}_r^J$\\[10 pt]
-        \item Allows efficient optimization, considering the $\bm{\beta}$-structure
-    \end{itemize}
+    \frametitle{Rank R multiway logistic regression \cite{multi_rank_r}}
+    \hspace{50 pt}Summing rank 1 together : $\beta_{j,k} = \sum\limits_{r = 1}^R \beta_{j,r}^J\beta_{k,r}^K$\\
+    $$\beta_{j,k}x_{j,k} = \left( \sum\limits_{r = 1}^R \beta_{j,r}^J\beta_{k,r}^K \right) x_{j,k} = \sum\limits_{r = 1}^R \beta_{j,r}^J\beta_{k,r}^K \hspace{1 pt} x_{j,k}$$
+    \vspace{-10 pt}
+\begin{figure}
+    \centering
+    \begin{minipage}{0.5\textwidth}
+        \centering
+        \includegraphics[scale=0.25]{images/beta_tens_R.png}
+        \caption{Tensor structure of $\bm{\beta}$}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        % Ajoutez votre équation ici
+        \[
+        \text{lasso} \leadsto  \sum\limits_{r = 1}^R \left( \lVert \bm{\beta}_{(1,r)}^J \rVert_1 \lVert \bm{\beta}_{(1,r)}^K \rVert_1 \right)
+        \]
+    \end{minipage}
+\end{figure}
 \end{frame}
 
 \begin{frame}
- \frametitle{grouping by blocs}
+ \frametitle{Blocs of variables}
 
- \textbf{Problem}: Several groups of variables of different natures (first order, shape, texture). But $\bm{\beta}_r^{K_1} \, \hdots, \bm{\beta}_r^J$ common to all groups. \\[15 pt]
-
- \textbf{Solution} : Separating each group of variables in different blocks (tensors), with own $\bm{\beta}_r^{K_1} \, \hdots, \bm{\beta}_r^J$ for each block.
+ \textbf{Problem}: Several groups of variables of different natures (first order, shape, texture). But $\bm{\beta}_r^{K}$ and $\bm{\beta}_r^J$ common to all groups.$K_1 = K_2 = K_3$ needed or else:
 
  \begin{figure}
-        \centering
-        \includegraphics[scale = 0.165]{images/picto_explic.png}
-        \caption{Separation by blocks of a pictogram}
-  \end{figure}
+    \centering
+    \includegraphics[scale = 0.23]{images/blocks_faux.png}
+    \caption{Problem if blocs have different sizes}
+\end{figure}
 
 \end{frame}
 
 \begin{frame}
-    \frametitle{Multiway Multiblock Logistic Regression (MMLR)}
+    \frametitle{Multiway model with blocs of variables}
+    If $K_1 = K_2$, blocks can be glued, but the structure is lost
+    \begin{figure}
+        \centering
+        \includegraphics[scale = 0.2]{images/glue_blocks.png}
+        \caption{Multiway model with blocs of variables}
+    \end{figure}
+\end{frame}
 
-    For L blocks, when $\bm{\beta}$  of order $2$ (extension rank $R$ straightforward):
+\begin{frame}
+    \frametitle{Multiway Multiblock Logistic Regression}
+    \vspace{10 pt}
+    \textbf{Solution}: giving each block its own $\bm{\beta}^J$ and $\bm{\beta}^K$\\[15 pt]
+    \begin{figure}
+        \centering
+        \includegraphics[scale = 0.28]{images/beta_blocks.png}
+        \caption{Multiway multiblock model for rank 1}
+    \end{figure}
+\end{frame}
 
-    $$    \bm{\beta} = \left[ \sum\limits_{r = 1}^{R_1} \bm{\beta}_{(1,r)}^{K} \otimes \bm{\beta}_{(1,r)}^J;   \; \; \hdots  \; \; ;\, \sum\limits_{r = 1}^{R_L}\bm{\beta}_{(L,r)}^K \otimes \bm{\beta}_{(L,r)}^J \right] $$
-    \phantom{a}\\
-    Allows having different orders for $2$ different blocks,  e.g.: averaging over time only 1 block\\[10 pt]
-    Same penalization as multiway model but summed by block
+\begin{frame}
+    \frametitle{Multiway Multiblock Logistic Regression}
+    Mathematically, this gives :
+    $$\mathbf{x}^T\bm{\beta} \leadsto =  \sum\limits_{l = 1}^L \sum\limits_{j,k} x_{j,k}^l\beta_{j,k}^l$$
+    With, for rank 1: $\beta_{j,k}^l = \beta_j^{J_l}\beta_k^{K_l}$\\[10 pt]
+    But each $\bm{\beta}^l$ can have a different rank $R_l$, which gives:
+    $$\beta_{j,k}^l = \sum\limits_{r = 1}^{R_l} (\beta_r^{J_l})_j \, (\beta_r^{K_l})_k $$
 \end{frame}
 
 \begin{frame}
@@ -257,29 +308,29 @@ Concatenate non tensor coefficients at the end of the Kronecker structure}
         \item Balance between classes\\[12 pt]
         \item Structure of the regression coefficients $\bm{\beta}$ (several blocks)\\[12 pt] 
         \item Quality of the classification (AUC)\\[12 pt]
-        \item Quality of the reconstruction of $\bm{\beta}$ (pictograms)
+        \item Quality of the reconstruction of $\bm{\beta}$ (pictograms \cite{picto})
     \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Illustration in 2D}
+
+    \begin{figure}
+        \centering
+        \includegraphics[scale = 0.2]{images/2D_better.png}
+        \caption{Example of explanatory variables for $\bm{\beta} = (-2,1)$}
+    \end{figure}
 \end{frame}
 
 \begin{frame}
     \frametitle{Data generation}
     Chose the $\bm{\beta}$ to be reconstructed (pictograms)\\[10 pt]
-    Generate the $(\mathbf{x}_i)_{i \in \llbracket 1, I\rrbracket}$ with 2 multivariate normal laws of means $\bm{\mu}_1$ and $\bm{\mu}_2$ and common covariance matrix $\bm{\Sigma}$ such that:
+    Generate the $(\mathbf{x}_i)_{i \in \llbracket 1, I\rrbracket}$ with 2 multivariate normal laws of means $\bm{\mu}_0$ and $\bm{\mu}_1$ and common covariance matrix $\bm{\Sigma}$ such that:
     \begin{itemize}
-        \item $\bm{\mu}_2 - \bm{\mu}_1$ colinear to $\bm{\beta}$\\[10 pt]
+        \item $\bm{\mu}_1 - \bm{\mu}_0$ colinear to $\bm{\beta}$\\[10 pt]
         \item One of the principal axis of $\bm{\Sigma}$ colinear to $\bm{\beta}$
     \end{itemize}
-    Separation of classes linked with eigenvalues of $\bm{\Sigma}$ (to be compared with $\lVert\bm{\mu}_2 - \bm{\mu}_1 \rVert$)
-\end{frame}
-
-\begin{frame}
-    \frametitle{Example in 2D}
-
-    \begin{figure}
-        \centering
-        \includegraphics[scale = 0.16]{images/2D.png}
-        \caption{Example of explanatory variables for $\bm{\beta} = (-2,1)$}
-    \end{figure}
+    Separation of classes linked with eigenvalues of $\bm{\Sigma}$ (to be compared with $\lVert\bm{\mu}_1 - \bm{\mu}_0 \rVert$)
 \end{frame}
 
 \begin{frame}
@@ -316,16 +367,16 @@ Concatenate non tensor coefficients at the end of the Kronecker structure}
         \hspace{0.05\textwidth} % Ajuster l'espace entre les images
         \begin{minipage}{0.35\textwidth}
             \centering
-            \subfloat[multiway multiblock $(\sigma_{\bm{\beta}}, \sigma_{\text{noise}}) = (0.1,0.5) $\label{fig:multiblock}]{\includegraphics[width=\textwidth]{images/heatmap_logistic_multibloc_simu_4000.png}}
+            \subfloat[M.M., $R = (12,1,10)$ $(\sigma_{\bm{\beta}}, \sigma_{\text{noise}}) = (0.1,0.5) $\label{fig:multiblock}]{\includegraphics[width=\textwidth]{images/heatmap_logistic_multibloc_simu_4000.png}}
         \end{minipage}
         \begin{minipage}{0.33\textwidth}
             \centering
-            \subfloat[multiway $(\sigma_{\bm{\beta}}, \sigma_{\text{noise}}) = (0.1,0.8) $\label{fig:easy_multiway}]{\includegraphics[width=\textwidth]{images/heatmap_logistic_multibloc_simu_4000_medium_easy_multiway.png}}
+            \subfloat[multiway $R = 10$ $(\sigma_{\bm{\beta}}, \sigma_{\text{noise}}) = (0.1,0.8) $\label{fig:easy_multiway}]{\includegraphics[width=\textwidth]{images/heatmap_logistic_multibloc_simu_4000_medium_easy_multiway.png}}
         \end{minipage}
         \hspace{10 pt}
         \begin{minipage}{0.33\textwidth}
             \centering
-            \subfloat[multiway multiblock $(\sigma_{\bm{\beta}}, \sigma_{\text{noise}}) = (0.1,0.8) $\label{fig:easy_multiblock}]{\includegraphics[width=\textwidth]{images/heatmap_logistic_multibloc_simu_4000_medium_easy.png}}
+            \subfloat[M.M., $R = (6,1,1)$ $(\sigma_{\bm{\beta}}, \sigma_{\text{noise}}) = (0.1,0.8) $\label{fig:easy_multiblock}]{\includegraphics[width=\textwidth]{images/heatmap_logistic_multibloc_simu_4000_medium_easy.png}}
         \end{minipage}
     \end{figure}
 \end{frame}
@@ -336,32 +387,51 @@ Concatenate non tensor coefficients at the end of the Kronecker structure}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Features extraction with pyradiomics}
+    \frametitle{Features extraction with pyradiomics \cite{pyradio}}
     Extraction of $\simeq  100$ features (about intensities, shape, texture) for each $2$D or $3$D image.\\[10 pt]
-    Difficulties: Which spacing? Which slices if 2D?\\[25 pt]
-    \onslide<2->{\textbf{In 3D}:
-    \begin{itemize}
-        \item Common spacing\\[5 pt]
-        \item Average shape over time
-    \end{itemize}
-    }
+    \begin{figure}
+        \centering
+        \includegraphics[scale = 0.15]{images/features.png}
+        \caption{Features extraction with pyradiomics of an RMI image composed of $4$ slices}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Features extraction in 3D}
+    Each radio $\rightarrow$ 1 particular spacing along $(x,y,z)$\\[10 pt]
+    \textbf{But} : Calculations of pyradiomics by pixels/ voxels.\\[10 pt]
+    Not always meaningful if the scale changes at each radio (e.g. for Gray Level Run Length Matrix, based on number allignments of pixels of same intensity)\\[10 pt]
+    \textbf{Solution}: Standardize the spacing along $(x,y,z)$. Allowed by resampling (interpolation) of the image.
 \end{frame}
 
 \begin{frame}
     \frametitle{Features extraction in 2D}
     \vspace{5 pt}
     Slices along z axis $\rightarrow$ same spacing along $(x,y)$\\[5 pt]
-    \textbf{But:} No common spacing along $z$  
+    \textbf{Difficulty} Tumors are of variable locations sizes and shapes in the frontal plane (front - back plane)
     \begin{figure}
-        \centering
-        \includegraphics[scale = 0.18]{images/curves_area.png}
-        \caption{Curves of the cumulated volume of tumor (in $mm^3$) as a function of the depth travelled in the liver (in $mm$) for 2 tumors during arterial phase}
+        \begin{minipage}{0.45\textwidth}
+            \centering
+            \includegraphics[scale = 0.125]{images/slices_big.png}
+            \caption{Extracting 5 slices in a big tumor}
+        \end{minipage}
+        \hspace{0.03\textwidth} 
+        \begin{minipage}{0.45\textwidth}
+            \centering
+            \includegraphics[scale = 0.18]{images/slices_small.png}
+            \caption{Extracting 5 slices in a small tumor}
+        \end{minipage}
     \end{figure}
 \end{frame}
 
 \begin{frame}
     \frametitle{Features extraction in 2D}
-    Solution: Selecting $5$ slices equally spaced along the cumulated volume axis
+    Every slice not equally informative
+\end{frame}
+
+\begin{frame}
+    \frametitle{Features extraction in 2D}
+    \textbf{Solution}: Selecting $5$ slices equally spaced along the cumulated volume axis
     \begin{figure}
         \centering
         \includegraphics[scale = 0.15]{images/curve_points.png}
@@ -461,7 +531,7 @@ Concatenate non tensor coefficients at the end of the Kronecker structure}
 \begin{frame}
     \frametitle{Conclusion}
     A good representation of a research work (and its challenges)\\[10 pt]
-    Supportive, available and Calm supervision (evn as deadlines approach)\\[10 pt]
+    Supportive, available and Calm supervision (even as deadlines approach)\\[10 pt]
     Looking forward to continuing in this direction
 \end{frame}
 
