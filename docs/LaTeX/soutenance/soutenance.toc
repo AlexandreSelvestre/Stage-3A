@@ -1,8 +1,8 @@
 \beamer@sectionintoc {1}{Machine learning models}{11}{0}{1}
 \beamer@subsectionintoc {1}{1}{tabular models}{11}{0}{1}
-\beamer@subsectionintoc {1}{2}{tensor models}{16}{0}{1}
-\beamer@sectionintoc {2}{Simulations}{24}{0}{2}
-\beamer@sectionintoc {3}{real data}{30}{0}{3}
-\beamer@subsectionintoc {3}{1}{with pyradiomics}{30}{0}{3}
-\beamer@subsectionintoc {3}{2}{latest data}{37}{0}{3}
-\beamer@sectionintoc {4}{Retrospective Analysis}{40}{0}{4}
+\beamer@subsectionintoc {1}{2}{tensor models}{15}{0}{1}
+\beamer@sectionintoc {2}{Simulations}{22}{0}{2}
+\beamer@sectionintoc {3}{liver tumor data}{28}{0}{3}
+\beamer@subsectionintoc {3}{1}{with pyradiomics}{28}{0}{3}
+\beamer@subsectionintoc {3}{2}{latest data}{34}{0}{3}
+\beamer@sectionintoc {4}{Retrospective Analysis}{37}{0}{4}

@@ -22,7 +22,7 @@
 \makeatother
 
 
-\title{Multiway multiblock logistic regression to classify liver tumors from MRI images}
+\title{Tensor multiblock logistic regression to classify liver tumors from MRI images}
 \author{SELVESTREL Alexandre}
 \institute{
     Université Paris-Saclay, CNRS, CentraleSupélec, Laboratoire des signaux et systèmes\\[10 pt]
@@ -45,7 +45,7 @@
     Classification:
     \begin{itemize}
         \item Hepatocellular Carcinoma (HCC): $75\%$ of cases, resection often possible\\[10 pt]
-        \item CCK = Cholangiocarcinoma (CCK): $6\%$ of cases, resection difficult (possible $30\%$ of cases)\\[10 pt]
+        \item CCK = Cholangiocarcinoma (CCK): $6\%$ of cases, resection difficult (possible in $30\%$ of cases)\\[10 pt]
         \item Others: benign ($18 \%$ of cases) or Hepatoblastoma ($1 \%$ of cases)
     \end{itemize}
 \end{frame}
@@ -58,16 +58,18 @@
     \item Biopsy: invasive and potentially lethal ($0.02 \%$ of patients)\\
     \end{itemize}
     \begin{center}
-        But a lot of clues even without Biopsy $\rightarrow$ Machine Learning
+        But a lot of clues even without biopsy $\rightarrow$ Machine Learning
     \end{center}
 \end{frame}
 
 \begin{frame}
     \frametitle{Available data}
 
-    $\bullet$ RMI images in 3D of liver tumors (arterial, portal, veinous -not used-, late)\\[5 pt]
-    $\bullet$ gender\\[5 pt]
-    $\bullet$ age at disease\\[15 pt]
+    $\bullet$ RMI images in 3D of liver tumors (arterial, portal, late)\\[5 pt]
+    $\bullet$ gender (63 men, 27 women)\\[5 pt]
+    $\bullet$ age at disease (average: $63$ years old)\\[15 pt]
+
+    From Henri Mondor hospital: Sébastien Mulé
 
     Same variables extracted from each RMI images 3 times (shape, texture, intensity)  $\rightarrow$ specific structure\\[10 pt]
 
@@ -145,9 +147,9 @@
 
     $$P(Y = 1|x) = \frac{\exp(\beta_0 + \bm{x}^T\hspace{-2 pt}\bm{\beta})}{1 + \exp(\beta_0 + \bm{x}^T\hspace{-2 pt}\bm{\beta})}$$
 
-    Defines a likelihood function $\mathcal{L}(\bm{\beta}) = \prod_{i = 1}^n P(Y_i = y_i|x_i)$\\[15 pt]
+    Defines a likelihood function $\mathcal{L}(\bm{\beta}) = \prod_{i = 1}^I P(Y_i = y_i|x_i)$\\[15 pt]
 
-    To much features (vs $n$) $\rightarrow$ need to limit variance of prediction. Penalization with $\lVert \bm{\beta} \rVert_1$: lasso\\[15 pt]
+    To much features (vs $I$) $\rightarrow$ need to limit variance of prediction. Penalization with $\lVert \bm{\beta} \rVert_1$: lasso\\[15 pt]
 
     function to minimize : $- \log(\mathcal{L}(\bm{\beta})) + \text{penalization}$ 
 \end{frame}
@@ -168,18 +170,16 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Limitations of the logistic regression lasso}
-        $\bullet$ Each feature impact considered independently (no link between the times). Adapting penalty would change nothing on this\\[15 pt]
-        $\bullet$ Elimination of features without specific considerations for the same feature at other times/ other features at the same time\\[15 pt]
-    \onslide<2->{
+    \frametitle{Group lasso}
+ \textbf{Limitation of lasso}: Elimination of features without specific considerations for the same feature at other times/ other features at the same time\\[10 pt]
 
+ Common solution: grouping coefficients together in the penalization
+ $$ \sum\limits_{j,k} |\beta_{j,k}|\leadsto \sum\limits_{g = 1}^G \lVert \bm{\beta}^g \rVert_2 $$
+
+ Tendency to cancel variables by entire blocks.
+
+\textbf{But}: grouping either by mode or by variable, not both.  Adapting the model to the structure of the data (aim of the internship)
     
-    2 main solutions:
-    \begin{itemize}
-        \item Preprocessing the data so it becomes tabular. But only using clustering + PCA $\rightarrow$ poor results
-        \item Adapting the model to the structure of the data (aim of the internship)
-    \end{itemize}
-    }
 
 \end{frame}
 
@@ -232,9 +232,9 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Rank R multiway logistic regression \cite{multi_rank_r}}
+    \frametitle{Rank R tensor logistic regression \cite{multi_rank_r}}
     \hspace{50 pt}Summing rank 1 together : $\beta_{j,k} = \sum\limits_{r = 1}^R \beta_{j,r}^J\beta_{k,r}^K$\\
-    $$\beta_{j,k}x_{j,k} = \left( \sum\limits_{r = 1}^R \beta_{j,r}^J\beta_{k,r}^K \right) x_{j,k} = \sum\limits_{r = 1}^R \beta_{j,r}^J\beta_{k,r}^K \hspace{1 pt} x_{j,k}$$
+    % $$\beta_{j,k}x_{j,k} = \left( \sum\limits_{r = 1}^R \beta_{j,r}^J\beta_{k,r}^K \right) x_{j,k} = \sum\limits_{r = 1}^R \beta_{j,r}^J\beta_{k,r}^K \hspace{1 pt} x_{j,k}$$
     \vspace{-10 pt}
 \begin{figure}
     \centering
@@ -262,34 +262,34 @@
  \begin{figure}
     \centering
     \includegraphics[scale = 0.23]{images/blocks_faux.png}
-    \caption{Problem if blocs have different sizes}
+    \caption{Problem if blocs have different order or dimensions}
 \end{figure}
 
 \end{frame}
 
-\begin{frame}
-    \frametitle{Multiway model with blocs of variables}
-    If $K_1 = K_2$, blocks can be glued, but the structure is lost
-    \begin{figure}
-        \centering
-        \includegraphics[scale = 0.2]{images/glue_blocks.png}
-        \caption{Multiway model with blocs of variables}
-    \end{figure}
-\end{frame}
+% \begin{frame}
+%     \frametitle{Multiway model with blocs of variables}
+%     If $K_1 = K_2$, blocks can be glued, but the structure is lost
+%     \begin{figure}
+%         \centering
+%         \includegraphics[scale = 0.2]{images/glue_blocks.png}
+%         \caption{Multiway model with blocs of variables}
+%     \end{figure}
+% \end{frame}
 
 \begin{frame}
-    \frametitle{Multiway Multiblock Logistic Regression}
+    \frametitle{Tensor multiblock logistic regression}
     \vspace{10 pt}
     \textbf{Solution}: giving each block its own $\bm{\beta}^J$ and $\bm{\beta}^K$\\[15 pt]
     \begin{figure}
         \centering
         \includegraphics[scale = 0.28]{images/beta_blocks.png}
-        \caption{Multiway multiblock model for rank 1}
+        \caption{Tensor multiblock model for rank 1}
     \end{figure}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Multiway Multiblock Logistic Regression}
+    \frametitle{Tensor multiblock logistic regression}
     Mathematically, this gives :
     $$\mathbf{x}^T\bm{\beta} \leadsto =  \sum\limits_{l = 1}^L \sum\limits_{j,k} x_{j,k}^l\beta_{j,k}^l$$
     With, for rank 1: $\beta_{j,k}^l = \beta_j^{J_l}\beta_k^{K_l}$\\[10 pt]
@@ -308,7 +308,7 @@
         \item Balance between classes\\[12 pt]
         \item Structure of the regression coefficients $\bm{\beta}$ (several blocks)\\[12 pt] 
         \item Quality of the classification (AUC)\\[12 pt]
-        \item Quality of the reconstruction of $\bm{\beta}$ (pictograms \cite{picto})
+        \item Quality of the reconstruction of $\bm{\beta}$ \nocite{picto}
     \end{itemize}
 \end{frame}
 
@@ -338,13 +338,13 @@
     \begin{figure}
         \begin{table}[H]
             \centering
-            \caption{AUC for each model on simulated data for 3000 individuals}
+            \caption{Cross validated AUC for each model on simulated data for 3000 individuals}
             \label{tab:result_simul}
             \renewcommand{\arraystretch}{1.2} 
             \begin{adjustbox}{center}
-            \begin{tabular}{|>{\centering\arraybackslash}m{1.4cm}|>{\centering\arraybackslash}m{1.1cm}|>{\centering\arraybackslash}m{1.1cm}|>{\centering\arraybackslash}m{1.1cm}|>{\centering\arraybackslash}m{1.1cm}|>{\centering\arraybackslash}m{1.1cm}|>{\centering\arraybackslash}m{1.1cm}|}
+            \begin{tabular}{|>{\centering\arraybackslash}m{1.7cm}|>{\centering\arraybackslash}m{1.1cm}|>{\centering\arraybackslash}m{1.1cm}|>{\centering\arraybackslash}m{1.1cm}|>{\centering\arraybackslash}m{1.1cm}|>{\centering\arraybackslash}m{1.1cm}|>{\centering\arraybackslash}m{1.1cm}|}
                 \cline{1-7}
-                $(\sigma_{\bm{\beta}}$, $\sigma_{\text{noise}})$ & lasso & g. l (blocs) & g.l (mode)& g.l (var) & tensor & tensor blocks\\
+                $(\sigma_{\bm{\beta}}, \sigma_{\text{noise}})$ & lasso & g.l. (blocs) & g.l. (mode)& g.l. (var) & tensor & tensor blocks\\
                 \cline{1-7} 
                 (0.1,0.5) & 0.83 & 0.86 & 0.94 & 0.94 & 0.99 & 0.99 \\
                 \cline{1-7}
@@ -354,35 +354,49 @@
         \end{adjustbox}
         \end{table}
     \end{figure}
+    
+    \begin{figure}
+        \centering
+        \includegraphics[scale = 0.12]{images/3_picto.png}
+        \caption{Pictogram of shape $66 \times 117$}
+    \end{figure}
+
 \end{frame}
 
 \begin{frame}
+
     \frametitle{Reconstructed $\bm{\beta}$}
     \begin{figure}[H]
         \centering
-        \begin{minipage}{0.35\textwidth}
+        \begin{minipage}{0.30\textwidth}
             \centering
             \subfloat[lasso $(\sigma_{\bm{\beta}}, \sigma_{\text{noise}}) = (0.1,0.5) $\label{fig:3000simple}]{\includegraphics[width=\textwidth]{images/heatmap_logistique_simple_simu_4000.png}}
         \end{minipage}
-        \hspace{0.05\textwidth} % Ajuster l'espace entre les images
-        \begin{minipage}{0.35\textwidth}
+        \begin{minipage}{0.30\textwidth}
             \centering
-            \subfloat[M.M., $R = (12,1,10)$ $(\sigma_{\bm{\beta}}, \sigma_{\text{noise}}) = (0.1,0.5) $\label{fig:multiblock}]{\includegraphics[width=\textwidth]{images/heatmap_logistic_multibloc_simu_4000.png}}
+            \subfloat[tensor $R: 10$ $(\sigma_{\bm{\beta}}, \sigma_{\text{noise}}) = (0.1,0.5) $\label{fig:3000simple}]{\includegraphics[width=\textwidth]{images/heatmap_logistic_multibloc_simu_4000_multiway.png}}
         \end{minipage}
-        \begin{minipage}{0.33\textwidth}
+        \begin{minipage}{0.30\textwidth}
             \centering
-            \subfloat[multiway $R = 10$ $(\sigma_{\bm{\beta}}, \sigma_{\text{noise}}) = (0.1,0.8) $\label{fig:easy_multiway}]{\includegraphics[width=\textwidth]{images/heatmap_logistic_multibloc_simu_4000_medium_easy_multiway.png}}
+            \subfloat[T.M. $R: (12,1,10)$ $(\sigma_{\bm{\beta}}, \sigma_{\text{noise}}) = (0.1,0.5) $\label{fig:multiblock}]{\includegraphics[width=\textwidth]{images/heatmap_logistic_multibloc_simu_4000.png}}
         \end{minipage}
-        \hspace{10 pt}
-        \begin{minipage}{0.33\textwidth}
+        \begin{minipage}{0.30\textwidth}
             \centering
-            \subfloat[M.M., $R = (6,1,1)$ $(\sigma_{\bm{\beta}}, \sigma_{\text{noise}}) = (0.1,0.8) $\label{fig:easy_multiblock}]{\includegraphics[width=\textwidth]{images/heatmap_logistic_multibloc_simu_4000_medium_easy.png}}
+            \subfloat[lasso $(\sigma_{\bm{\beta}}, \sigma_{\text{noise}}) = (0.1,0.8) $\label{fig:easy_multiblock}]{\includegraphics[width=\textwidth]{images/heatmap_logistique_simple_simu_medium_easy.png}}
+        \end{minipage}
+        \begin{minipage}{0.30\textwidth}
+            \centering
+            \subfloat[tensor $R: 10$ $(\sigma_{\bm{\beta}}, \sigma_{\text{noise}}) = (0.1,0.8) $\label{fig:easy_multiway}]{\includegraphics[width=\textwidth]{images/heatmap_logistic_multibloc_simu_4000_medium_easy_multiway.png}}
+        \end{minipage}
+        \begin{minipage}{0.30\textwidth}
+            \centering
+            \subfloat[T.M. $R: (6,1,1)$ $(\sigma_{\bm{\beta}}, \sigma_{\text{noise}}) = (0.1,0.8) $\label{fig:easy_multiblock}]{\includegraphics[width=\textwidth]{images/heatmap_logistic_multibloc_simu_4000_medium_easy.png}}
         \end{minipage}
     \end{figure}
 \end{frame}
 
 \begin{frame}
-    \section{real data}
+    \section{liver tumor data}
     \subsection{with pyradiomics}
 \end{frame}
 
@@ -399,7 +413,7 @@
 \begin{frame}
     \frametitle{Features extraction in 3D}
     Each radio $\rightarrow$ 1 particular spacing along $(x,y,z)$\\[10 pt]
-    \textbf{But} : Calculations of pyradiomics by pixels/ voxels.\\[10 pt]
+    \textbf{But} : Calculations of pyradiomics only use voxels (= 3D pixels).\\[10 pt]
     Not always meaningful if the scale changes at each radio (e.g. for Gray Level Run Length Matrix, based on number allignments of pixels of same intensity)\\[10 pt]
     \textbf{Solution}: Standardize the spacing along $(x,y,z)$. Allowed by resampling (interpolation) of the image.
 \end{frame}
@@ -426,18 +440,23 @@
 
 \begin{frame}
     \frametitle{Features extraction in 2D}
-    Every slice not equally informative
-\end{frame}
-
-\begin{frame}
-    \frametitle{Features extraction in 2D}
-    \textbf{Solution}: Selecting $5$ slices equally spaced along the cumulated volume axis
+    Every slice not equally informative:
     \begin{figure}
         \centering
-        \includegraphics[scale = 0.15]{images/curve_points.png}
-        \caption{Curve of the depth travelled in the liver  (in $mm$) as a function of the standardized cumulated volume of the tumor. The points represent the selected slices.}
+        \includegraphics[scale = 0.2]{images/bad_shape.png}
+        \caption{Slicing relative to the depth vs. relative to the volume travelled in the tumor}
     \end{figure}
 \end{frame}
+
+% \begin{frame}
+%     \frametitle{Features extraction in 2D}
+%     \textbf{Solution}: Selecting $5$ slices equally spaced along the cumulated volume axis
+%     \begin{figure}
+%         \centering
+%         \includegraphics[scale = 0.15]{images/curve_points.png}
+%         \caption{Curve of the depth travelled in the liver  (in $mm$) as a function of the standardized cumulated volume of the tumor. The points represent the selected slices.}
+%     \end{figure}
+% \end{frame}
 
 \begin{frame}
     \frametitle{Results}
@@ -458,7 +477,7 @@
     \end{adjustbox}
     \parbox{0.9\textwidth}{
     \vspace{0.2 cm}    
-    \centering \small Area under curve (AUC) on 3D real data}
+    \centering \small cross validated area under curve (AUC) on 3D real data}
     \vspace{0.3 cm}
     
     \begin{adjustbox}{center}
@@ -472,7 +491,7 @@
     \end{adjustbox}
     \parbox{0.9\textwidth}{
     \vspace{0.2 cm}    
-    \centering \small Area under curve (AUC) on 2D real data}
+    \centering \small Cross validated area under curve (AUC) on 2D real data}
     \end{table}
 \end{frame}
 
@@ -480,11 +499,11 @@
 
 \begin{frame}
     \frametitle{Latest data}
-    13 binary features determined by radiologists (late enhancement, non peripheral washout etc...) + sex\\[10 pt]
+    12 binary features determined by radiologists (late enhancement, non peripheral washout etc...) + sex and existence of chronical disease\\[10 pt]
     With lasso model:
     \begin{itemize}
         \item AUC: $0.97 \pm 0.02$\\[10 pt]
-        \item balanced accurcy: $0.88 \pm 0.05$
+        \item balanced accuracy: $0.88 \pm 0.05$
         \end{itemize}
     Would be interesting to test other models...
 \end{frame}
@@ -501,9 +520,9 @@
 \begin{frame}
     \frametitle{Possible extensions}
     Testing other penalizations (group lasso, elastic net)\\[10 pt]
-    Extending the multiblock approach to other classical machine learning algorithms (other GLMs, SVM etc...)\\[10 pt]
-    Testing other models on the latest data (in order to obtain a model that can be deployed in the hospital)\\[10 pt]
-    Implementing the multiblock code in C forincreased speed (currently quite slowin R)
+    Extending the multiblock approach to other classical machine learning algorithms (other GLMs, SVM etc...). Comparing it to CNN.\\[10 pt]
+    Testing other models on the latest data (in order to obtain a model that can be deployed in the hospital).\\[10 pt]
+    Implementing the multiblock code in C for increased speed (currently quite slowin R)
 \end{frame}
 
 \begin{frame}
@@ -522,7 +541,7 @@
 \begin{frame}
     \frametitle{Consequences of the internship}
     A promising framework for the diagnosis of liver tumors\\[10 pt]
-    The simulation part of an article on the multiblock multiway logistic regression\\[10 pt]
+    The simulation part of an article on the multiblock tensor 
     More information about the correct context for using that kind of models\\[10 pt]
     An ethically positive impact (controllable deployment, a precise need, no replacement of humans...)
     
