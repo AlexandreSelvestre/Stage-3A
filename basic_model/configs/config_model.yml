@@ -20,8 +20,8 @@ default:
   penalty_adapt: FALSE #Seulement sur logistique_simple
 
   do_multiway: FALSE
-  #name_model: "logistique_simple"
-  name_model: "logistic_grp"
+  name_model: "logistique_simple"
+  #name_model: "logistic_grp"
   #name_model: "logistic_multibloc"
 
   #3 modèles trop vieux:
