@@ -71,7 +71,7 @@
 
     From Henri Mondor hospital: Sébastien Mulé
 
-    Same variables extracted from each RMI images 3 times (shape, texture, intensity)  $\rightarrow$ specific structure\\[10 pt]
+    Same variables extracted from each RMI image at 3 times  $\rightarrow$ specific structure\\[10 pt]
 
     Need to adapt existing machine learning methods to this structure
 
@@ -149,34 +149,33 @@
 
     Defines a likelihood function $\mathcal{L}(\bm{\beta}) = \prod_{i = 1}^I P(Y_i = y_i|x_i)$\\[15 pt]
 
-    To many features (vs $I$) $\rightarrow$ need to limit variance of prediction. Penalization with $\lVert \bm{\beta} \rVert_1$: lasso\\[15 pt]
+    To many features (vs $I$) $\rightarrow$ need to limit variance of prediction. Penalization proportionnal to $\lVert \bm{\beta} \rVert_1$: lasso\\[15 pt]
 
-    Function to minimize : $- \log(\mathcal{L}(\bm{\beta})) + \text{penalization}$ 
+    Function to minimize : $- \log(\mathcal{L}(\bm{\beta})) + \text{\textcolor{red}{penalization}}$ 
 \end{frame}
 
 \begin{frame}
-    \frametitle{Impact of the tensor nature of $\bm{\beta}$}
+    \frametitle{Transcription when $\bm{\beta}$ is a tensor}
     \begin{center}
     $\bm{\beta} = (\beta_{j,k})_{j \in \llbracket 1, J\rrbracket, k \in \llbracket 1, K\rrbracket}$ so $JK$ parameters to determine\\[15 pt]
     \end{center}
     $$x^T \bm{\beta} \leadsto \sum\limits_{k}\sum\limits_{j}  \beta_{j,k} x_{j,k} \hspace{0.5 cm} \text{and} \hspace{0.5 cm} \lVert \bm{\beta} \rVert_1 = \sum\limits_{k}\sum\limits_{j} \lvert \beta_{j,k} \rvert$$
     \begin{figure}
         \centering
-        \includegraphics[scale = 0.2]{images/deplier.png}
+        \includegraphics[scale = 0.15]{images/deplier.png}
         \caption{Unfolding a tensor}
     \end{figure}
-
+    \textbf{Limitation of lasso}: Elimination of features without specific consideration for the same feature at other times/ other features at the same time
     
 \end{frame}
 
 \begin{frame}
     \frametitle{Group lasso}
- \textbf{Limitation of lasso}: Elimination of features without specific consideration for the same feature at other times/ other features at the same time\\[10 pt]
 
- Common solution: grouping regression coefficients together in the penalization
+ \textbf{Common solution}: grouping regression coefficients together in the penalization
  $$ \sum\limits_{j,k} |\beta_{j,k}|\leadsto \sum\limits_{g = 1}^G \lVert \bm{\beta}^g \rVert_2 $$
 
- Tendency to set regression coefficients to zero by entire blocks.
+ Tendency to set regression coefficients to zero by entire blocks.\\[20 pt]
 
 \textbf{But}: grouping either by mode or by variable, not both\\  $\rightarrow$ Adapting the model to the structure of the data: aim of the internship
     
@@ -307,7 +306,7 @@
         \item Difficulty of the classification (overlap between classes, distance between means of classes etc ...)\\[12 pt]
         \item Balance between classes\\[12 pt]
         \item Structure of the regression parameter $\bm{\beta}$ (several blocks)\\[12 pt] 
-        \item Quality of the classification (AUC)\\[12 pt]
+        \item Quality of the classification (Area Under the ROC Curve : AUC)\\[12 pt]
         \item Quality of the reconstruction of $\bm{\beta}$ \nocite{picto}
     \end{itemize}
 \end{frame}
@@ -414,7 +413,7 @@
     \frametitle{Feature extraction in 3D}
     Each radio $\rightarrow$ 1 particular spacing along $(x,y,z)$\\[10 pt]
     \textbf{But} : Calculations of pyradiomics only use voxels (= 3D pixels).\\[10 pt]
-    Not always meaningful if the scale changes at each radio (e.g. for Gray Level Run Length Matrix, based on number allignments of pixels of same intensity)\\[10 pt]
+    Not always meaningful if the scale changes at each radio (e.g. for Gray Level Run Length Matrix, based on number allignments of voxels of same intensity)\\[10 pt]
     \textbf{Solution}: Standardize the spacing along $(x,y,z)$. Allowed by resampling (interpolation) of the image.
 \end{frame}
 
@@ -477,7 +476,7 @@
     \end{adjustbox}
     \parbox{0.9\textwidth}{
     \vspace{0.2 cm}    
-    \centering \small Cross validated area under curve (AUC) on 3D real data}
+    \centering \small Cross validated AUC on 3D real data}
     \vspace{0.3 cm}
     
     \begin{adjustbox}{center}
@@ -491,7 +490,7 @@
     \end{adjustbox}
     \parbox{0.9\textwidth}{
     \vspace{0.2 cm}    
-    \centering \small Cross validated area under curve (AUC) on 2D real data}
+    \centering \small Cross validated AUC on 2D real data}
     \end{table}
 \end{frame}
 
@@ -522,7 +521,7 @@
     Testing other penalizations (group lasso, elastic net)\\[10 pt]
     Extending the multiblock approach to other classical machine learning algorithms (other GLMs, SVM etc...). Comparing it to CNN.\\[10 pt]
     Testing other models on the latest data (in order to obtain a model that can be deployed in the hospital).\\[10 pt]
-    Implementing the multiblock code in C for increased speed (currently quite slow in R)
+    Getting the same results as those obtained with the features created by the radiologists, but from the raw RMI images (to obtain a clinical routine)
 \end{frame}
 
 \begin{frame}
