@@ -54,7 +54,7 @@
     \frametitle{Difficulties for classification}
     \begin{itemize}
     \item No perfect method using RMI images (contrast, shape, size, location): disagreement between radiologists \\[15 pt]
-    \item High alpha-fetoprotein indicate HCC, but not always.\\[15 pt]
+    \item High levels of alpha-fetoprotein indicate HCC, but not always.\\[15 pt]
     \item Biopsy: invasive and potentially lethal ($0.02 \%$ of patients)\\
     \end{itemize}
     \begin{center}
@@ -97,12 +97,12 @@
 
 
 \begin{frame}
-    \frametitle{Correlation matrix of the texture (GLDM) coefficients}
-    Strong correlations between the imaging times for a given variable
+    \frametitle{Correlation matrix of features about texture (GLDM)}
+    Strong correlations between imaging times for a given variable
     \begin{figure}
         \centering
         \includegraphics[scale = 0.1]{images/correlation.png}
-        \caption{Correlation matrix of the texture coefficients elative to Gray Level Dependence Matrix (GLDM)}
+        \caption{Correlation matrix of the features relative to the Gray Level Dependence Matrix (GLDM)}
     \end{figure}
 
 \end{frame}
@@ -149,9 +149,9 @@
 
     Defines a likelihood function $\mathcal{L}(\bm{\beta}) = \prod_{i = 1}^I P(Y_i = y_i|x_i)$\\[15 pt]
 
-    To much features (vs $I$) $\rightarrow$ need to limit variance of prediction. Penalization with $\lVert \bm{\beta} \rVert_1$: lasso\\[15 pt]
+    To many features (vs $I$) $\rightarrow$ need to limit variance of prediction. Penalization with $\lVert \bm{\beta} \rVert_1$: lasso\\[15 pt]
 
-    function to minimize : $- \log(\mathcal{L}(\bm{\beta})) + \text{penalization}$ 
+    Function to minimize : $- \log(\mathcal{L}(\bm{\beta})) + \text{penalization}$ 
 \end{frame}
 
 \begin{frame}
@@ -163,7 +163,7 @@
     \begin{figure}
         \centering
         \includegraphics[scale = 0.2]{images/deplier.png}
-        \caption{Unfolding of a tensor}
+        \caption{Unfolding a tensor}
     \end{figure}
 
     
@@ -171,14 +171,14 @@
 
 \begin{frame}
     \frametitle{Group lasso}
- \textbf{Limitation of lasso}: Elimination of features without specific considerations for the same feature at other times/ other features at the same time\\[10 pt]
+ \textbf{Limitation of lasso}: Elimination of features without specific consideration for the same feature at other times/ other features at the same time\\[10 pt]
 
- Common solution: grouping coefficients together in the penalization
+ Common solution: grouping regression coefficients together in the penalization
  $$ \sum\limits_{j,k} |\beta_{j,k}|\leadsto \sum\limits_{g = 1}^G \lVert \bm{\beta}^g \rVert_2 $$
 
- Tendency to cancel variables by entire blocks.
+ Tendency to set regression coefficients to zero by entire blocks.
 
-\textbf{But}: grouping either by mode or by variable, not both.  Adapting the model to the structure of the data (aim of the internship)
+\textbf{But}: grouping either by mode or by variable, not both\\  $\rightarrow$ Adapting the model to the structure of the data: aim of the internship
     
 
 \end{frame}
@@ -255,25 +255,25 @@
 \end{frame}
 
 \begin{frame}
- \frametitle{Blocs of variables}
+ \frametitle{Blocks of variables}
 
- \textbf{Problem}: Several groups of variables of different natures (first order, shape, texture). But $\bm{\beta}_r^{K}$ and $\bm{\beta}_r^J$ common to all groups.$K_1 = K_2 = K_3$ needed or else:
+ \textbf{Problem}: Several groups of variables of different natures (first order, shape, texture). But $\bm{\beta}_r^{K}$ and $\bm{\beta}_r^J$ common to all groups. $K_1 = K_2 = K_3$ needed or else:
 
  \begin{figure}
     \centering
     \includegraphics[scale = 0.23]{images/blocks_faux.png}
-    \caption{Problem if blocs have different order or dimensions}
+    \caption{Problem if blocks have different orders or dimensions}
 \end{figure}
 
 \end{frame}
 
 % \begin{frame}
-%     \frametitle{Multiway model with blocs of variables}
+%     \frametitle{Tensor model with blocks of variables}
 %     If $K_1 = K_2$, blocks can be glued, but the structure is lost
 %     \begin{figure}
 %         \centering
 %         \includegraphics[scale = 0.2]{images/glue_blocks.png}
-%         \caption{Multiway model with blocs of variables}
+%         \caption{Tensor model with blocks of variables}
 %     \end{figure}
 % \end{frame}
 
@@ -306,7 +306,7 @@
     \begin{itemize}
         \item Difficulty of the classification (overlap between classes, distance between means of classes etc ...)\\[12 pt]
         \item Balance between classes\\[12 pt]
-        \item Structure of the regression coefficients $\bm{\beta}$ (several blocks)\\[12 pt] 
+        \item Structure of the regression parameter $\bm{\beta}$ (several blocks)\\[12 pt] 
         \item Quality of the classification (AUC)\\[12 pt]
         \item Quality of the reconstruction of $\bm{\beta}$ \nocite{picto}
     \end{itemize}
@@ -344,7 +344,7 @@
             \begin{adjustbox}{center}
             \begin{tabular}{|>{\centering\arraybackslash}m{1.7cm}|>{\centering\arraybackslash}m{1.1cm}|>{\centering\arraybackslash}m{1.1cm}|>{\centering\arraybackslash}m{1.1cm}|>{\centering\arraybackslash}m{1.1cm}|>{\centering\arraybackslash}m{1.1cm}|>{\centering\arraybackslash}m{1.1cm}|}
                 \cline{1-7}
-                $(\sigma_{\bm{\beta}}, \sigma_{\text{noise}})$ & lasso & g.l. (blocs) & g.l. (mode)& g.l. (var) & tensor & tensor blocks\\
+                $(\sigma_{\bm{\beta}}, \sigma_{\text{noise}})$ & lasso & g.l. (blocks) & g.l. (mode)& g.l. (var) & tensor & tensor blocks\\
                 \cline{1-7} 
                 (0.1,0.5) & 0.83 & 0.86 & 0.94 & 0.94 & 0.99 & 0.99 \\
                 \cline{1-7}
@@ -396,22 +396,22 @@
 \end{frame}
 
 \begin{frame}
-    \section{liver tumor data}
+    \section{Liver tumor data}
     \subsection{with pyradiomics}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Features extraction with pyradiomics \cite{pyradio}}
+    \frametitle{Feature extraction with pyradiomics \cite{pyradio}}
     Extraction of $\simeq  100$ features (about intensities, shape, texture) for each $2$D or $3$D image.\\[10 pt]
     \begin{figure}
         \centering
         \includegraphics[scale = 0.15]{images/features.png}
-        \caption{Features extraction with pyradiomics of an RMI image composed of $4$ slices}
+        \caption{Feature extraction with pyradiomics for an RMI image composed of $4$ slices}
     \end{figure}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Features extraction in 3D}
+    \frametitle{Feature extraction in 3D}
     Each radio $\rightarrow$ 1 particular spacing along $(x,y,z)$\\[10 pt]
     \textbf{But} : Calculations of pyradiomics only use voxels (= 3D pixels).\\[10 pt]
     Not always meaningful if the scale changes at each radio (e.g. for Gray Level Run Length Matrix, based on number allignments of pixels of same intensity)\\[10 pt]
@@ -419,10 +419,10 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Features extraction in 2D}
+    \frametitle{Feature extraction in 2D}
     \vspace{5 pt}
     Slices along z axis $\rightarrow$ same spacing along $(x,y)$\\[5 pt]
-    \textbf{Difficulty} Tumors are of variable locations sizes and shapes in the frontal plane (front - back plane)
+    \textbf{Difficulty} Tumors are of variable locations, sizes and shapes in the frontal plane (front - back plane)
     \begin{figure}
         \begin{minipage}{0.45\textwidth}
             \centering
@@ -439,7 +439,7 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Features extraction in 2D}
+    \frametitle{Feature extraction in 2D}
     Every slice not equally informative:
     \begin{figure}
         \centering
@@ -449,7 +449,7 @@
 \end{frame}
 
 % \begin{frame}
-%     \frametitle{Features extraction in 2D}
+%     \frametitle{Feature extraction in 2D}
 %     \textbf{Solution}: Selecting $5$ slices equally spaced along the cumulated volume axis
 %     \begin{figure}
 %         \centering
@@ -477,7 +477,7 @@
     \end{adjustbox}
     \parbox{0.9\textwidth}{
     \vspace{0.2 cm}    
-    \centering \small cross validated area under curve (AUC) on 3D real data}
+    \centering \small Cross validated area under curve (AUC) on 3D real data}
     \vspace{0.3 cm}
     
     \begin{adjustbox}{center}
@@ -509,11 +509,11 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{features importance}
+    \frametitle{Feature importance}
     \begin{figure}
         \centering
         \includegraphics[scale = 0.38]{images/barplot_final.png}
-        \caption{Features importance with lasso (in green percentage of runs with non null coefficient)}
+        \caption{Feature importance with lasso (in green percentage of runs with non null coefficient)}
     \end{figure}
 \end{frame}
 
@@ -522,7 +522,7 @@
     Testing other penalizations (group lasso, elastic net)\\[10 pt]
     Extending the multiblock approach to other classical machine learning algorithms (other GLMs, SVM etc...). Comparing it to CNN.\\[10 pt]
     Testing other models on the latest data (in order to obtain a model that can be deployed in the hospital).\\[10 pt]
-    Implementing the multiblock code in C for increased speed (currently quite slowin R)
+    Implementing the multiblock code in C for increased speed (currently quite slow in R)
 \end{frame}
 
 \begin{frame}
@@ -530,32 +530,27 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Impact of the internship on me}
+    \frametitle{Personal learnings}
     Direct impact: continuing in thesis (increase in motivation for research activities)\\[10 pt]
-    Soft skills in machine learning: become more critical vs results, searching for other data whenever possible\\[10 pt]
-    Being part of a team in a scientific context (not only 1 supervisor): importance of communication and reporting (even when no writen documents)\\[10 pt]
-    The reasearch in machine learning: an accessible world
+    Soft skills in machine learning: becoming more critical vs results, searching for other data whenever possible\\[10 pt]
+    Being part of a team in a scientific context (not only 1 supervisor): importance of communication and reporting (even when no written documents)\\[10 pt]
+    Research in machine learning: an accessible world
 \end{frame}
 
-
-\begin{frame}
-    \frametitle{Consequences of the internship}
-    A promising framework for the diagnosis of liver tumors\\[10 pt]
-    The simulation part of an article on the multiblock tensor 
-    More information about the correct context for using that kind of models\\[10 pt]
-    An ethically positive impact (controllable deployment, a precise need, no replacement of humans...)
-    
-\end{frame}
 
 \begin{frame}
     \frametitle{Conclusion}
+    A promising framework for the diagnosis of liver tumors\\[10 pt]
+    The simulation part of an article on the multiblock tensor model\\[10 pt]
+    Ethically positive impact (controllable deployment, a precise need, no replacement of human beings...)\\[20 pt]
+    \textbf{On a personal level}:\\[5 pt]
     A good representation of a research work (and its challenges)\\[10 pt]
-    Supportive, available and Calm supervision (even as deadlines approach)\\[10 pt]
+    Supportive, available and calm supervision (even as deadlines approach)\\[10 pt]
     Looking forward to continuing in this direction
 \end{frame}
 
 \begin{frame}
-\section*{bibliography}
+\section*{Bibliography}
 \end{frame}
 
 

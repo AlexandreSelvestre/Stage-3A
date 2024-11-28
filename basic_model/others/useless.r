@@ -45,7 +45,6 @@ colnames(df_tard)[2:ncol(df_art)] <- paste0(colnames(df_tard)[2:ncol(df_art)], "
 
 
 df <- merge(df_art, df_port, by = "key")
-print(dim(df))
 # df <- merge(df, df_vein, by = "key")
 df <- merge(df, df_tard, by = "key")
 
@@ -53,5 +52,6 @@ df <- merge(df, df_tard, by = "key")
 
 # afficher les key de ceux qui ont des na
 print(df[apply(df, 1, function(x) any(is.na(x))), "key"])
+print()
 # write_xlsx(df, "../data/radiomiques_global_check.xlsx")
 print(nrow(df))

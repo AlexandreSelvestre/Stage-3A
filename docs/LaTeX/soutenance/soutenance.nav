@@ -62,7 +62,7 @@
 \headcommand {\beamer@framepages {27}{27}}
 \headcommand {\beamer@sectionpages {1}{27}}
 \headcommand {\beamer@subsectionpages {15}{27}}
-\headcommand {\sectionentry {3}{liver tumor data}{28}{liver tumor data}{0}}
+\headcommand {\sectionentry {3}{Liver tumor data}{28}{Liver tumor data}{0}}
 \headcommand {\beamer@subsectionpages {28}{27}}
 \headcommand {\beamer@subsectionentry {0}{3}{1}{28}{with pyradiomics}}
 \headcommand {\slideentry {3}{1}{0}{28/28}{tensor models}{0}}
@@ -94,19 +94,17 @@
 \headcommand {\beamer@framepages {38}{38}}
 \headcommand {\slideentry {4}{0}{2}{39/39}{latest data}{0}}
 \headcommand {\beamer@framepages {39}{39}}
-\headcommand {\slideentry {4}{0}{3}{40/40}{latest data}{0}}
+\headcommand {\beamer@sectionpages {1}{39}}
+\headcommand {\beamer@subsectionpages {34}{39}}
+\headcommand {\sectionentry {5}{Bibliography}{40}{Bibliography}{0}}
+\headcommand {\slideentry {5}{0}{0}{40/40}{latest data}{0}}
 \headcommand {\beamer@framepages {40}{40}}
-\headcommand {\beamer@sectionpages {1}{40}}
-\headcommand {\beamer@subsectionpages {34}{40}}
-\headcommand {\sectionentry {5}{bibliography}{41}{bibliography}{0}}
-\headcommand {\slideentry {5}{0}{0}{41/41}{latest data}{0}}
+\headcommand {\slideentry {5}{0}{1}{41/41}{latest data}{0}}
 \headcommand {\beamer@framepages {41}{41}}
-\headcommand {\slideentry {5}{0}{1}{42/42}{latest data}{0}}
-\headcommand {\beamer@framepages {42}{42}}
-\headcommand {\slideentry {5}{0}{1}{42/43}{latest data}{0}}
-\headcommand {\beamer@framepages {42}{43}}
-\headcommand {\beamer@partpages {1}{43}}
-\headcommand {\beamer@subsectionpages {34}{43}}
-\headcommand {\beamer@sectionpages {1}{43}}
-\headcommand {\beamer@documentpages {43}}
-\headcommand {\gdef \inserttotalframenumber {42}}
+\headcommand {\slideentry {5}{0}{1}{41/42}{latest data}{0}}
+\headcommand {\beamer@framepages {41}{42}}
+\headcommand {\beamer@partpages {1}{42}}
+\headcommand {\beamer@subsectionpages {34}{42}}
+\headcommand {\beamer@sectionpages {1}{42}}
+\headcommand {\beamer@documentpages {42}}
+\headcommand {\gdef \inserttotalframenumber {41}}
