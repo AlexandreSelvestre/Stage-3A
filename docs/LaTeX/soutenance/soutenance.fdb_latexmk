@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex soutenance"] 1732799081.59757 "soutenance.aux" "soutenance.bbl" "soutenance" 1732803583.22452 0
+["bibtex soutenance"] 1732799081.59757 "soutenance.aux" "soutenance.bbl" "soutenance" 1732869537.09653 0
   "./bibliography.bib" 1732033505.04967 7534 2ec5c87ac8035dde392c85ed31085289 ""
   "/usr/local/share/miktex-texmf/bibtex/bst/bibtex/plain.bst" 1726308370.06082 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
-  "soutenance.aux" 1732803582.60369 11608 36d56b85ec34396a45c6d552827ca3ca "pdflatex"
+  "soutenance.aux" 1732869536.79109 11608 36d56b85ec34396a45c6d552827ca3ca "pdflatex"
   (generated)
   "soutenance.bbl"
   "soutenance.blg"
   (rewritten before read)
-["pdflatex"] 1732803577.33122 "/home/alexandre/Documents/Stage-3A/docs/LaTeX/soutenance/soutenance.tex" "soutenance.pdf" "soutenance" 1732803583.22474 0
+["pdflatex"] 1732869534.62779 "/home/alexandre/Documents/Stage-3A/docs/LaTeX/soutenance/soutenance.tex" "soutenance.pdf" "soutenance" 1732869537.09665 0
   "/home/alexandre/.miktex/texmfs/data/fonts/map/pdftex/pdftex.map" 1732283299.19307 90367 3f0a9c9c6d2ed0a26b36cc110c4d8fdc ""
   "/home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/tcss1095.pk" 1732270935.38255 11640 9c46dda962dd0e819c90a5b9d4d4daa9 ""
   "/home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi657/ecso1000.pk" 1732274772.93584 33196 e145b9b6846c0385cc9e1494d1af2c74 ""
@@ -120,7 +120,7 @@
   "/home/alexandre/.miktex/texmfs/install/tex/latex/translator/translator-theorem-dictionary-English.dict" 1732266352.01323 3523 1f9d9b91f7d78b73e74c7e97bca30fb0 ""
   "/home/alexandre/.miktex/texmfs/install/tex/latex/translator/translator.sty" 1732266352.01323 8765 56d370785f0143111ff9898b5adfe08e ""
   "/home/alexandre/.miktex/texmfs/install/tex/latex/varwidth/varwidth.sty" 1731076540.80071 10894 d359a13923460b2a73d4312d613554c8 ""
-  "/home/alexandre/Documents/Stage-3A/docs/LaTeX/soutenance/soutenance.tex" 1732803576.74104 21978 cd59492c022618d39afb371304ca5178 ""
+  "/home/alexandre/Documents/Stage-3A/docs/LaTeX/soutenance/soutenance.tex" 1732869534.33909 21955 e6de3b6e5e4f099742882315aaf99853 ""
   "/usr/local/share/miktex-texmf/fonts/tfm/jknappen/ec/ecso1000.tfm" 1726308370.54883 3352 e0c1f9db9b36126db0457e2b60fb63ee ""
   "/usr/local/share/miktex-texmf/fonts/tfm/jknappen/ec/tcss1095.tfm" 1726308370.55283 1476 a5029f05f7a73d73a725274ff87f9765 ""
   "/usr/local/share/miktex-texmf/fonts/tfm/public/amsfonts/cmextra/cmbsy5.tfm" 1726308367.20781 1120 1e8878807317373affa7f7bba4cf2f6a ""
@@ -365,12 +365,12 @@
   "images/slices_small.png" 1732640082.05942 142455 62dfbbaef681d1c2d7b711ff2c39f9bb ""
   "images/square.png" 1732281684.08059 1597 bbb1042d2b134b247d94f10c7c832184 ""
   "images/tensor.png" 1732558468.39144 54820 d9b2365058501d3a3fc39efb407b77b4 ""
-  "soutenance.aux" 1732803582.60369 11608 36d56b85ec34396a45c6d552827ca3ca "pdflatex"
+  "soutenance.aux" 1732869536.79109 11608 36d56b85ec34396a45c6d552827ca3ca "pdflatex"
   "soutenance.bbl" 1732799081.77105 1254 79fd83cea23a19ae969bc6d10d91f97f "bibtex soutenance"
-  "soutenance.nav" 1732803582.60569 5607 8020fcf8f8aeaba2b62013fabc04e383 "pdflatex"
-  "soutenance.out" 1732803582.60569 1164 4bc1257d913dee0c5f12dbb355a29b26 "pdflatex"
-  "soutenance.tex" 1732803576.74104 21978 cd59492c022618d39afb371304ca5178 ""
-  "soutenance.toc" 1732803582.60569 446 1def0713b8f452b6023b090cf16791c9 "pdflatex"
+  "soutenance.nav" 1732869536.79209 5607 8020fcf8f8aeaba2b62013fabc04e383 "pdflatex"
+  "soutenance.out" 1732869536.79209 1164 4bc1257d913dee0c5f12dbb355a29b26 "pdflatex"
+  "soutenance.tex" 1732869534.33909 21955 e6de3b6e5e4f099742882315aaf99853 ""
+  "soutenance.toc" 1732869536.79209 446 1def0713b8f452b6023b090cf16791c9 "pdflatex"
   (generated)
   "soutenance.aux"
   "soutenance.log"

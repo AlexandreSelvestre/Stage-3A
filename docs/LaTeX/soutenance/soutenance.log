@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.10.15)  28 NOV 2024 15:19
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.10.15)  29 NOV 2024 09:38
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1105,8 +1105,6 @@ File: images/deplier.png Graphic file (type png)
 <use images/deplier.png>
 Package pdftex.def Info: images/deplier.png  used on input line 170.
 (pdftex.def)             Requested size: 207.61673pt x 69.55687pt.
-LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <12> not available
-(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 170.
 
 Overfull \vbox (18.18675pt too high) detected at line 170
  []
@@ -1163,6 +1161,8 @@ File: images/picto_500/heatmap_logistic_multibloc_simu_500_multiway.png Graphic 
 <use images/picto_500/heatmap_logistic_multibloc_simu_500_multiway.png>
 Package pdftex.def Info: images/picto_500/heatmap_logistic_multibloc_simu_500_multiway.png  used on input line 231.
 (pdftex.def)             Requested size: 122.91406pt x 92.183pt.
+LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <12> not available
+(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 231.
 
 Overfull \vbox (7.64998pt too high) detected at line 231
  []
@@ -1481,7 +1481,7 @@ Here is how much of TeX's memory you used:
  1141 hyphenation exceptions out of 8191
  128i,16n,123p,1977b,907s stack positions out of 10000i,1000n,20000p,200000b,200000s
  </home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi657/ecso1000.pk> </home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/tcss1095.pk></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmmib10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cmextra/cmmib6.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cmextra/cmmib8.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmss12.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmss8.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmss9.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmssi10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmssi8.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmssi9.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/symbols/msam10.pfb></home/alexandre/.miktex/texmfs/install/fonts/type1/public/hoekwater/stmary8.pfb>
-Output written on soutenance.pdf (42 pages, 2403286 bytes).
+Output written on soutenance.pdf (42 pages, 2403381 bytes).
 PDF statistics:
  493 PDF objects out of 1000 (max. 8388607)
  108 named destinations out of 1000 (max. 500000)

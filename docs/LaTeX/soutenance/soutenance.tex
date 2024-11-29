@@ -53,7 +53,7 @@
 \begin{frame}
     \frametitle{Difficulties for classification}
     \begin{itemize}
-    \item No perfect method using RMI images (contrast, shape, size, location): disagreement between radiologists \\[15 pt]
+    \item No perfect method using MRI images (contrast, shape, size, location): disagreement between radiologists \\[15 pt]
     \item High levels of alpha-fetoprotein indicate HCC, but not always.\\[15 pt]
     \item Biopsy: invasive and potentially lethal ($0.02 \%$ of patients)\\
     \end{itemize}
@@ -65,13 +65,13 @@
 \begin{frame}
     \frametitle{Available data}
 
-    $\bullet$ RMI images in 3D of liver tumors (arterial, portal, late)\\[5 pt]
+    $\bullet$ MRI images in 3D of liver tumors (arterial, portal, late)\\[5 pt]
     $\bullet$ gender (63 men, 27 women)\\[5 pt]
     $\bullet$ age at disease (average: $63$ years old)\\[15 pt]
 
     From Henri Mondor hospital: Sébastien Mulé
 
-    Same variables extracted from each RMI image at 3 times  $\rightarrow$ specific structure\\[10 pt]
+    Same variables extracted from each MRI image at 3 times  $\rightarrow$ specific structure\\[10 pt]
 
     Need to adapt existing machine learning methods to this structure
 
@@ -83,7 +83,7 @@
     \begin{figure}
         \centering
         \includegraphics[scale = 0.215]{images/HCC.png}
-        \caption{Example of RMI images of a HCC tumor (arterial, portal, late). More contrast in arterial}
+        \caption{Example of MRI images of a HCC tumor (arterial, portal, late). More contrast in arterial}
     \end{figure}
 \end{frame}
 
@@ -91,7 +91,7 @@
     \begin{figure}
         \centering
         \includegraphics[scale = 0.215]{images/CCK.png}
-        \caption{Example of RMI images of a CCK tumor (arterial, portal, late)}
+        \caption{Example of MRI images of a CCK tumor (arterial, portal, late)}
     \end{figure}
 \end{frame}
 
@@ -120,12 +120,12 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Multibloc data}
+    \frametitle{Multiblock data}
     Features about pixel/voxel intensities, shape and texture: different natures
     \begin{figure}
         \centering
         \includegraphics[scale = 0.25]{images/blocks.png}
-        \caption{Type of data: multibloc}
+        \caption{Type of data: multiblock}
     \end{figure}
 \end{frame}
 
@@ -155,7 +155,7 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Transcription when $\bm{\beta}$ is a tensor}
+    \frametitle{Naive approach: unfolding}
     \begin{center}
     $\bm{\beta} = (\beta_{j,k})_{j \in \llbracket 1, J\rrbracket, k \in \llbracket 1, K\rrbracket}$ so $JK$ parameters to determine\\[15 pt]
     \end{center}
@@ -195,7 +195,7 @@
     \end{figure}
     \onslide<2>
     \vspace{10 pt}
-    For $J$ variables observed following $K$ modalities (e.g. times)
+    For $J$ variables observed on $K$ modalities (e.g. times)
     $$\beta_{j,k} = \beta_j^J\beta_{k}^{K}$$
     $\beta_j$ : impact of variable $j$\\[5 pt]
     $\beta_k$ : impact of modality $k$\\[10 pt]
@@ -323,7 +323,7 @@
 
 \begin{frame}
     \frametitle{Data generation}
-    Chose the $\bm{\beta}$ to be reconstructed (pictograms)\\[10 pt]
+    Choose the $\bm{\beta}$ to be reconstructed (pictograms)\\[10 pt]
     Generate the $(\mathbf{x}_i)_{i \in \llbracket 1, I\rrbracket}$ with 2 multivariate normal laws of means $\bm{\mu}_0$ and $\bm{\mu}_1$ and common covariance matrix $\bm{\Sigma}$ such that:
     \begin{itemize}
         \item $\bm{\mu}_1 - \bm{\mu}_0$ colinear to $\bm{\beta}$\\[10 pt]
@@ -405,7 +405,7 @@
     \begin{figure}
         \centering
         \includegraphics[scale = 0.15]{images/features.png}
-        \caption{Feature extraction with pyradiomics for an RMI image composed of $4$ slices}
+        \caption{Feature extraction with pyradiomics for an MRI image composed of $4$ slices}
     \end{figure}
 \end{frame}
 
@@ -413,7 +413,7 @@
     \frametitle{Feature extraction in 3D}
     Each radio $\rightarrow$ 1 particular spacing along $(x,y,z)$\\[10 pt]
     \textbf{But} : Calculations of pyradiomics only use voxels (= 3D pixels).\\[10 pt]
-    Not always meaningful if the scale changes at each radio (e.g. for Gray Level Run Length Matrix, based on number allignments of voxels of same intensity)\\[10 pt]
+    Not always meaningful if the scale changes at each radio (e.g. for Gray Level Run Length Matrix, based on number alignments of voxels of same intensity)\\[10 pt]
     \textbf{Solution}: Standardize the spacing along $(x,y,z)$. Allowed by resampling (interpolation) of the image.
 \end{frame}
 
@@ -521,7 +521,7 @@
     Testing other penalizations (group lasso, elastic net)\\[10 pt]
     Extending the multiblock approach to other classical machine learning algorithms (other GLMs, SVM etc...). Comparing it to CNN.\\[10 pt]
     Testing other models on the latest data (in order to obtain a model that can be deployed in the hospital).\\[10 pt]
-    Getting the same results as those obtained with the features created by the radiologists, but from the raw RMI images (to obtain a clinical routine)
+    Getting the same results as those obtained with the features created by the radiologists, but from the raw MRI images (to obtain a clinical routine)
 \end{frame}
 
 \begin{frame}
