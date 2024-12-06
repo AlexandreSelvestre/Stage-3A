@@ -1,7 +1,7 @@
 get_perfs <- function(best_name_model, best_results, li_roc, vec_accu, df_test, stats_chosen, sum_confus_mat, reclassify_Mixtes, df_mixte, mixte_class_sum = NULL, mixte_proba_sum = NULL) {
     print(paste("Moyenne balanced accuracy validation", mean(best_results$resample$balanced_acc)))
     print(paste("Moyenne AUC validation", mean(best_results$resample$ROC)))
-    x_test <- df_test[, setdiff(colnames(df_test), c("Tumeur"))]
+    x_test <- df_test[, setdiff(colnames(df_test), c("Tumeur", "patient_num"))]
     x_test <- data.frame(lapply(x_test, function(col) {
         return(factor(col, levels = c(0, 1)))
     }))
@@ -27,11 +27,9 @@ get_perfs <- function(best_name_model, best_results, li_roc, vec_accu, df_test, 
         predictions_proba_mixte <- predict(best_results, newdata = x_mixte, type = "prob")[["CCK"]]
         predictions_class_mixte <- predict(best_results, newdata = x_mixte)
         mixte_class_sum <- mixte_class_sum + c(sum(predictions_class_mixte == "CHC"), sum(predictions_class_mixte == "CCK"))
-        mixte_proba_sum[1] <- mixte_proba_sum[1] + mean(predictions_proba_mixte)
-        mixte_proba_sum[2] <- mixte_proba_sum[2] + 1
-        mixte_proba_sum[3] <- mixte_proba_sum[1] / mixte_proba_sum[2]
+        mixte_proba_sum[[as.character(length(mixte_proba_sum) + 1)]] <- predictions_proba_mixte
         print(mixte_class_sum)
-        print(paste("proba moyenne des Mixtes pour être CCK:", mixte_proba_sum[3]))
+        print(paste("proba moyenne des Mixtes pour être CCK:", mean(Reduce("c", mixte_proba_sum)), "ecart type", sd(Reduce("c", mixte_proba_sum))))
     } else {
         mixte_class_sum <- NULL
         mixte_proba_sum <- NULL
@@ -47,7 +45,7 @@ one_run <- function(df, li_models, li_perfs, li_imp, k_folds, rep_folds, stats_c
     df_test <- na.omit(df_test)
     y <- df_train$Tumeur
     y <- as.factor(y)
-    x <- df_train[, setdiff(colnames(df_train), c("Tumeur"))]
+    x <- df_train[, setdiff(colnames(df_train), c("Tumeur", "patient_num"))]
     x <- data.frame(lapply(x, function(col) {
         return(factor(col, levels = c(0, 1)))
     }))

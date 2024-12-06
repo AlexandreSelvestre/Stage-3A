@@ -75,14 +75,17 @@ rf_importance_intra <- function(results, li_imp_rf, show_model) {
     if (show_model) {
         print(paste("meilleur modèle: rf avec mtry =", results$bestTune$mtry))
     }
-    li_imp_rf[[length(li_imp_rf) + 1]] <- as.vector(results$finalModel$importance)
+    # print(results$finalModel$importance)
+    df_imp_full <- results$finalModel$importance
+    df_imp_full[, ncol(df_imp_full) - 1]
+    li_imp_rf[[length(li_imp_rf) + 1]] <- df_imp_full[, ncol(df_imp_full) - 1]
     return(li_imp_rf)
 }
 
 rf_importance_extra <- function(li_imp_rf, df) {
     vec_global_sum <- Reduce("+", li_imp_rf)
     vec_global_sum <- vec_global_sum / nrow(df)
-    names(vec_global_sum) <- colnames(df[setdiff(colnames(df), c("Tumeur"))])
+    names(vec_global_sum) <- colnames(df[setdiff(colnames(df), c("Tumeur", "patient_num"))])
 
     df_res <- data.frame(Variable = gsub("[_.]", " ", names(vec_global_sum)), Importance = as.numeric(vec_global_sum))
     df_res$Variable <- factor(df_res$Variable, levels = df_res$Variable[order(df_res$Importance)])

@@ -32,13 +32,19 @@
 
 
 # Exemple de matrice binaire
-binary_matrix <- matrix(c(0, 1, 0, 1, 1, 0, 1, 0), nrow = 4, ncol = 2)
+# binary_matrix <- matrix(c(0, 1, 0, 1, 1, 0, 1, 0), nrow = 4, ncol = 2)
 
-# Conversion de la matrice binaire en matrice de facteurs
-factor_matrix <- data.frame(lapply(as.data.frame(binary_matrix), function(col) {
-    factor(col, levels = c(0, 1))
-}))
-print(factor_matrix)
-# Vérification que chaque colonne est un facteur
-print(is.factor(factor_matrix[, 1]))
-print(is.factor(factor_matrix[, 2]))
+# # Conversion de la matrice binaire en matrice de facteurs
+# factor_matrix <- data.frame(lapply(as.data.frame(binary_matrix), function(col) {
+#     factor(col, levels = c(0, 1))
+# }))
+# print(factor_matrix)
+# # Vérification que chaque colonne est un facteur
+# print(is.factor(factor_matrix[, 1]))
+# print(is.factor(factor_matrix[, 2]))
+
+li <- list(a = c(0, 1), b = c(2, 3))
+# print(Reduce("c", li))
+# print(unlist(li))
+li$c <- c(0, 1)
+print(li)

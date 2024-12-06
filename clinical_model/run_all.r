@@ -29,19 +29,19 @@ library(missForest)
 
 
 
-
+####### AVANCER DISPERSION
 ########### paramétrage
 name_models <- c("rf") # "logistic", "rf", "xgbDART", "xgbLinear"
-n_runs <- 50
+n_runs <- 2
 k_folds <- 10
 rep_folds <- 1
 metric <- "ROC" # "ROC" ou "balanced_acc"
-numCores <- 1 # detectCores() - 1
+numCores <- detectCores() - 1
 analyze_data <- FALSE
 dedoubler_shape <- TRUE
 verbose <- TRUE
-impute_data <- TRUE
-kill_tumor <- "" # CHC CCK ou Mixte (ou "")
+impute_data <- TRUE # impossible d'analyser les data en cas d'imputation: à cause des NA!!
+kill_tumor <- "Mixte" # CHC CCK ou Mixte (ou "")
 reclassify_Mixtes <- TRUE # ne sera considéré que si on a seulment étudié CCK et CHC
 
 if (kill_tumor != "Mixte") {
@@ -72,7 +72,7 @@ source("utils.r")
 li_perfs <- list(li_roc = c(), vec_accu = c())
 if (reclassify_Mixtes) {
     li_perfs$mixte_class_sum <- c("CHC" = 0, "CCK" = 0)
-    li_perfs$mixte_proba_sum <- c(0, 0, 0)
+    li_perfs$mixte_proba_sum <- list()
 } else {
     li_perfs$mixte_class_sum <- NULL
     li_perfs$mixte_proba_sum <- NULL
@@ -139,4 +139,32 @@ if ("logistic" %in% name_models) {
 }
 if ("rf" %in% name_models) {
     rf_importance_extra(li_imp[["rf"]], df)
+}
+if (reclassify_Mixtes) {
+    mixte_proba_sum <- li_perfs$mixte_proba_sum
+    png(filename = "plots/mixte_proba_distribution.png", width = 800, height = 600)
+    hist(Reduce("c", mixte_proba_sum), breaks = 101, main = "Répartition des éléments de mixte_proba_sum", xlab = "Valeurs", ylab = "Fréquence", col = "blue", border = "black")
+    dev.off()
+    print(paste("length:", length(mixte_proba_sum)))
+    li_compos_per_compos <- lapply(mixte_proba_sum[[1]], function(elem) {
+        return(c(elem))
+    })
+    # print(mixte_proba_sum)
+    # print(li_compos_per_compos)
+    if (length(mixte_proba_sum) > 1) {
+        for (r in 2:length(mixte_proba_sum)) {
+            for (j in 1:length(li_compos_per_compos)) {
+                li_compos_per_compos[[j]] <- c(li_compos_per_compos[[j]], mixte_proba_sum[[r]][j])
+            }
+        }
+    }
+    vec_sd <- sapply(li_compos_per_compos, sd)
+    names(vec_sd) <- df_mixte$patient_num
+    vec_mean <- sapply(li_compos_per_compos, mean)
+    names(vec_mean) <- df_mixte$patient_num
+    print("proba par patient:")
+    print(vec_mean)
+    # print(sapply(li_compos_per_compos, mean))
+    # print(vec_sd)
+    print(paste("Ecart type moyen d'une même proba mixte entre runs", mean(vec_sd)))
 }
