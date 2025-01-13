@@ -1,7 +1,3 @@
-\beamer@sectionintoc {1}{New model for logistic regression}{7}{0}{1}
-\beamer@subsectionintoc {1}{1}{Standard logistic regression}{8}{0}{1}
-\beamer@subsectionintoc {1}{2}{Tensor logistic regression}{12}{0}{1}
-\beamer@subsectionintoc {1}{3}{Tensor multiblock logistic regression}{16}{0}{1}
-\beamer@sectionintoc {2}{Fitting algorithm}{19}{0}{2}
-\beamer@sectionintoc {3}{Simulations and results}{25}{0}{3}
-\beamer@sectionintoc {4}{Application of proposed logistic regression to liver tumor classification}{32}{0}{4}
+\beamer@sectionintoc {1}{Logistic model for tensor multiblock data}{9}{0}{1}
+\beamer@sectionintoc {2}{Maximizing penalized likelihood}{20}{0}{2}
+\beamer@sectionintoc {3}{Tests on simulated data and application to liver tumor classification}{22}{0}{3}

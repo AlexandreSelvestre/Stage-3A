@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.10.15)  13 JAN 2025 12:08
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.10.15)  13 JAN 2025 18:51
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -534,14 +534,8 @@ Package: amsthm 2020/05/29 v2.20.6
 ) (/home/alexandre/.miktex/texmfs/install/tex/latex/beamer/beamerbasethemes.sty)) (/home/alexandre/.miktex/texmfs/install/tex/latex/beamer/beamerthemedefault.sty (/home/alexandre/.miktex/texmfs/install/tex/latex/beamer/beamerfontthemedefault.sty) (/home/alexandre/.miktex/texmfs/install/tex/latex/beamer/beamercolorthemedefault.sty) (/home/alexandre/.miktex/texmfs/install/tex/latex/beamer/beamerinnerthemedefault.sty
 \beamer@dima=\dimen293
 \beamer@dimb=\dimen294
-) (/home/alexandre/.miktex/texmfs/install/tex/latex/beamer/beamerouterthemedefault.sty))) (/home/alexandre/.miktex/texmfs/install/tex/latex/beamertheme-metropolis/beamerthememetropolis.sty
-Package: beamerthememetropolis 2017/01/23 v1.2 Metropolis Beamer theme
- (/home/alexandre/.miktex/texmfs/install/tex/latex/pgfopts/pgfopts.sty
-Package: pgfopts 2014/07/10 v2.1a LaTeX package options with pgfkeys
-\pgfopts@list@add@a@toks=\toks46
-\pgfopts@list@add@b@toks=\toks47
-) (/home/alexandre/.miktex/texmfs/install/tex/latex/beamertheme-metropolis/beamerinnerthememetropolis.sty
-Package: beamerinnerthememetropolis 2017/01/23 Metropolis inner theme
+) (/home/alexandre/.miktex/texmfs/install/tex/latex/beamer/beamerouterthemedefault.sty))) (/home/alexandre/.miktex/texmfs/install/tex/latex/beamer/beamerthemeWarsaw.sty (/home/alexandre/.miktex/texmfs/install/tex/latex/beamer/beamerinnerthemerounded.sty) (/home/alexandre/.miktex/texmfs/install/tex/latex/beamer/beamerouterthemeshadow.sty (/home/alexandre/.miktex/texmfs/install/tex/latex/beamer/beamerouterthemesplit.sty)) (/home/alexandre/.miktex/texmfs/install/tex/latex/beamer/beamercolorthemeorchid.sty) (/home/alexandre/.miktex/texmfs/install/tex/latex/beamer/beamercolorthemewhale.sty)) (/home/alexandre/.miktex/texmfs/install/tex/latex/mathtools/mathtools.sty
+Package: mathtools 2024/03/11 v1.30 mathematical typesetting tools
  (/usr/local/share/miktex-texmf/tex/latex/tools/calc.sty
 Package: calc 2023/07/08 v4.3 Infix arithmetic (KKT,FJ)
 \calc@Acount=\count343
@@ -554,97 +548,20 @@ LaTeX Info: Redefining \setlength on input line 80.
 LaTeX Info: Redefining \addtolength on input line 81.
 \calc@Ccount=\count345
 \calc@Cskip=\skip68
-) (/usr/local/share/miktex-texmf/tex/latex/pgf/frontendlayer/tikz.sty (/usr/local/share/miktex-texmf/tex/latex/pgf/basiclayer/pgf.sty
-Package: pgf 2023-01-15 v3.1.10 (3.1.10)
- (/usr/local/share/miktex-texmf/tex/generic/pgf/modules/pgfmoduleshapes.code.tex
-File: pgfmoduleshapes.code.tex 2023-01-15 v3.1.10 (3.1.10)
-\pgfnodeparttextbox=\box77
-) (/usr/local/share/miktex-texmf/tex/generic/pgf/modules/pgfmoduleplot.code.tex
-File: pgfmoduleplot.code.tex 2023-01-15 v3.1.10 (3.1.10)
-) (/usr/local/share/miktex-texmf/tex/latex/pgf/compatibility/pgfcomp-version-0-65.sty
-Package: pgfcomp-version-0-65 2023-01-15 v3.1.10 (3.1.10)
-\pgf@nodesepstart=\dimen297
-\pgf@nodesepend=\dimen298
-) (/usr/local/share/miktex-texmf/tex/latex/pgf/compatibility/pgfcomp-version-1-18.sty
-Package: pgfcomp-version-1-18 2023-01-15 v3.1.10 (3.1.10)
-)) (/usr/local/share/miktex-texmf/tex/latex/pgf/utilities/pgffor.sty (/usr/local/share/miktex-texmf/tex/generic/pgf/utilities/pgffor.code.tex
-Package: pgffor 2023-01-15 v3.1.10 (3.1.10)
-\pgffor@iter=\dimen299
-\pgffor@skip=\dimen300
-\pgffor@stack=\toks48
-\pgffor@toks=\toks49
-)) (/usr/local/share/miktex-texmf/tex/generic/pgf/frontendlayer/tikz/tikz.code.tex
-Package: tikz 2023-01-15 v3.1.10 (3.1.10)
- (/usr/local/share/miktex-texmf/tex/generic/pgf/libraries/pgflibraryplothandlers.code.tex
-File: pgflibraryplothandlers.code.tex 2023-01-15 v3.1.10 (3.1.10)
-\pgf@plot@mark@count=\count346
-\pgfplotmarksize=\dimen301
-)
-\tikz@lastx=\dimen302
-\tikz@lasty=\dimen303
-\tikz@lastxsaved=\dimen304
-\tikz@lastysaved=\dimen305
-\tikz@lastmovetox=\dimen306
-\tikz@lastmovetoy=\dimen307
-\tikzleveldistance=\dimen308
-\tikzsiblingdistance=\dimen309
-\tikz@figbox=\box78
-\tikz@figbox@bg=\box79
-\tikz@tempbox=\box80
-\tikz@tempbox@bg=\box81
-\tikztreelevel=\count347
-\tikznumberofchildren=\count348
-\tikznumberofcurrentchild=\count349
-\tikz@fig@count=\count350
- (/usr/local/share/miktex-texmf/tex/generic/pgf/modules/pgfmodulematrix.code.tex
-File: pgfmodulematrix.code.tex 2023-01-15 v3.1.10 (3.1.10)
-\pgfmatrixcurrentrow=\count351
-\pgfmatrixcurrentcolumn=\count352
-\pgf@matrix@numberofcolumns=\count353
-)
-\tikz@expandcount=\count354
- (/usr/local/share/miktex-texmf/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarytopaths.code.tex
-File: tikzlibrarytopaths.code.tex 2023-01-15 v3.1.10 (3.1.10)
-)))
-\metropolis@titleseparator@linewidth=\skip69
-\metropolis@progressonsectionpage=\skip70
-\metropolis@progressonsectionpage@linewidth=\skip71
-\metropolis@blocksep=\skip72
-\metropolis@blockadjust=\skip73
-\metropolis@parskip=\skip74
-) (/home/alexandre/.miktex/texmfs/install/tex/latex/beamertheme-metropolis/beamerouterthememetropolis.sty
-Package: beamerouterthememetropolis 2017/01/23 Metropolis outer theme
-\metropolis@frametitle@padding=\skip75
-\metropolis@progressinheadfoot=\skip76
-\metropolis@progressinheadfoot@linewidth=\skip77
-) (/home/alexandre/.miktex/texmfs/install/tex/latex/beamertheme-metropolis/beamercolorthememetropolis.sty
-Package: beamercolorthememetropolis 2017/01/23 Metropolis color theme
-) (/home/alexandre/.miktex/texmfs/install/tex/latex/beamertheme-metropolis/beamerfontthememetropolis.sty
-Package: beamerfontthememetropolis 2017/01/23 Metropolis font theme
- (/usr/local/share/miktex-texmf/tex/generic/iftex/ifxetex.sty
-Package: ifxetex 2019/10/25 v0.7 ifxetex legacy package. Use iftex instead.
-) (/usr/local/share/miktex-texmf/tex/generic/iftex/ifluatex.sty
-Package: ifluatex 2019/10/25 v1.5 ifluatex legacy package. Use iftex instead.
-)
-
-Package beamerthememetropolis Warning: You need to compile with XeLaTeX or LuaLaTeX to use the Fira fonts on input line 95.
-
-)) (/home/alexandre/.miktex/texmfs/install/tex/latex/mathtools/mathtools.sty
-Package: mathtools 2024/03/11 v1.30 mathematical typesetting tools
- (/home/alexandre/.miktex/texmfs/install/tex/latex/mathtools/mhsetup.sty
+) (/home/alexandre/.miktex/texmfs/install/tex/latex/mathtools/mhsetup.sty
 Package: mhsetup 2021/03/18 v1.4 programming setup (MH)
 )
-\g_MT_multlinerow_int=\count355
-\l_MT_multwidth_dim=\dimen310
-\origjot=\skip78
-\l_MT_shortvdotswithinadjustabove_dim=\dimen311
-\l_MT_shortvdotswithinadjustbelow_dim=\dimen312
-\l_MT_above_intertext_sep=\dimen313
-\l_MT_below_intertext_sep=\dimen314
-\l_MT_above_shortintertext_sep=\dimen315
-\l_MT_below_shortintertext_sep=\dimen316
-\xmathstrut@box=\box82
-\xmathstrut@dim=\dimen317
+\g_MT_multlinerow_int=\count346
+\l_MT_multwidth_dim=\dimen297
+\origjot=\skip69
+\l_MT_shortvdotswithinadjustabove_dim=\dimen298
+\l_MT_shortvdotswithinadjustbelow_dim=\dimen299
+\l_MT_above_intertext_sep=\dimen300
+\l_MT_below_intertext_sep=\dimen301
+\l_MT_above_shortintertext_sep=\dimen302
+\l_MT_below_shortintertext_sep=\dimen303
+\xmathstrut@box=\box77
+\xmathstrut@dim=\dimen304
 ) (/home/alexandre/.miktex/texmfs/install/tex/latex/stmaryrd/stmaryrd.sty
 Package: stmaryrd 1994/03/03 St Mary's Road symbol package
 \symstmry=\mathgroup6
@@ -656,54 +573,105 @@ Package: subcaption 2023/07/28 v1.6b Sub-captions (AR)
 Package: caption 2023/08/05 v3.6o Customizing captions (AR)
  (/home/alexandre/.miktex/texmfs/install/tex/latex/caption/caption3.sty
 Package: caption3 2023/07/31 v2.4d caption3 kernel (AR)
-\caption@tempdima=\dimen318
-\captionmargin=\dimen319
-\caption@leftmargin=\dimen320
-\caption@rightmargin=\dimen321
-\caption@width=\dimen322
-\caption@indent=\dimen323
-\caption@parindent=\dimen324
-\caption@hangindent=\dimen325
+\caption@tempdima=\dimen305
+\captionmargin=\dimen306
+\caption@leftmargin=\dimen307
+\caption@rightmargin=\dimen308
+\caption@width=\dimen309
+\caption@indent=\dimen310
+\caption@parindent=\dimen311
+\caption@hangindent=\dimen312
 Package caption Info: beamer document class detected.
  (/home/alexandre/.miktex/texmfs/install/tex/latex/caption/caption-beamer.sto
 File: caption-beamer.sto 2022/01/06 v2.0c Adaption of the caption package to the beamer document classes (AR)
 ))
-\c@caption@flags=\count356
-\c@continuedfloat=\count357
+\c@caption@flags=\count347
+\c@continuedfloat=\count348
 Package caption Info: hyperref package is loaded.
 Package caption Info: Hyperref support is turned off
 (caption)             because hyperref has stopped early.
 )
 Package caption Info: New subtype `subfigure' on input line 238.
-\c@subfigure=\count358
+\c@subfigure=\count349
 Package caption Info: New subtype `subtable' on input line 238.
-\c@subtable=\count359
+\c@subtable=\count350
 ) (/home/alexandre/.miktex/texmfs/install/tex/latex/float/float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
-\c@float@type=\count360
-\float@exts=\toks50
-\float@box=\box83
-\@float@everytoks=\toks51
-\@floatcapt=\box84
-) (/usr/local/share/miktex-texmf/tex/latex/pgfplots/pgfplots.sty (/usr/local/share/miktex-texmf/tex/generic/pgfplots/pgfplots.revision.tex)
+\c@float@type=\count351
+\float@exts=\toks46
+\float@box=\box78
+\@float@everytoks=\toks47
+\@floatcapt=\box79
+) (/usr/local/share/miktex-texmf/tex/latex/pgf/frontendlayer/tikz.sty (/usr/local/share/miktex-texmf/tex/latex/pgf/basiclayer/pgf.sty
+Package: pgf 2023-01-15 v3.1.10 (3.1.10)
+ (/usr/local/share/miktex-texmf/tex/generic/pgf/modules/pgfmoduleshapes.code.tex
+File: pgfmoduleshapes.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgfnodeparttextbox=\box80
+) (/usr/local/share/miktex-texmf/tex/generic/pgf/modules/pgfmoduleplot.code.tex
+File: pgfmoduleplot.code.tex 2023-01-15 v3.1.10 (3.1.10)
+) (/usr/local/share/miktex-texmf/tex/latex/pgf/compatibility/pgfcomp-version-0-65.sty
+Package: pgfcomp-version-0-65 2023-01-15 v3.1.10 (3.1.10)
+\pgf@nodesepstart=\dimen313
+\pgf@nodesepend=\dimen314
+) (/usr/local/share/miktex-texmf/tex/latex/pgf/compatibility/pgfcomp-version-1-18.sty
+Package: pgfcomp-version-1-18 2023-01-15 v3.1.10 (3.1.10)
+)) (/usr/local/share/miktex-texmf/tex/latex/pgf/utilities/pgffor.sty (/usr/local/share/miktex-texmf/tex/generic/pgf/utilities/pgffor.code.tex
+Package: pgffor 2023-01-15 v3.1.10 (3.1.10)
+\pgffor@iter=\dimen315
+\pgffor@skip=\dimen316
+\pgffor@stack=\toks48
+\pgffor@toks=\toks49
+)) (/usr/local/share/miktex-texmf/tex/generic/pgf/frontendlayer/tikz/tikz.code.tex
+Package: tikz 2023-01-15 v3.1.10 (3.1.10)
+ (/usr/local/share/miktex-texmf/tex/generic/pgf/libraries/pgflibraryplothandlers.code.tex
+File: pgflibraryplothandlers.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgf@plot@mark@count=\count352
+\pgfplotmarksize=\dimen317
+)
+\tikz@lastx=\dimen318
+\tikz@lasty=\dimen319
+\tikz@lastxsaved=\dimen320
+\tikz@lastysaved=\dimen321
+\tikz@lastmovetox=\dimen322
+\tikz@lastmovetoy=\dimen323
+\tikzleveldistance=\dimen324
+\tikzsiblingdistance=\dimen325
+\tikz@figbox=\box81
+\tikz@figbox@bg=\box82
+\tikz@tempbox=\box83
+\tikz@tempbox@bg=\box84
+\tikztreelevel=\count353
+\tikznumberofchildren=\count354
+\tikznumberofcurrentchild=\count355
+\tikz@fig@count=\count356
+ (/usr/local/share/miktex-texmf/tex/generic/pgf/modules/pgfmodulematrix.code.tex
+File: pgfmodulematrix.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgfmatrixcurrentrow=\count357
+\pgfmatrixcurrentcolumn=\count358
+\pgf@matrix@numberofcolumns=\count359
+)
+\tikz@expandcount=\count360
+ (/usr/local/share/miktex-texmf/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarytopaths.code.tex
+File: tikzlibrarytopaths.code.tex 2023-01-15 v3.1.10 (3.1.10)
+))) (/usr/local/share/miktex-texmf/tex/latex/pgfplots/pgfplots.sty (/usr/local/share/miktex-texmf/tex/generic/pgfplots/pgfplots.revision.tex)
 Package: pgfplots 2021/05/15 v1.18.1 Data Visualization (1.18.1)
  (/usr/local/share/miktex-texmf/tex/generic/pgfplots/pgfplots.code.tex (/usr/local/share/miktex-texmf/tex/generic/pgfplots/pgfplotscore.code.tex
-\t@pgfplots@toka=\toks52
-\t@pgfplots@tokb=\toks53
-\t@pgfplots@tokc=\toks54
+\t@pgfplots@toka=\toks50
+\t@pgfplots@tokb=\toks51
+\t@pgfplots@tokc=\toks52
 \pgfplots@tmpa=\dimen326
 \c@pgfplots@coordindex=\count361
 \c@pgfplots@scanlineindex=\count362
  (/usr/local/share/miktex-texmf/tex/generic/pgfplots/sys/pgfplotssysgeneric.code.tex)) (/usr/local/share/miktex-texmf/tex/generic/pgfplots/libs/pgfplotslibrary.code.tex) (/usr/local/share/miktex-texmf/tex/generic/pgfplots/oldpgfcompatib/pgfplotsoldpgfsupp_loader.code.tex (/usr/local/share/miktex-texmf/tex/generic/pgf/libraries/pgflibraryfpu.code.tex)
 Package pgfplots: loading complementary utilities for your pgf version...
-\t@pgf@toka=\toks55
-\t@pgf@tokb=\toks56
-\t@pgf@tokc=\toks57
+\t@pgf@toka=\toks53
+\t@pgf@tokb=\toks54
+\t@pgf@tokc=\toks55
 (/usr/local/share/miktex-texmf/tex/generic/pgfplots/oldpgfcompatib/pgfplotsoldpgfsupp_pgfutil-common-lists.tex)) (/usr/local/share/miktex-texmf/tex/generic/pgfplots/util/pgfplotsutil.code.tex (/usr/local/share/miktex-texmf/tex/generic/pgfplots/liststructure/pgfplotsliststructure.code.tex) (/usr/local/share/miktex-texmf/tex/generic/pgfplots/liststructure/pgfplotsliststructureext.code.tex) (/usr/local/share/miktex-texmf/tex/generic/pgfplots/liststructure/pgfplotsarray.code.tex
 \c@pgfplotsarray@tmp=\count363
 ) (/usr/local/share/miktex-texmf/tex/generic/pgfplots/liststructure/pgfplotsmatrix.code.tex) (/usr/local/share/miktex-texmf/tex/generic/pgfplots/numtable/pgfplotstableshared.code.tex
 \c@pgfplotstable@counta=\count364
-\t@pgfplotstable@a=\toks58
+\t@pgfplotstable@a=\toks56
 ) (/usr/local/share/miktex-texmf/tex/generic/pgfplots/liststructure/pgfplotsdeque.code.tex) (/usr/local/share/miktex-texmf/tex/generic/pgfplots/util/pgfplotsbinary.code.tex (/usr/local/share/miktex-texmf/tex/generic/pgfplots/util/pgfplotsbinary.data.code.tex)) (/usr/local/share/miktex-texmf/tex/generic/pgfplots/util/pgfplotsutil.verb.code.tex) (/usr/local/share/miktex-texmf/tex/generic/pgfplots/libs/pgflibrarypgfplots.surfshading.code.tex
 \c@pgfplotslibrarysurf@no=\count365
  (/usr/local/share/miktex-texmf/tex/generic/pgfplots/sys/pgflibrarypgfplots.surfshading.pgfsys-pdftex.def))) (/usr/local/share/miktex-texmf/tex/generic/pgfplots/util/pgfplotscolormap.code.tex (/usr/local/share/miktex-texmf/tex/generic/pgfplots/util/pgfplotscolor.code.tex)) (/usr/local/share/miktex-texmf/tex/generic/pgfplots/pgfplotsstackedplots.code.tex) (/usr/local/share/miktex-texmf/tex/generic/pgfplots/pgfplotsplothandlers.code.tex (/usr/local/share/miktex-texmf/tex/generic/pgfplots/pgfplotsmeshplothandler.code.tex (/usr/local/share/miktex-texmf/tex/generic/pgfplots/pgfplotsmeshplotimage.code.tex))) (/usr/local/share/miktex-texmf/tex/generic/pgfplots/pgfplots.scaling.code.tex) (/usr/local/share/miktex-texmf/tex/generic/pgfplots/pgfplotscoordprocessing.code.tex) (/usr/local/share/miktex-texmf/tex/generic/pgfplots/pgfplots.errorbars.code.tex) (/usr/local/share/miktex-texmf/tex/generic/pgfplots/pgfplots.markers.code.tex) (/usr/local/share/miktex-texmf/tex/generic/pgfplots/pgfplotsticks.code.tex) (/usr/local/share/miktex-texmf/tex/generic/pgfplots/pgfplots.paths.code.tex) (/usr/local/share/miktex-texmf/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarydecorations.code.tex (/usr/local/share/miktex-texmf/tex/generic/pgf/modules/pgfmoduledecorations.code.tex
@@ -735,7 +703,7 @@ LaTeX Font Info:    Redeclaring math alphabet \mathbb on input line 42.
 )
 \sympureletters=\mathgroup7
 LaTeX Font Info:    Overwriting symbol font `pureletters' in version `bold'
-(Font)                  OT1/mathkerncmss/m/sl --> OT1/mathkerncmss/bx/sl on input line 12.
+(Font)                  OT1/mathkerncmss/m/sl --> OT1/mathkerncmss/bx/sl on input line 13.
  (/usr/local/share/miktex-texmf/tex/latex/tools/bm.sty
 Package: bm 2023/12/19 v1.2f Bold Symbol Support (DPC/FMi)
 \symboldoperators=\mathgroup8
@@ -757,17 +725,17 @@ Package: array 2024/06/14 v2.6d Tabular extension package (FMi)
 \col@sep=\dimen340
 \ar@mcellbox=\box86
 \extrarowheight=\dimen341
-\NC@list=\toks59
-\extratabsurround=\skip79
-\backup@length=\skip80
+\NC@list=\toks57
+\extratabsurround=\skip70
+\backup@length=\skip71
 \ar@cellbox=\box87
 ) (/home/alexandre/.miktex/texmfs/install/tex/latex/adjustbox/adjustbox.sty
 Package: adjustbox 2022/10/17 v1.3a Adjusting TeX boxes (trim, clip, ...)
  (/usr/local/share/miktex-texmf/tex/latex/xkeyval/xkeyval.sty
 Package: xkeyval 2022/06/16 v2.9 package option processing (HA)
  (/usr/local/share/miktex-texmf/tex/generic/xkeyval/xkeyval.tex (/usr/local/share/miktex-texmf/tex/generic/xkeyval/xkvutils.tex
-\XKV@toks=\toks60
-\XKV@tempa@toks=\toks61
+\XKV@toks=\toks58
+\XKV@tempa@toks=\toks59
 )
 \XKV@depth=\count368
 File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
@@ -804,9 +772,7 @@ Package: varwidth 2009/03/30 ver 0.92;  Variable-width minipages
 \sift@deathcycles=\count370
 \@vwid@loff=\dimen354
 \@vwid@roff=\dimen355
-)) (/home/alexandre/.miktex/texmfs/install/tex/latex/beamertheme-metropolis/pgfplotsthemetol.sty
-Package: pgfplotsthemetol 2017/01/23 PGFplots colors based on Paul Tol's SRON technical note
-) (/usr/local/share/miktex-texmf/tex/latex/l3backend/l3backend-pdftex.def
+)) (/usr/local/share/miktex-texmf/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2024-05-08 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count371
 \l__pdf_internal_box=\box90
@@ -826,24 +792,24 @@ LaTeX Warning: Label `sub@fig:easy_multiblock' multiply defined.
 )
 \openout1 = `colloque.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 34.
-LaTeX Font Info:    ... okay on input line 34.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 34.
-LaTeX Font Info:    ... okay on input line 34.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 34.
-LaTeX Font Info:    ... okay on input line 34.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 34.
-LaTeX Font Info:    ... okay on input line 34.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 34.
-LaTeX Font Info:    ... okay on input line 34.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 34.
-LaTeX Font Info:    ... okay on input line 34.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 34.
-LaTeX Font Info:    ... okay on input line 34.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 34.
-LaTeX Font Info:    ... okay on input line 34.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 34.
-LaTeX Font Info:    ... okay on input line 34.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 44.
+LaTeX Font Info:    ... okay on input line 44.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 44.
+LaTeX Font Info:    ... okay on input line 44.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 44.
+LaTeX Font Info:    ... okay on input line 44.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 44.
+LaTeX Font Info:    ... okay on input line 44.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 44.
+LaTeX Font Info:    ... okay on input line 44.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 44.
+LaTeX Font Info:    ... okay on input line 44.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 44.
+LaTeX Font Info:    ... okay on input line 44.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 44.
+LaTeX Font Info:    ... okay on input line 44.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 44.
+LaTeX Font Info:    ... okay on input line 44.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -886,72 +852,72 @@ LaTeX Font Info:    ... okay on input line 34.
 \scratchbox=\box91
 \nofMPsegments=\count373
 \nofMParguments=\count374
-\everyMPshowfont=\toks62
+\everyMPshowfont=\toks60
 \MPscratchCnt=\count375
 \MPscratchDim=\dimen357
 \MPnumerator=\count376
 \makeMPintoPDFobject=\count377
-\everyMPtoPDFconversion=\toks63
+\everyMPtoPDFconversion=\toks61
 ) (/usr/local/share/miktex-texmf/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
  (/usr/local/share/miktex-texmf/tex/latex/00miktex/epstopdf-sys.cfg
 File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
-Package hyperref Info: Link coloring OFF on input line 34.
+Package hyperref Info: Link coloring OFF on input line 44.
  (colloque.out) (colloque.out)
 \@outlinefile=\write5
 \openout5 = `colloque.out'.
 
 LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
-(Font)                  OT1/cmr/m/n --> OT1/cmss/m/n on input line 34.
+(Font)                  OT1/cmr/m/n --> OT1/cmss/m/n on input line 44.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
-(Font)                  OT1/cmr/bx/n --> OT1/cmss/b/n on input line 34.
+(Font)                  OT1/cmr/bx/n --> OT1/cmss/b/n on input line 44.
 \symnumbers=\mathgroup12
-LaTeX Font Info:    Redeclaring symbol font `pureletters' on input line 34.
+LaTeX Font Info:    Redeclaring symbol font `pureletters' on input line 44.
 LaTeX Font Info:    Overwriting symbol font `pureletters' in version `normal'
-(Font)                  OT1/mathkerncmss/m/sl --> OT1/cmss/m/it on input line 34.
+(Font)                  OT1/mathkerncmss/m/sl --> OT1/cmss/m/it on input line 44.
 LaTeX Font Info:    Overwriting symbol font `pureletters' in version `bold'
-(Font)                  OT1/mathkerncmss/bx/sl --> OT1/cmss/m/it on input line 34.
+(Font)                  OT1/mathkerncmss/bx/sl --> OT1/cmss/m/it on input line 44.
 LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `normal'
-(Font)                  OT1/cmss/m/n --> OT1/cmr/m/n on input line 34.
-LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 34.
-LaTeX Font Info:    Redeclaring math alphabet \mathsf on input line 34.
+(Font)                  OT1/cmss/m/n --> OT1/cmr/m/n on input line 44.
+LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 44.
+LaTeX Font Info:    Redeclaring math alphabet \mathsf on input line 44.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
-(Font)                  OT1/cmss/m/n --> OT1/cmss/m/n on input line 34.
+(Font)                  OT1/cmss/m/n --> OT1/cmss/m/n on input line 44.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
-(Font)                  OT1/cmss/bx/n --> OT1/cmss/m/n on input line 34.
-LaTeX Font Info:    Redeclaring math alphabet \mathit on input line 34.
+(Font)                  OT1/cmss/bx/n --> OT1/cmss/m/n on input line 44.
+LaTeX Font Info:    Redeclaring math alphabet \mathit on input line 44.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
-(Font)                  OT1/cmr/m/it --> OT1/cmss/m/it on input line 34.
+(Font)                  OT1/cmr/m/it --> OT1/cmss/m/it on input line 44.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
-(Font)                  OT1/cmr/bx/it --> OT1/cmss/m/it on input line 34.
-LaTeX Font Info:    Redeclaring math alphabet \mathtt on input line 34.
+(Font)                  OT1/cmr/bx/it --> OT1/cmss/m/it on input line 44.
+LaTeX Font Info:    Redeclaring math alphabet \mathtt on input line 44.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
-(Font)                  OT1/cmtt/m/n --> OT1/cmtt/m/n on input line 34.
+(Font)                  OT1/cmtt/m/n --> OT1/cmtt/m/n on input line 44.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
-(Font)                  OT1/cmtt/m/n --> OT1/cmtt/m/n on input line 34.
+(Font)                  OT1/cmtt/m/n --> OT1/cmtt/m/n on input line 44.
 LaTeX Font Info:    Overwriting symbol font `numbers' in version `bold'
-(Font)                  OT1/cmss/m/n --> OT1/cmss/b/n on input line 34.
+(Font)                  OT1/cmss/m/n --> OT1/cmss/b/n on input line 44.
 LaTeX Font Info:    Overwriting symbol font `pureletters' in version `bold'
-(Font)                  OT1/cmss/m/it --> OT1/cmss/b/it on input line 34.
+(Font)                  OT1/cmss/m/it --> OT1/cmss/b/it on input line 44.
 LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `bold'
-(Font)                  OT1/cmss/b/n --> OT1/cmr/b/n on input line 34.
+(Font)                  OT1/cmss/b/n --> OT1/cmr/b/n on input line 44.
 LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `bold'
-(Font)                  OT1/cmss/b/n --> OT1/cmss/b/n on input line 34.
+(Font)                  OT1/cmss/b/n --> OT1/cmss/b/n on input line 44.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
-(Font)                  OT1/cmss/m/n --> OT1/cmss/b/n on input line 34.
+(Font)                  OT1/cmss/m/n --> OT1/cmss/b/n on input line 44.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
-(Font)                  OT1/cmss/m/it --> OT1/cmss/b/it on input line 34.
+(Font)                  OT1/cmss/m/it --> OT1/cmss/b/it on input line 44.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
-(Font)                  OT1/cmtt/m/n --> OT1/cmtt/b/n on input line 34.
-LaTeX Font Info:    Redeclaring symbol font `pureletters' on input line 34.
+(Font)                  OT1/cmtt/m/n --> OT1/cmtt/b/n on input line 44.
+LaTeX Font Info:    Redeclaring symbol font `pureletters' on input line 44.
 LaTeX Font Info:    Overwriting symbol font `pureletters' in version `normal'
-(Font)                  OT1/cmss/m/it --> OT1/mathkerncmss/m/sl on input line 34.
+(Font)                  OT1/cmss/m/it --> OT1/mathkerncmss/m/sl on input line 44.
 LaTeX Font Info:    Overwriting symbol font `pureletters' in version `bold'
-(Font)                  OT1/cmss/b/it --> OT1/mathkerncmss/m/sl on input line 34.
+(Font)                  OT1/cmss/b/it --> OT1/mathkerncmss/m/sl on input line 44.
 LaTeX Font Info:    Overwriting symbol font `pureletters' in version `bold'
-(Font)                  OT1/mathkerncmss/m/sl --> OT1/mathkerncmss/bx/sl on input line 34.
+(Font)                  OT1/mathkerncmss/m/sl --> OT1/mathkerncmss/bx/sl on input line 44.
  (/home/alexandre/.miktex/texmfs/install/tex/latex/translator/translator-basic-dictionary-English.dict
 Dictionary: translator-basic-dictionary, Language: English 
 ) (/home/alexandre/.miktex/texmfs/install/tex/latex/translator/translator-bibliography-dictionary-English.dict
@@ -969,106 +935,96 @@ Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: float package is loaded.
 Package caption Info: End \AtBeginDocument code.
 
-Package pgfplots notification 'compat/show suggested version=true': you might benefit from \pgfplotsset{compat=1.18} (current compat level: 1.9).
+Package pgfplots notification 'compat/show suggested version=true': document has been generated with the most recent feature set (\pgfplotsset{compat=1.18}).
 
 (colloque.nav)
-Overfull \vbox (44.55656pt too high) detected at line 38
- []
-
-
 
 [1
 
 {/home/alexandre/.miktex/texmfs/data/fonts/map/pdftex/pdftex.map}]
-LaTeX Font Info:    Trying to load font information for U+msa on input line 112.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 123.
  (/usr/local/share/miktex-texmf/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 112.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 123.
  (/usr/local/share/miktex-texmf/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Trying to load font information for U+stmry on input line 112.
+LaTeX Font Info:    Trying to load font information for U+stmry on input line 123.
  (/home/alexandre/.miktex/texmfs/install/tex/latex/stmaryrd/Ustmry.fd)
-LaTeX Font Info:    Trying to load font information for OT1+mathkerncmss on input line 112.
+LaTeX Font Info:    Trying to load font information for OT1+mathkerncmss on input line 123.
  (/home/alexandre/.miktex/texmfs/install/tex/latex/sansmathaccent/ot1mathkerncmss.fd
 File: ot1mathkerncmss.fd 2020/01/31 Fontinst v1.933 font definitions for OT1/mathkerncmss.
 )
 
 LaTeX Font Warning: Font shape `U/stmry/b/n' undefined
-(Font)              using `U/stmry/m/n' instead on input line 112.
+(Font)              using `U/stmry/m/n' instead on input line 123.
 
-<images/tensor_mode.png, id=53, 1430.34375pt x 403.5075pt>
-File: images/tensor_mode.png Graphic file (type png)
-<use images/tensor_mode.png>
-Package pdftex.def Info: images/tensor_mode.png  used on input line 112.
-(pdftex.def)             Requested size: 328.97214pt x 92.80476pt.
-
-Overfull \hbox (21.68227pt too wide) in paragraph at lines 112--112
- [] 
- []
-
-
-Overfull \vbox (17.5083pt too high) detected at line 112
- []
-
+LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <10.95> not available
+(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 123.
+LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <8> not available
+(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 123.
+LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <6> not available
+(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 123.
 
 
 [2
 
- <./images/tensor_mode.png>]
-<images/blocks.png, id=62, 1264.725pt x 563.10374pt>
-File: images/blocks.png Graphic file (type png)
-<use images/blocks.png>
-Package pdftex.def Info: images/blocks.png  used on input line 124.
-(pdftex.def)             Requested size: 316.18048pt x 140.77559pt.
-
-Overfull \hbox (8.89061pt too wide) in paragraph at lines 124--124
- [] 
- []
-
-
-Overfull \vbox (1.58444pt too high) detected at line 124
- []
-
+]
+<images/HCC.png, id=119, 986.68625pt x 722.7pt>
+File: images/HCC.png Graphic file (type png)
+<use images/HCC.png>
+Package pdftex.def Info: images/HCC.png  used on input line 132.
+(pdftex.def)             Requested size: 212.1334pt x 155.37747pt.
 
 
 [3
 
- <./images/blocks.png>]
+ <./images/HCC.png>]
+<images/CCK.png, id=149, 987.69pt x 792.9625pt>
+File: images/CCK.png Graphic file (type png)
+<use images/CCK.png>
+Package pdftex.def Info: images/CCK.png  used on input line 141.
+(pdftex.def)             Requested size: 212.34921pt x 170.48361pt.
+
 
 [4
 
-]
-<images/HCC.png, id=74, 986.68625pt x 722.7pt>
-File: images/HCC.png Graphic file (type png)
-<use images/HCC.png>
-Package pdftex.def Info: images/HCC.png  used on input line 145.
-(pdftex.def)             Requested size: 212.1334pt x 155.37747pt.
-
+ <./images/CCK.png>]
 
 [5
 
- <./images/HCC.png>] (colloque.toc)
+]
+<images/tensor_mode.png, id=206, 1430.34375pt x 403.5075pt>
+File: images/tensor_mode.png Graphic file (type png)
+<use images/tensor_mode.png>
+Package pdftex.def Info: images/tensor_mode.png  used on input line 167.
+(pdftex.def)             Requested size: 328.97214pt x 92.80476pt.
+
+Overfull \hbox (21.68227pt too wide) in paragraph at lines 167--167
+ [] 
+ []
+
+
 
 [6
 
-]
+ <./images/tensor_mode.png>]
+<images/blocks.png, id=236, 1264.725pt x 563.10374pt>
+File: images/blocks.png Graphic file (type png)
+<use images/blocks.png>
+Package pdftex.def Info: images/blocks.png  used on input line 179.
+(pdftex.def)             Requested size: 316.18048pt x 140.77559pt.
+
+Overfull \hbox (8.89061pt too wide) in paragraph at lines 179--179
+ [] 
+ []
+
+
 
 [7
 
-]
-Overfull \hbox (24.32214pt too wide) detected at line 169
-[]
- []
-
-LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <10.95> not available
-(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 169.
-LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <8> not available
-(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 169.
-LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <6> not available
-(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 169.
-
+ <./images/blocks.png>] (colloque.toc)
 
 [8
 
@@ -1077,121 +1033,96 @@ LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <6> not available
 [9
 
 ]
-<images/deplier.png, id=122, 1384.17125pt x 463.7325pt>
-File: images/deplier.png Graphic file (type png)
-<use images/deplier.png>
-Package pdftex.def Info: images/deplier.png  used on input line 195.
-(pdftex.def)             Requested size: 207.61673pt x 69.55687pt.
-
-Overfull \vbox (18.18675pt too high) detected at line 195
+Overfull \hbox (177.11095pt too wide) in paragraph at lines 218--218
+[][] 
  []
 
 
 
 [10
 
- <./images/deplier.png>]
-LaTeX Font Info:    Trying to load font information for TS1+cmss on input line 212.
- (/usr/local/share/miktex-texmf/tex/latex/base/ts1cmss.fd
-File: ts1cmss.fd 2023/04/13 v2.5m Standard LaTeX font definitions
-)
+]
+<images/deplier.png, id=374, 1384.17125pt x 463.7325pt>
+File: images/deplier.png Graphic file (type png)
+<use images/deplier.png>
+Package pdftex.def Info: images/deplier.png  used on input line 235.
+(pdftex.def)             Requested size: 207.61673pt x 69.55687pt.
+
 
 [11
 
-]
-<images/beta_tens.png, id=140, 528.47438pt x 473.51906pt>
-File: images/beta_tens.png Graphic file (type png)
-<use images/beta_tens.png>
-Package pdftex.def Info: images/beta_tens.png  used on input line 234.
-(pdftex.def)             Requested size: 158.54353pt x 142.05681pt.
-
-Overfull \vbox (8.55557pt too high) detected at line 234
- []
-
-
+ <./images/deplier.png>]
 
 [12
 
- <./images/beta_tens.png>]
+]
+<images/beta_tens.png, id=459, 528.47438pt x 473.51906pt>
 File: images/beta_tens.png Graphic file (type png)
 <use images/beta_tens.png>
-Package pdftex.def Info: images/beta_tens.png  used on input line 234.
+Package pdftex.def Info: images/beta_tens.png  used on input line 285.
 (pdftex.def)             Requested size: 158.54353pt x 142.05681pt.
-
-Overfull \vbox (8.55557pt too high) detected at line 234
- []
-
+LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <10> not available
+(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 285.
+LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <7> not available
+(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 285.
+LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <5> not available
+(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 285.
 
 
 [13
 
-]
-<images/square.png, id=154, 346.29375pt x 356.33125pt>
-File: images/square.png Graphic file (type png)
-<use images/square.png>
-Package pdftex.def Info: images/square.png  used on input line 260.
-(pdftex.def)             Requested size: 92.1879pt x 94.85686pt.
-<images/picto_500/heatmap_logistic_multibloc_simu_500_multiway.png, id=155, 602.25pt x 451.6875pt>
-File: images/picto_500/heatmap_logistic_multibloc_simu_500_multiway.png Graphic file (type png)
-<use images/picto_500/heatmap_logistic_multibloc_simu_500_multiway.png>
-Package pdftex.def Info: images/picto_500/heatmap_logistic_multibloc_simu_500_multiway.png  used on input line 260.
-(pdftex.def)             Requested size: 122.91406pt x 92.183pt.
-
-Overfull \vbox (7.64998pt too high) detected at line 260
- []
-
+ <./images/beta_tens.png>]
+File: images/beta_tens.png Graphic file (type png)
+<use images/beta_tens.png>
+Package pdftex.def Info: images/beta_tens.png  used on input line 285.
+(pdftex.def)             Requested size: 158.54353pt x 142.05681pt.
 
 
 [14
 
- <./images/square.png> <./images/picto_500/heatmap_logistic_multibloc_simu_500_multiway.png>]
-<images/beta_tens_R.png, id=164, 734.745pt x 534.49687pt>
-File: images/beta_tens_R.png Graphic file (type png)
-<use images/beta_tens_R.png>
-Package pdftex.def Info: images/beta_tens_R.png  used on input line 283.
-(pdftex.def)             Requested size: 183.68579pt x 133.62389pt.
-
-Overfull \hbox (30.04086pt too wide) in paragraph at lines 283--283
- [][] 
- []
-
+]
+<images/picto_500/heatmap_logistic_multibloc_simu_500_multiway.png, id=538, 602.25pt x 451.6875pt>
+File: images/picto_500/heatmap_logistic_multibloc_simu_500_multiway.png Graphic file (type png)
+<use images/picto_500/heatmap_logistic_multibloc_simu_500_multiway.png>
+Package pdftex.def Info: images/picto_500/heatmap_logistic_multibloc_simu_500_multiway.png  used on input line 301.
+(pdftex.def)             Requested size: 153.64493pt x 115.23047pt.
+LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <14.4> not available
+(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 301.
 
 
 [15
 
- <./images/beta_tens_R.png>]
-<images/blocks_faux.png, id=173, 1233.60875pt x 578.16pt>
-File: images/blocks_faux.png Graphic file (type png)
-<use images/blocks_faux.png>
-Package pdftex.def Info: images/blocks_faux.png  used on input line 297.
-(pdftex.def)             Requested size: 283.72404pt x 132.974pt.
-
-Overfull \vbox (11.06526pt too high) detected at line 297
- []
-
+ <./images/picto_500/heatmap_logistic_multibloc_simu_500_multiway.png>]
+<images/beta_tens_R.png, id=579, 734.745pt x 534.49687pt>
+File: images/beta_tens_R.png Graphic file (type png)
+<use images/beta_tens_R.png>
+Package pdftex.def Info: images/beta_tens_R.png  used on input line 318.
+(pdftex.def)             Requested size: 139.603pt x 101.55545pt.
 
 
 [16
 
- <./images/blocks_faux.png>]
-<images/beta_blocks.png, id=179, 726.46407pt x 489.32813pt>
-File: images/beta_blocks.png Graphic file (type png)
-<use images/beta_blocks.png>
-Package pdftex.def Info: images/beta_blocks.png  used on input line 318.
-(pdftex.def)             Requested size: 203.40855pt x 137.01093pt.
-
-Overfull \vbox (3.83401pt too high) detected at line 318
- []
-
+ <./images/beta_tens_R.png>]
+<images/blocks_faux.png, id=611, 1233.60875pt x 578.16pt>
+File: images/blocks_faux.png Graphic file (type png)
+<use images/blocks_faux.png>
+Package pdftex.def Info: images/blocks_faux.png  used on input line 330.
+(pdftex.def)             Requested size: 283.72404pt x 132.974pt.
 
 
 [17
 
- <./images/beta_blocks.png>]
+ <./images/blocks_faux.png>]
+<images/beta_blocks.png, id=640, 726.46407pt x 489.32813pt>
+File: images/beta_blocks.png Graphic file (type png)
+<use images/beta_blocks.png>
+Package pdftex.def Info: images/beta_blocks.png  used on input line 351.
+(pdftex.def)             Requested size: 203.40855pt x 137.01093pt.
+
 
 [18
 
-]
+ <./images/beta_blocks.png>]
 
 [19
 
@@ -1200,153 +1131,125 @@ Overfull \vbox (3.83401pt too high) detected at line 318
 [20
 
 ]
-Overfull \vbox (25.94707pt too high) detected at line 364
- []
-
-
 
 [21
 
 ]
-Overfull \vbox (25.94707pt too high) detected at line 364
- []
-
-
 
 [22
 
 ]
-Overfull \vbox (25.94707pt too high) detected at line 364
- []
-
+<images/2D_better.png, id=853, 1001.99344pt x 816.80156pt>
+File: images/2D_better.png Graphic file (type png)
+<use images/2D_better.png>
+Package pdftex.def Info: images/2D_better.png  used on input line 411.
+(pdftex.def)             Requested size: 200.39514pt x 163.3574pt.
 
 
 [23
 
-]
-
-[24
-
-]
-
-[25
-
-]
-
-[26
-
-]
-<images/2D_better.png, id=234, 1001.99344pt x 816.80156pt>
-File: images/2D_better.png Graphic file (type png)
-<use images/2D_better.png>
-Package pdftex.def Info: images/2D_better.png  used on input line 406.
-(pdftex.def)             Requested size: 200.39514pt x 163.3574pt.
-LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <10> not available
-(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 406.
-LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <7> not available
-(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 406.
-LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <5> not available
-(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 406.
-
-
-[27
-
  <./images/2D_better.png>]
-
-[28
-
-]
-Overfull \hbox (2.06686pt too wide) in paragraph at lines 447--447
+Overfull \hbox (2.06686pt too wide) in paragraph at lines 441--441
  []|$\OT1/cmss/m/n/10.95 (\OML/cmm/m/it/10.95 ^^[[]; ^^[[]\OT1/cmss/m/n/10.95 )$| 
  []
 
 
-Overfull \hbox (5.68852pt too wide) in paragraph at lines 447--447
+Overfull \hbox (5.68852pt too wide) in paragraph at lines 441--441
  \OT1/cmss/m/n/10.95 (blocks)| 
  []
 
 
-Overfull \hbox (2.22104pt too wide) in paragraph at lines 447--447
+Overfull \hbox (2.22104pt too wide) in paragraph at lines 441--441
  \OT1/cmss/m/n/10.95 (mode)| 
  []
 
-<images/3_picto.png, id=247, 517.935pt x 506.89375pt>
+<images/3_picto.png, id=882, 517.935pt x 506.89375pt>
 File: images/3_picto.png Graphic file (type png)
 <use images/3_picto.png>
-Package pdftex.def Info: images/3_picto.png  used on input line 447.
+Package pdftex.def Info: images/3_picto.png  used on input line 441.
 (pdftex.def)             Requested size: 62.1495pt x 60.82462pt.
 
-Overfull \vbox (12.8969pt too high) detected at line 447
- []
 
-
-
-[29
+[24
 
  <./images/3_picto.png>]
-<images/heatmap_logistique_simple_simu_4000.png, id=256, 602.25pt x 451.6875pt>
+<images/heatmap_logistique_simple_simu_4000.png, id=913, 602.25pt x 451.6875pt>
 File: images/heatmap_logistique_simple_simu_4000.png Graphic file (type png)
 <use images/heatmap_logistique_simple_simu_4000.png>
-Package pdftex.def Info: images/heatmap_logistique_simple_simu_4000.png  used on input line 479.
+Package pdftex.def Info: images/heatmap_logistique_simple_simu_4000.png  used on input line 473.
 (pdftex.def)             Requested size: 92.1879pt x 69.13553pt.
 LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <9> not available
-(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 479.
-<images/heatmap_logistic_multibloc_simu_4000_multiway.png, id=257, 602.25pt x 451.6875pt>
+(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 473.
+<images/heatmap_logistic_multibloc_simu_4000_multiway.png, id=914, 602.25pt x 451.6875pt>
 File: images/heatmap_logistic_multibloc_simu_4000_multiway.png Graphic file (type png)
 <use images/heatmap_logistic_multibloc_simu_4000_multiway.png>
-Package pdftex.def Info: images/heatmap_logistic_multibloc_simu_4000_multiway.png  used on input line 479.
+Package pdftex.def Info: images/heatmap_logistic_multibloc_simu_4000_multiway.png  used on input line 473.
 (pdftex.def)             Requested size: 92.1879pt x 69.13553pt.
-<images/heatmap_logistic_multibloc_simu_4000.png, id=258, 602.25pt x 451.6875pt>
+<images/heatmap_logistic_multibloc_simu_4000.png, id=915, 602.25pt x 451.6875pt>
 File: images/heatmap_logistic_multibloc_simu_4000.png Graphic file (type png)
 <use images/heatmap_logistic_multibloc_simu_4000.png>
-Package pdftex.def Info: images/heatmap_logistic_multibloc_simu_4000.png  used on input line 479.
+Package pdftex.def Info: images/heatmap_logistic_multibloc_simu_4000.png  used on input line 473.
 (pdftex.def)             Requested size: 92.1879pt x 69.13553pt.
-<images/heatmap_logistique_simple_simu_medium_easy.png, id=259, 803.0pt x 602.25pt>
+<images/heatmap_logistique_simple_simu_medium_easy.png, id=916, 803.0pt x 602.25pt>
 File: images/heatmap_logistique_simple_simu_medium_easy.png Graphic file (type png)
 <use images/heatmap_logistique_simple_simu_medium_easy.png>
-Package pdftex.def Info: images/heatmap_logistique_simple_simu_medium_easy.png  used on input line 479.
+Package pdftex.def Info: images/heatmap_logistique_simple_simu_medium_easy.png  used on input line 473.
 (pdftex.def)             Requested size: 92.1879pt x 69.13322pt.
-<images/heatmap_logistic_multibloc_simu_4000_medium_easy_multiway.png, id=260, 803.0pt x 602.25pt>
+<images/heatmap_logistic_multibloc_simu_4000_medium_easy_multiway.png, id=917, 803.0pt x 602.25pt>
 File: images/heatmap_logistic_multibloc_simu_4000_medium_easy_multiway.png Graphic file (type png)
 <use images/heatmap_logistic_multibloc_simu_4000_medium_easy_multiway.png>
-Package pdftex.def Info: images/heatmap_logistic_multibloc_simu_4000_medium_easy_multiway.png  used on input line 479.
+Package pdftex.def Info: images/heatmap_logistic_multibloc_simu_4000_medium_easy_multiway.png  used on input line 473.
 (pdftex.def)             Requested size: 92.1879pt x 69.13322pt.
-<images/heatmap_logistic_multibloc_simu_4000_medium_easy.png, id=261, 803.0pt x 602.25pt>
+<images/heatmap_logistic_multibloc_simu_4000_medium_easy.png, id=918, 803.0pt x 602.25pt>
 File: images/heatmap_logistic_multibloc_simu_4000_medium_easy.png Graphic file (type png)
 <use images/heatmap_logistic_multibloc_simu_4000_medium_easy.png>
-Package pdftex.def Info: images/heatmap_logistic_multibloc_simu_4000_medium_easy.png  used on input line 479.
+Package pdftex.def Info: images/heatmap_logistic_multibloc_simu_4000_medium_easy.png  used on input line 473.
 (pdftex.def)             Requested size: 92.1879pt x 69.13322pt.
-LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <12> not available
-(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 479.
-
-Overfull \vbox (12.12254pt too high) detected at line 479
- []
 
 
-
-[30
+[25
 
 
 pdfTeX warning (ext4): destination with the same identifier (name{fig:3000simple}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.479 \end{frame}
+l.473 \end{frame}
                  
 pdfTeX warning (ext4): destination with the same identifier (name{sub@fig:3000simple}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.479 \end{frame}
+l.473 \end{frame}
                  
 pdfTeX warning (ext4): destination with the same identifier (name{fig:easy_multiblock}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.479 \end{frame}
+l.473 \end{frame}
                  
 pdfTeX warning (ext4): destination with the same identifier (name{sub@fig:easy_multiblock}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.479 \end{frame}
+l.473 \end{frame}
                   <./images/heatmap_logistique_simple_simu_4000.png> <./images/heatmap_logistic_multibloc_simu_4000_multiway.png> <./images/heatmap_logistic_multibloc_simu_4000.png> <./images/heatmap_logistique_simple_simu_medium_easy.png (PNG copy)> <./images/heatmap_logistic_multibloc_simu_4000_medium_easy_multiway.png> <./images/heatmap_logistic_multibloc_simu_4000_medium_easy.png>]
+
+[26
+
+]
+
+[27
+
+]
+
+[28
+
+]
+
+[29
+
+] (colloque.bbl)
+
+[30
+
+ </home/alexandre/.miktex/texmfs/install/tex/latex/beamer/beamericonarticle.pdf>]
 
 [31
 
@@ -1355,26 +1258,10 @@ l.479 \end{frame}
 [32
 
 ]
-<images/features.png, id=297, 1954.30125pt x 611.28375pt>
-File: images/features.png Graphic file (type png)
-<use images/features.png>
-Package pdftex.def Info: images/features.png  used on input line 502.
-(pdftex.def)             Requested size: 293.13254pt x 91.6886pt.
-
 
 [33
 
- <./images/features.png>]
-Overfull \hbox (1.49103pt too wide) in paragraph at lines 587--587
- \OT1/cmss/m/n/10.95 (block)| 
- []
-
-
-Overfull \hbox (4.33649pt too wide) in paragraph at lines 587--587
- \OT1/cmss/m/n/10.95 (block)| 
- []
-
-
+]
 
 [34
 
@@ -1385,19 +1272,6 @@ Overfull \hbox (4.33649pt too wide) in paragraph at lines 587--587
 ]
 
 [36
-
-]
-
-[37
-
-] (colloque.bbl)
-
-[38
-
- </home/alexandre/.miktex/texmfs/install/tex/latex/beamer/beamericonarticle.pdf>]
-
-[39
-
 
 ]
 \tf@nav=\write6
@@ -1422,20 +1296,20 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `colloque.out' has not changed.
-(rerunfilecheck)             Checksum: F01FA34EC0478CB6059DBB7F356966FF;1699.
+(rerunfilecheck)             Checksum: E781EB15D782AC5E3D258B2044AD915E;1053.
  ) 
 Here is how much of TeX's memory you used:
- 39282 strings out of 473900
- 923988 string characters out of 5733583
- 1394746 words of memory out of 5000000
- 61287 multiletter control sequences out of 15000+600000
- 587847 words of font info for 135 fonts, out of 8000000 for 9000
+ 39136 strings out of 473900
+ 918211 string characters out of 5733583
+ 1387343 words of memory out of 5000000
+ 61165 multiletter control sequences out of 15000+600000
+ 586901 words of font info for 132 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 128i,16n,123p,1975b,907s stack positions out of 10000i,1000n,20000p,200000b,200000s
- </home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/tcss1095.pk> </home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi657/ecso1000.pk></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmmib10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cmextra/cmmib6.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cmextra/cmmib8.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmss12.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmss8.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmss9.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmssi10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmssi8.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmssi9.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/symbols/msam10.pfb></home/alexandre/.miktex/texmfs/install/fonts/type1/public/hoekwater/stmary8.pfb>
-Output written on colloque.pdf (39 pages, 1294269 bytes).
+ 128i,16n,123p,860b,884s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ </home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi657/ecso1000.pk></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmmib10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cmextra/cmmib6.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cmextra/cmmib8.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmss12.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmss8.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmss9.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmssi10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmssi12.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmssi8.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmssi9.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/symbols/msam10.pfb></home/alexandre/.miktex/texmfs/install/fonts/type1/public/hoekwater/stmary8.pfb>
+Output written on colloque.pdf (36 pages, 1790032 bytes).
 PDF statistics:
- 471 PDF objects out of 1000 (max. 8388607)
- 102 named destinations out of 1000 (max. 500000)
- 202 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1411 PDF objects out of 1440 (max. 8388607)
+ 91 named destinations out of 1000 (max. 500000)
+ 749 words of extra memory for PDF output out of 10000 (max. 10000000)
 

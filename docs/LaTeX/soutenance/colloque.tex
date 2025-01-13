@@ -1,5 +1,6 @@
 \documentclass{beamer}
-\usetheme{metropolis} % Ou remplacez par votre thème préféré
+\usetheme{Warsaw} % Ou remplacez par votre thème préféré
+\setbeamertemplate{headline}{}
 \usepackage{amsmath, amsfonts, mathtools}
 \usepackage{stmaryrd}
 \usepackage{graphicx}
@@ -20,6 +21,15 @@
 \makeatletter
 \patchcmd{\beamer@calculateheadfoot}{\insertcontinuationcount}{\relax}{}{}
 \makeatother
+\setbeamertemplate{caption}[numbered]
+
+\setbeamertemplate{section page}{
+    \begin{centering}
+        \begin{beamercolorbox}[sep=12pt,center, rounded = true]{part title}
+            \usebeamerfont{section title}\insertsection\par
+        \end{beamercolorbox}
+    \end{centering}
+}
 
 
 \title{Tensor multiblock logistic regression}
@@ -100,15 +110,60 @@
 % \end{frame}
 
 \begin{frame}
+    \frametitle{Liver tumors classification}
+    \begin{center}
+        \textbf{$\mathbf{6}^{\text{th}}$ most widespread cancer and $\mathbf{4}^{\text{th}}$ mortality cause by cancer}\\
+    \end{center}
+    Classification:
+    \begin{itemize}
+        \item Hepatocellular Carcinoma (HCC): $75\%$ of cases, resection often possible\\[10 pt]
+        \item CCK = Cholangiocarcinoma (CCK): $6\%$ of cases, resection difficult (possible in $30\%$ of cases)\\[10 pt]
+        \item Others: benign ($18 \%$ of cases) or Hepatoblastoma ($1 \%$ of cases)
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Some MRI images}
+    \begin{figure}
+        \centering
+        \includegraphics[scale = 0.215]{images/HCC.png}
+        \caption{Example of MRI images of a HCC liver tumor (arterial, portal, late) from From Henri Mondor hospital: the 3 images look quite similar}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Some MRI images}
+    \begin{figure}
+        \centering
+        \includegraphics[scale = 0.215]{images/CCK.png}
+        \caption{Example of MRI images of a CCK liver tumor (arterial, portal, late) from From Henri Mondor hospital}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Available data}
+
+    $\bullet$ MRI images in 3D of liver tumors (arterial, portal, late)\\[5 pt]
+    $\bullet$ gender (63 men, 27 women)\\[5 pt]
+    $\bullet$ age at disease (average: $63$ years old)\\[15 pt]
+
+    Same variables extracted from each MRI image at 3 times  $\rightarrow$ \textbf{tensor data}\\[10 pt]
+
+    Features grouped by blocks: grey levels intensity, shape and texture $\rightarrow$ \textbf{multiblock data}\\[10 pt]
+
+    
+\end{frame}
+
+\begin{frame}
     \frametitle{Tensor data}
-  Measuring the same variables across several modalities (position, time, etc...) $\rightarrow$ features with tensor structure.
+A given subject $i$ is represented by a transverse slice in the features tensor
     \begin{figure}
         \centering
         \includegraphics[scale = 0.23]{images/tensor_mode.png}
         \caption{Type of data: tensorial}
     \end{figure}
 
-\textbf{Warning}: Often strong correlation between features of the same variable across different modalities $\rightarrow$ adapt the model to this structure.
+\textbf{Warning}: Often strong correlation between features from the same variable across different modalities $\rightarrow$ adapt the model to this structure.
 \end{frame}
 
 \begin{frame}
@@ -123,26 +178,17 @@ Each block is a tensor with its own structure.
 
 \end{frame}
 
-\begin{frame}
-    \frametitle{Application example of real multiblock tensor data}
-    \textbf{classification of liver tumors through MRI}:\\[15 pt]
-    Same variables extracted from each MRI image at 3 times  (arterial, portal, late) $\rightarrow$ \textbf{tensor structure}\\[10 pt]
+% \begin{frame}
+%     \frametitle{Application example of real multiblock tensor data}
+%     \textbf{classification of liver tumors through MRI}:\\[15 pt]
+%     Same variables extracted from each MRI image at 3 times  (arterial, portal, late) $\rightarrow$ \textbf{tensor structure}\\[10 pt]
 
-    $\bullet$ MRI images in 3D of liver tumors. Information about grey levels, shape and correlations  $\rightarrow$ \textbf{multiblock structure}\\[5 pt]
-    $\bullet$ Also include univariate features: gender and age\\[10 pt]
+%     $\bullet$ MRI images in 3D of liver tumors. Information about grey levels, shape and correlations  $\rightarrow$ \textbf{multiblock structure}\\[5 pt]
+%     $\bullet$ Also include univariate features: gender and age\\[10 pt]
 
-    \textbf{Conclusion}: \textbf{Multiblock tensor data} $\rightarrow$ train a tensor multiblock logistic regression model.
+%     \textbf{Conclusion}: \textbf{Multiblock tensor data} $\rightarrow$ train a tensor multiblock logistic regression model.
     
-\end{frame}
-
-\begin{frame}
-    \frametitle{Some MRI images}
-    \begin{figure}
-        \centering
-        \includegraphics[scale = 0.215]{images/HCC.png}
-        \caption{Example of MRI images of a liver tumor (arterial, portal, late) from From Henri Mondor hospital: the 3 images look quite similar}
-    \end{figure}
-\end{frame}
+% \end{frame}
 
 
 \begin{frame}
@@ -150,70 +196,74 @@ Each block is a tensor with its own structure.
     \tableofcontents
 \end{frame}
 
+\section{Logistic model for tensor multiblock data}
 \begin{frame}
-    \section{New model for logistic regression}
+\sectionpage
 \end{frame}
 
-\subsection{Standard logistic regression}
+
 \begin{frame}
-    \frametitle{Logistic regression}
-    Generalized linear regression model for classification:
-    \begin{align}
-    x &\text{ :  features vector} \hspace{5 cm} \phantom{1}\\
-    Y &\text{ : binary response (explained variable)} \hspace{5 cm} \phantom{1}
-\end{align}
+    \frametitle{Logistic regression (recall)}
+    Generalized linear model (GLM) for classification:\\[15 pt]
+    \begin{tabular}{ll}
+        $x$ & \hspace{-8 pt}: features vector \hspace{5 cm} \\[5 pt]
+        $Y$ & \hspace{-8 pt}: binary response (explained variable) \hspace{10 cm}
+    \end{tabular}
+\vspace{5 pt}
+\begin{block}{Likelihood for logistic regression}
 $$P(Y = 1|x) = \frac{\exp(\beta_0 + \bm{x}^T\hspace{-2 pt}\bm{\beta})}{1 + \exp(\beta_0 + \bm{x}^T\hspace{-2 pt}\bm{\beta})}$$
-\phantom{a}\\[10 pt]
-    Defines a likelihood function $\mathcal{L}(\bm{\beta}) = \prod_{i = 1}^I P(Y_i = y_i|x_i)$ .
+Defines a likelihood function $\mathcal{L}(\bm{\beta}) = \prod_{i = 1}^I P(Y_i = y_i|x_i)$ .
+\end{block}
 
 \end{frame}
 
 \begin{frame}
-    \frametitle{penalization}
-    To many features (vs $I$) $\rightarrow$ need to limit variance of prediction.\\[10 pt]
-    Search for sparse easily interpretable model $\rightarrow$ choice of lasso: $$\text{penalization} = \lambda \lVert \bm{\beta} \rVert_1 \hspace{0.7 cm} (\lambda >0)$$
-    Function to minimize : 
-    $$- \log(\mathcal{L}(\bm{\beta})) + \lambda \lVert \bm{\beta} \rVert_1 $$
-    Convex optimization problem.
-
-    
-\end{frame}
-
-\begin{frame}
-    \frametitle{Naive approach: unfolding}
-    \begin{center}
-    $\bm{\beta} = (\beta_{j,k})_{j \in \llbracket 1, J\rrbracket, k \in \llbracket 1, K\rrbracket}$ so $JK$ parameters to determine.\\[15 pt]
-    \end{center}
-    $$x^T \bm{\beta} \leadsto \sum\limits_{k}\sum\limits_{j}  \beta_{j,k} x_{j,k} \hspace{0.5 cm} \text{and} \hspace{0.5 cm} \lVert \bm{\beta} \rVert_1 = \sum\limits_{k}\sum\limits_{j} \lvert \beta_{j,k} \rvert$$
+    \frametitle{Naive approach for tensor data: unfolding}
     \begin{figure}
         \centering
         \includegraphics[scale = 0.15]{images/deplier.png}
         \caption{Unfolding a tensor}
     \end{figure}
-    \textbf{Limitation of lasso}: Elimination of features without specific consideration for the same feature at other times/ other features at the same time.
+    \begin{block}{Naive unfolding}
+    $$\bm{\beta} = (\beta_{j,k})_{j \in \llbracket 1, J\rrbracket, k \in \llbracket 1, K\rrbracket} \rightarrow JK\text{ parameters to determine}$$ 
+    $$\mathbf{x}^T \bm{\beta} \leadsto \sum\limits_{j,k}  \beta_{j,k} x_{j,k}$$
+    \end{block}
+    \textbf{Limitation}: No consideration of the tensor structure in the likelihood
+    
+    %Elimination of features without specific consideration for the same feature at other times/ other features at the same time.
     
 \end{frame}
 
 \begin{frame}
-    \frametitle{Group lasso}
+    \frametitle{Lasso penalization}
+    To many features (vs $I$) $\rightarrow$ penalization to control variance of prediction (overfitting).\\[10 pt]
+    Search for easily interpretable model $\rightarrow$ choice of lasso: 
+    \begin{block}{Lasso}
+    $$\text{penalization} = \lambda \lVert \bm{\beta} \rVert_1 \hspace{0.7 cm} (\lambda >0)$$
+    Function to maximize : 
+    $$ \text{penalized likelihood} =  \log(\mathcal{L}(\bm{\beta})) - \lambda \lVert \bm{\beta} \rVert_1 $$
+    \end{block}
+\vspace{5 pt}
+    \textbf{Limitation}: No consideration of the tensor structure in the penalization.
 
- \textbf{Common solution}: grouping regression coefficients together in the penalization.
- $$ \sum\limits_{j,k} |\beta_{j,k}|\leadsto \sum\limits_{g = 1}^G \lVert \bm{\beta}^g \rVert_2 $$
-
- Tendency to set regression coefficients to zero by entire blocks.\\[10 pt]
-
-\textbf{Downsides}: 
-\begin{itemize}
-    \item grouping either by mode or by variable, not both.
-    \item no tensor structure (or at least grouping of variables) in the likelihood term.\\[5 pt]
-\end{itemize}
     
-
 \end{frame}
 
-\subsection{Tensor logistic regression}
+
+% \begin{frame}
+%     \frametitle{Group lasso penalization}
+
+%  \textbf{Common solution}: grouping regression coefficients together in the penalization.
+%  $$ \sum\limits_{j,k} |\beta_{j,k}|\leadsto \sum\limits_{g = 1}^G \lVert \bm{\beta}^g \rVert_2 $$
+
+%  Tendency to set regression coefficients to zero by entire blocks.\\[15 pt]
+
+% \textbf{Limitation}: grouping either by mode or by variable, not both.
+
+% \end{frame}
+
 \begin{frame}
-    \frametitle{Tensor regression models}
+    \frametitle{Tensor regression model}
     \textbf{Idea}: each variable and mode has its own influence on the prediction (i.e. on $\bm{\beta}$) \cite{multi_rank_1}.\\[10 pt]
     \begin{overprint}
     \onslide<1>
@@ -223,9 +273,10 @@ $$P(Y = 1|x) = \frac{\exp(\beta_0 + \bm{x}^T\hspace{-2 pt}\bm{\beta})}{1 + \exp(
         \caption{Tensor structure of $\bm{\beta}$}
     \end{figure}
     \onslide<2>
-    \vspace{10 pt}
+    \begin{block}{Proposed rank 1 model}
     For $J$ variables observed on $K$ modalities (e.g. times)
-    $$\beta_{j,k} = \beta_j^J\beta_{k}^{K}$$
+    $$ \bm{\beta} = \bm{\beta}^K \circ \bm{\beta}^J \hspace{0.7 cm}  (\beta_{j,k} = \beta_j^J\beta_{k}^{K})$$
+    \end{block}
     $\beta_j$ : impact of variable $j$\\[5 pt]
     $\beta_k$ : impact of modality $k$\\[10 pt]
     Only $J+K$ parameters to determine (instead of $JK$).
@@ -236,23 +287,13 @@ $$P(Y = 1|x) = \frac{\exp(\beta_0 + \bm{x}^T\hspace{-2 pt}\bm{\beta})}{1 + \exp(
 \begin{frame}
     \frametitle{Limits of rank $1$}
     \vspace{10 pt}
-    \hspace{60pt} $\beta_{j,k} = \beta_j^J\beta_{k}^{K}$ implies that $\bm{\beta}$ looks like:
+    $\bm{\beta} = \bm{\beta}^K \circ \bm{\beta}^J$ \hspace{0.5 pt} implies a complete separation between columns and rows:
     \begin{figure}
-        \centering
-        \begin{minipage}{0.3\textwidth}
             \centering
-            \includegraphics[width=\textwidth]{images/square.png}
-            \caption{\centering Example of rank 1 pictogram (only 0 and 1)}
-        \end{minipage}
-        \hspace{0.1\textwidth}
-        \begin{minipage}{0.4\textwidth}
-            \centering
-            \includegraphics[width=\textwidth]{images/picto_500/heatmap_logistic_multibloc_simu_500_multiway.png}
-            \caption{\centering Example of rank 1 matrix (all values allowed)}
-        \end{minipage}
+            \includegraphics[width=0.5\textwidth]{images/picto_500/heatmap_logistic_multibloc_simu_500_multiway.png}
+            \caption{\centering Example of rank 1 matrix}
     \end{figure}
     \begin{center}
-        \vspace{5 pt}
         This can be too simplistic.
     \end{center}
 
@@ -260,33 +301,25 @@ $$P(Y = 1|x) = \frac{\exp(\beta_0 + \bm{x}^T\hspace{-2 pt}\bm{\beta})}{1 + \exp(
 \end{frame}
 
 \begin{frame}
-    \frametitle{Rank R tensor logistic regression \cite{multi_rank_r}}
-    \hspace{50 pt}Summing rank 1 together : $\beta_{j,k} = \sum\limits_{r = 1}^R \beta_{j,r}^J\beta_{k,r}^K$\\
+    \frametitle{Extension to rank $R$ \cite{multi_rank_r}}
+    \begin{block}{Rank R lasso penalized tensor model}
+    \hspace{50 pt}Summing rank 1 together : $\bm{\beta} = \sum\limits_{r = 1}^R \bm{\beta}_{r}^J \circ \bm{\beta}_{r}^K$\\[-10 pt]
+    $$ \text{lasso like penalization} =\lambda \sum\limits_{r = 1}^R  \lVert \bm{\beta}_r^J \circ \bm{\beta}_r^K \rVert_1  =  \lambda \sum\limits_{r = 1}^R\lVert \bm{\beta}_r^J \rVert_1 \lVert \bm{\beta}_r^K \rVert_1 $$
+    \end{block}
     % $$\beta_{j,k}x_{j,k} = \left( \sum\limits_{r = 1}^R \beta_{j,r}^J\beta_{k,r}^K \right) x_{j,k} = \sum\limits_{r = 1}^R \beta_{j,r}^J\beta_{k,r}^K \hspace{1 pt} x_{j,k}$$
     \vspace{-10 pt}
 \begin{figure}
-    \centering
-    \begin{minipage}{0.5\textwidth}
         \centering
-        \includegraphics[scale=0.25]{images/beta_tens_R.png}
-        \caption{Tensor structure of $\bm{\beta}$}
-    \end{minipage}
-    \hfill
-    \begin{minipage}{0.45\textwidth}
-        \centering
-        % Ajoutez votre équation ici
-        \[
-        \text{lasso} \leadsto  \lambda \sum\limits_{r = 1}^R \left( \lVert \bm{\beta}_r^J \rVert_1 \lVert \bm{\beta}_r^K \rVert_1 \right)
-        \]
-    \end{minipage}
+        \includegraphics[scale=0.19]{images/beta_tens_R.png}
+        \caption{Tensor structure of $\bm{\beta}$ for rank $2$}
+
 \end{figure}
+
 \end{frame}
 
-\subsection{Tensor multiblock logistic regression}
 \begin{frame}
  \frametitle{Blocks of variables}
-
- \textbf{Problem}: Several groups of variables of different natures (first order, shape, texture). But $\bm{\beta}_r^{K}$ and $\bm{\beta}_r^J$ common to all groups. $K_1 = K_2 = K_3$ needed or else:
+ \textbf{Aim}: GLM framework for multiblock tensor data.\\[10 pt]
 
  \begin{figure}
     \centering
@@ -307,7 +340,7 @@ $$P(Y = 1|x) = \frac{\exp(\beta_0 + \bm{x}^T\hspace{-2 pt}\bm{\beta})}{1 + \exp(
 % \end{frame}
 
 \begin{frame}
-    \frametitle{Tensor multiblock logistic regression}
+    \frametitle{Logistic model for tensor multiblock data}
     \vspace{10 pt}
     \textbf{Solution}: giving each block its own $\bm{\beta}^J$ and $\bm{\beta}^K$.\\[15 pt]
     \begin{figure}
@@ -319,105 +352,66 @@ $$P(Y = 1|x) = \frac{\exp(\beta_0 + \bm{x}^T\hspace{-2 pt}\bm{\beta})}{1 + \exp(
 
 \begin{frame}
     \frametitle{Tensor multiblock logistic regression}
-    Mathematically, this gives (for $L$ blocks):
-    $$\mathbf{x}^T\bm{\beta} \leadsto   \sum\limits_{\ell = 1}^L \sum\limits_{j,k} x_{j,k}^\ell(\beta_\ell)_{j,k}$$
-    With, for rank 1: $(\beta_\ell)_{j,k} = (\beta_\ell^{J})_j(\beta_\ell^{K})_k$\\[10 pt]
-    But each $\bm{\beta}_\ell$ can have a different rank $R_\ell$, which gives:
-    $$(\beta_\ell)_{j,k} = \sum\limits_{r = 1}^{R_\ell} (\beta_{\ell,r}^J)_j \, (\beta_{\ell,r}^K)_k $$
-    Lasso penalty $\leadsto \lambda \sum\limits_{\ell,r} \left( \lVert \bm{\beta}_{\ell,r}^K \rVert_1 \lVert \bm{\beta}_{\ell,r}^J \rVert_1 \right)$
+    \begin{block}{Scalar product for $L$ blocks}
+        $$\mathbf{x}^T\bm{\beta} \leadsto   \sum\limits_{\ell = 1}^L \sum\limits_{j,k} x_{j,k}^\ell(\beta_\ell)_{j,k}$$
+       \end{block}
+
+    \begin{block}{Regression coefficient for block $\ell$}
+    
+    $\bm{\beta}_\ell$ can have any rank $R_\ell$
+    $$\bm{\beta}_\ell = \sum\limits_{r = 1}^{R_\ell} \bm{\beta}_{\ell,r}^J \circ \bm{\beta}_{\ell,r}^K $$
+    \end{block}
+    \begin{block}{Penalization}
+        $$\text{Lasso like penalty} = \lambda \sum\limits_{\ell,r}\lVert \bm{\beta}_{\ell,r}^K \circ \bm{\beta}_{\ell,r}^J \rVert_1 = \lambda \sum\limits_{\ell,r}  \lVert \bm{\beta}_{\ell,r}^K \rVert_1 \lVert \bm{\beta}_{\ell,r}^J \rVert_1 $$
+    \end{block}
 \end{frame}
 
+\section{Maximizing penalized likelihood}
 \begin{frame}
-    \section{Fitting algorithm}
+\sectionpage
 \end{frame}
 
 \begin{frame}
 \frametitle{likelihood term}
-Likelihood term of the loss determined by
+\begin{block}{Scalar product of $x$ and $\bm{\beta}$}
 \begin{align}
-\mathbf{x}^T\bm{\beta} &=  \sum\limits_{\ell,r,j} \left(\sum\limits_{k}  x_{j,k}^\ell(\beta_{\ell,r}^{K})_k \, \right)(\beta_{\ell,r}^{J})_j\\
-&= \sum\limits_{\ell,r,k} \left(\sum\limits_{j}  x_{j,k}^\ell(\beta_{\ell,r}^{J})_j \, \right)(\beta_{\ell,r}^{K})_k
+\mathbf{x}^T\bm{\beta} &= \sum\limits_{\ell,r,j,k} x_{j,k}^\ell(\beta_{\ell,r}^J)_j(\beta_{\ell,r}^K)_k\\[-5 pt]
+&= \sum\limits_{\ell,r,j} \left(\sum\limits_{k}  x_{j,k}^\ell(\beta_{\ell,r}^{K})_k \, \right)(\beta_{\ell,r}^{J})_j
 \end{align}
+\end{block}
 
-\textbf{Strategy}: alternating logistic regressions (to optimize respectively $\bm{\beta}^J$ and $\bm{\beta}^K$).\\[5 pt]
-
-If a mode is inexistent in a block, renumber the modes of that block to perform the optimization on another (existing) mode of this block.
-
-\end{frame}
-
-\begin{frame}
-    \frametitle{Lasso penalty in fitting algorithm}
-
-    \begin{align}
-        \text{penalty} &\propto \sum\limits_{\ell,r} \left( \lVert \bm{\beta}_{\ell,r}^K \rVert_1 \lVert \bm{\beta}_{\ell,r}^J \rVert_1 \right)\\
-        &= \sum\limits_{\ell,r} \left( \left\lVert  \lVert\bm{\beta}_{\ell,r}^K \rVert_1  \bm{\beta}_{\ell,r}^J \right\rVert_1 \right)  = \sum\limits_{\ell,r} \left( \left\lVert  \lVert\bm{\beta}_{\ell,r}^J \rVert_1  \bm{\beta}_{\ell,r}^K \right\rVert_1  \right)
-    \end{align}
-    \onslide<2->{
-    \textbf{Strategy}: dilate $\bm{\beta}_{\ell,r}^J$ by $\lVert \bm{\beta}_{\ell,r}^K\rVert_1$ and $x_{j,k}^\ell$ by $\lVert \bm{\beta}_{\ell,r}^K\rVert_1^{-1}$, so
-    $$\mathbf{x}^T\bm{\beta} =  \sum\limits_{j,\ell,r} \left(\sum\limits_{k}  x_{j,k}^\ell(\beta_{\ell,r}^{K})_k \, \right)(\beta_{\ell,r}^{J})_j$$
-     does not change but 
-     $$\lVert \bm{\beta}^J \rVert_1 \leadsto\sum\limits_{\ell,r} \left( \lVert \bm{\beta}_{\ell,r}^K \rVert_1 \lVert \bm{\beta}_{\ell,r}^J \rVert_1 \right) $$
-    }
-    \onslide<3->{
-    \noindent Then, do logistic lasso regression with $\mathbf{x} = (x_{ijk}^l\lVert \bm{\beta}_{\ell,r}^K\rVert_1^{-1})$ and $\lambda$ penalty coefficient to find $\left((\beta_{\ell,r}^J)_j\lVert \bm{\beta}_{\ell,r}^K \rVert_1 \right)$.}
+\begin{block}{Partial optimization problem}
+ Optimizing along mode $J$ $\Leftrightarrow$ solving a logistic regression on weighted aggregated data $\sum\limits_{k}  x_{j,k}^\ell(\beta_{\ell,r}^{K})_k $
+\end{block}
+\begin{block}{Algorihm}
+Analgue result for mode $K$. Possibility to optimize the likelihood by alternating between modes (can be easily adapted for lasso penalization)
+\end{block}
+% If a mode is inexistent in a block, renumber the modes of that block to perform the optimization on another (existing) mode of this block.
 
 \end{frame}
 
+
+
+
+\section{Tests on simulated data and application to liver tumor classification}  
 \begin{frame}
-    \frametitle{Stopping criterion}
-    Before each optimization cycle, calculate the loss:
-    $$C= - \log(\mathcal{L}(\bm{\beta})) + \text{penalty}$$
-    Before the t-th optimization cycle, its value is $C^{t}$ and after this cycle it becomes $C^{t + 1}$.\\[5 pt]
-    End the optimization when:
-    $$ |C^{t + 1} - C^t| < \epsilon |C^t|$$
-    (typically $\epsilon = 10^{-4}$)
+  \sectionpage
 \end{frame}
 
 
-
-
 \begin{frame}
-    \section{Simulations and results}    
-\end{frame}
-
-\begin{frame}
-    \frametitle{Aim of the simulations}
-    Allow to choose 
-    \begin{itemize}
-        \item Difficulty of the classification (overlap between classes, distance between means of classes etc ...)\\[6 pt]
-        \item Balance between classes\\[6 pt]
-        \item Structure of the regression parameter $\bm{\beta}$ (several blocks)\\[12 pt] 
-    \end{itemize}
-    Allow to evaluate
-    \begin{itemize}
-    \item Quality of the classification (Area Under the ROC Curve : AUC)\\[6 pt]
-    \item Quality of the reconstruction of $\bm{\beta}$ \nocite{picto}
-    \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Illustration in 2D}
+    \frametitle{Data generation: example in 2D}
 
     \begin{figure}
         \centering
         \includegraphics[scale = 0.2]{images/2D_better.png}
         \caption{Example of explanatory variables for $\bm{\beta} = (-2,1)$}
     \end{figure}
+    Possibility to choose $(\sigma_\beta,\sigma_{\text{noise}})$ to define the problem difficulty.
 \end{frame}
 
 \begin{frame}
-    \frametitle{Data generation}
-    Choose the $\bm{\beta}$ to be reconstructed (pictograms).\\[10 pt]
-    Generate the $(\mathbf{x}_i)_{i \in \llbracket 1, I\rrbracket}$ with 2 multivariate normal laws of means $\bm{\mu}_0$ and $\bm{\mu}_1$ and common covariance matrix $\bm{\Sigma}$ such that:
-    \begin{itemize}
-        \item $\bm{\mu}_1 - \bm{\mu}_0$ colinear to $\bm{\beta}$\\[10 pt]
-        \item One of the principal axis of $\bm{\Sigma}$ colinear to $\bm{\beta}$
-    \end{itemize}
-    Separation of classes linked with eigenvalues of $\bm{\Sigma}$ (to be compared with $\lVert\bm{\mu}_1 - \bm{\mu}_0 \rVert$).
-\end{frame}
-
-\begin{frame}
-    \frametitle{AUC simulated data}
+    \frametitle{AUC on simulated data}
     \begin{figure}
         \begin{table}[H]
             \centering
@@ -441,7 +435,7 @@ If a mode is inexistent in a block, renumber the modes of that block to perform 
     \begin{figure}
         \centering
         \includegraphics[scale = 0.12]{images/3_picto.png}
-        \caption{Pictogram of shape $66 \times 117$}
+        \caption{Pictogram of shape $66 \times 117$ representing the $\bm{\beta}$ to be reconstructed (pixel red is $1$, white is $0$)}
     \end{figure}
 
 \end{frame}
@@ -478,28 +472,25 @@ If a mode is inexistent in a block, renumber the modes of that block to perform 
     \end{figure}
 \end{frame}
 
-\begin{frame}
-    \frametitle{Interpretation of the results}
-    Better reconstruction by tensor multiblock logistic model.\\[10 pt]
-    Performance (AUC) in adequation with quality of reconstruction (because small changes in $\bm{\beta}$ $\leadsto$ big changes in the classification, when $\sigma_{\text{noise}}$ increases).\\[10 pt]
-    Efficient sparse (low rank) approximation of pictograms by tensor multiblock logistic model in contrast with simple tensor model.\\[10 pt]
-    Tendency to choose rank $1$ for both tensor model when too few data (or too high noise).
+% \begin{frame}
+%     \frametitle{Interpretation of the results}
+%     Better reconstruction by tensor multiblock logistic model.\\[10 pt]
+%     Performance (AUC) in adequation with quality of reconstruction (because small changes in $\bm{\beta}$ $\leadsto$ big changes in the classification, when $\sigma_{\text{noise}}$ increases).\\[10 pt]
+%     Efficient sparse (low rank) approximation of pictograms by tensor multiblock logistic model in contrast with simple tensor model.\\[10 pt]
+%     Tendency to choose rank $1$ for both tensor model when too few data (or too high noise).
 
-\end{frame}
+% \end{frame}
 
-\begin{frame}
-    \section{Application of proposed logistic regression to liver tumor classification}
-\end{frame}
 
-\begin{frame}
-    \frametitle{Feature extraction with pyradiomics \cite{pyradio}}
-    Extraction of $\simeq  100$ features (about intensities, shape, texture) for each $2$D or $3$D image.\\[10 pt]
-    \begin{figure}
-        \centering
-        \includegraphics[scale = 0.15]{images/features.png}
-        \caption{Feature extraction with pyradiomics for an MRI image composed of $4$ slices}
-    \end{figure}
-\end{frame}
+% \begin{frame}
+%     \frametitle{Feature extraction with pyradiomics \cite{pyradio}}
+%     Extraction of $\simeq  100$ features (about intensities, shape, texture) for each $2$D or $3$D image.\\[10 pt]
+%     \begin{figure}
+%         \centering
+%         \includegraphics[scale = 0.15]{images/features.png}
+%         \caption{Feature extraction with pyradiomics for an MRI image composed of $4$ slices}
+%     \end{figure}
+% \end{frame}
 
 % \begin{frame}
 %     \frametitle{Feature extraction in 3D}
@@ -550,19 +541,18 @@ If a mode is inexistent in a block, renumber the modes of that block to perform 
 % \end{frame}
 
 \begin{frame}
-    \frametitle{Results}
+    \frametitle{Results on liver tumor data}
     \begin{table}[H]
         \centering
         \label{tab:result_real}
         \renewcommand{\arraystretch}{1.2} 
         \begin{adjustbox}{center}
-        \begin{tabular}{|>{\centering\arraybackslash}m{1.4cm}|>{\centering\arraybackslash}m{1.1cm}|>{\centering\arraybackslash}m{1.1cm}|>{\centering\arraybackslash}m{1.1cm}|>{\centering\arraybackslash}m{1.1cm}|>{\centering\arraybackslash}m{1.1cm}|>{\centering\arraybackslash}m{1.1cm}|}
-            \cline{1-7}
-            Type of data & lasso & g.l. (block) & g.l. (time)& g.l. (var) & tensor & tensor blocks\\
-            \cline{1-7} 
-            3D & $0.74 \pm 0.04$& $0.78 \pm 0.03$ & $0.76 \pm 0.03$ & $0.73 \pm 0.03$ & $0.77 \pm 0.03$ & $0.77 \pm 0.03$ \\
-            \cline{1-7}
-    
+        \begin{tabular}{|>{\centering\arraybackslash}m{1.1cm}|>{\centering\arraybackslash}m{1.8cm}|>{\centering\arraybackslash}m{1.8cm}|>{\centering\arraybackslash}m{1.8cm}|>{\centering\arraybackslash}m{1.1cm}|>{\centering\arraybackslash}m{1.1cm}|}
+            \cline{1-6}
+             lasso & group lasso (block) & group lasso (time)& group lasso (var) & tensor & tensor blocks\\
+            \cline{1-6} 
+             $0.74 \pm 0.04$& $0.78 \pm 0.03$ & $0.76 \pm 0.03$ & $0.73 \pm 0.03$ & $0.77 \pm 0.03$ & $0.77 \pm 0.03$ \\
+            \cline{1-6}
         \end{tabular}
         
     \end{adjustbox}
@@ -570,20 +560,9 @@ If a mode is inexistent in a block, renumber the modes of that block to perform 
     \vspace{0.2 cm}    
     \centering \small Cross validated AUC on 3D real data}
     \vspace{0.3 cm}
-    
-    \begin{adjustbox}{center}
-    \begin{tabular}{|>{\centering\arraybackslash}m{1.2cm}|>{\centering\arraybackslash}m{1cm}|>{\centering\arraybackslash}m{1cm}|>{\centering\arraybackslash}m{1cm}|>{\centering\arraybackslash}m{1cm}|>{\centering\arraybackslash}m{1cm}|>{\centering\arraybackslash}m{1cm}|>{\centering\arraybackslash}m{1cm}|}
-        \cline{1-8}
-        Type of data & lasso & g.l. (block) & g.l. (slice)& g.l. (time)& g.l. (var) & tensor & tensor blocks\\
-        \cline{1-8} 
-        2D & $0.73 \pm 0.03$ & $0.71 \pm 0.03$ & $0.70 \pm 0.04$ & $0.71 \pm 0.03 $  & $0.71 \pm 0.03$ & $0.66 \pm 0.04$ & $0.71 \pm 0.03$ \\
-        \cline{1-8}
-    \end{tabular}
-    \end{adjustbox}
-    \parbox{0.9\textwidth}{
-    \vspace{0.2 cm}    
-    \centering \small Cross validated AUC on 2D real data}
     \end{table}
+
+    Good results of tensor models on real data, but better explainability (less parameters).
 \end{frame}
 
 \begin{frame}
@@ -649,9 +628,9 @@ If a mode is inexistent in a block, renumber the modes of that block to perform 
 %     Supportive, available and calm supervision (even as deadlines approach)\\[10 pt]
 %     Looking forward to continuing in this direction
 % \end{frame}
-
-\begin{frame}
 \section*{Bibliography}
+\begin{frame}
+\sectionpage
 \end{frame}
 
 
@@ -660,6 +639,50 @@ If a mode is inexistent in a block, renumber the modes of that block to perform 
     \bibliography{bibliography.bib} 
     \end{frame}
 
+    \section*{Annex}
+\begin{frame}
+\sectionpage
+\end{frame}
 
+\begin{frame}
+    \frametitle{Lasso penalty in fitting algorithm}
+
+    \begin{align}
+        \text{penalty} &\propto \sum\limits_{\ell,r} \left( \lVert \bm{\beta}_{\ell,r}^K \rVert_1 \lVert \bm{\beta}_{\ell,r}^J \rVert_1 \right)\\
+        &= \sum\limits_{\ell,r} \left( \left\lVert  \lVert\bm{\beta}_{\ell,r}^K \rVert_1  \bm{\beta}_{\ell,r}^J \right\rVert_1 \right)  = \sum\limits_{\ell,r} \left( \left\lVert  \lVert\bm{\beta}_{\ell,r}^J \rVert_1  \bm{\beta}_{\ell,r}^K \right\rVert_1  \right)
+    \end{align}
+    \onslide<2->{
+    \textbf{Strategy}: dilate $\bm{\beta}_{\ell,r}^J$ by $\lVert \bm{\beta}_{\ell,r}^K\rVert_1$ and $x_{j,k}^\ell$ by $\lVert \bm{\beta}_{\ell,r}^K\rVert_1^{-1}$, so
+    $$\mathbf{x}^T\bm{\beta} =  \sum\limits_{j,\ell,r} \left(\sum\limits_{k}  x_{j,k}^\ell(\beta_{\ell,r}^{K})_k \, \right)(\beta_{\ell,r}^{J})_j$$
+     does not change but 
+     $$\lVert \bm{\beta}^J \rVert_1 \leadsto\sum\limits_{\ell,r} \left( \lVert \bm{\beta}_{\ell,r}^K \rVert_1 \lVert \bm{\beta}_{\ell,r}^J \rVert_1 \right) $$
+    }
+    \onslide<3->{
+    \noindent Then, do logistic lasso regression with $\mathbf{x} = (x_{ijk}^l\lVert \bm{\beta}_{\ell,r}^K\rVert_1^{-1})$ and $\lambda$ penalty coefficient to find $\left((\beta_{\ell,r}^J)_j\lVert \bm{\beta}_{\ell,r}^K \rVert_1 \right)$.}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Stopping criterion}
+    \begin{block}{Penalized likelihood}
+    $$C=  \log(\mathcal{L}(\bm{\beta})) -\text{penalty}$$
+    \end{block}
+    Before the t-th optimization cycle, its value is $C^{t}$ and after this cycle it becomes $C^{t + 1}$.\\[5 pt]
+    \begin{block}{Stopping criterion}
+    $$ |C^{t + 1} - C^t| < \epsilon |C^t|$$
+    \end{block}
+    (typically $\epsilon = 10^{-4}$)
+\end{frame}
+
+\begin{frame}
+    \frametitle{Data generation}
+    Choose the $\bm{\beta}$ to be reconstructed (pictograms).\\[10 pt]
+    Generate the $(\mathbf{x}_i)_{i \in \llbracket 1, I\rrbracket}$ with 2 multivariate normal laws of means $\bm{\mu}_0$ and $\bm{\mu}_1$ and common covariance matrix $\bm{\Sigma}$ such that:
+    \begin{itemize}
+        \item $\bm{\mu}_1 - \bm{\mu}_0$ colinear to $\bm{\beta}$\\[10 pt]
+        \item One of the principal axis of $\bm{\Sigma}$ colinear to $\bm{\beta}$
+    \end{itemize}
+    Separation of classes linked with eigenvalues of $\bm{\Sigma}$ (to be compared with $\lVert\bm{\mu}_1 - \bm{\mu}_0 \rVert$).
+\end{frame}
 
 \end{document}
