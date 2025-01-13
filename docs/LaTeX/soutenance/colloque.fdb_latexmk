@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex colloque"] 0 "colloque.aux" "colloque.bbl" "colloque" 1736766143.38994 -1
+["bibtex colloque"] 0 "colloque.aux" "colloque.bbl" "colloque" 1736766526.13614 -1
   "./bibliography.bib" 1732033505.04967 7534 2ec5c87ac8035dde392c85ed31085289 ""
   "/usr/local/share/miktex-texmf/bibtex/bst/bibtex/plain.bst" 1726308370.06082 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
-  "colloque.aux" 1736766143.08468 11818 beaba54613c7fca51503fe0f0ed2e47b "pdflatex"
+  "colloque.aux" 1736766525.82771 11818 beaba54613c7fca51503fe0f0ed2e47b "pdflatex"
   (generated)
   "colloque.bbl"
   "colloque.blg"
   (rewritten before read)
-["pdflatex"] 1736766141.37566 "/home/alexandre/Documents/Stage-3A/docs/LaTeX/soutenance/colloque.tex" "colloque.pdf" "colloque" 1736766143.39005 0
+["pdflatex"] 1736766524.07736 "/home/alexandre/Documents/Stage-3A/docs/LaTeX/soutenance/colloque.tex" "colloque.pdf" "colloque" 1736766526.13626 0
   "/home/alexandre/.miktex/texmfs/data/fonts/map/pdftex/pdftex.map" 1732283299.19307 90367 3f0a9c9c6d2ed0a26b36cc110c4d8fdc ""
   "/home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/tcss1095.pk" 1732270935.38255 11640 9c46dda962dd0e819c90a5b9d4d4daa9 ""
   "/home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi657/ecso1000.pk" 1732274772.93584 33196 e145b9b6846c0385cc9e1494d1af2c74 ""
@@ -120,7 +120,7 @@
   "/home/alexandre/.miktex/texmfs/install/tex/latex/translator/translator-theorem-dictionary-English.dict" 1732266352.01323 3523 1f9d9b91f7d78b73e74c7e97bca30fb0 ""
   "/home/alexandre/.miktex/texmfs/install/tex/latex/translator/translator.sty" 1732266352.01323 8765 56d370785f0143111ff9898b5adfe08e ""
   "/home/alexandre/.miktex/texmfs/install/tex/latex/varwidth/varwidth.sty" 1731076540.80071 10894 d359a13923460b2a73d4312d613554c8 ""
-  "/home/alexandre/Documents/Stage-3A/docs/LaTeX/soutenance/colloque.tex" 1736766141.07768 27286 0e46532ad0682ba03216718a1363c352 ""
+  "/home/alexandre/Documents/Stage-3A/docs/LaTeX/soutenance/colloque.tex" 1736766523.78571 27329 076dde5da2de188e5b479d5f5a06cc2c ""
   "/usr/local/share/miktex-texmf/fonts/tfm/jknappen/ec/ecso1000.tfm" 1726308370.54883 3352 e0c1f9db9b36126db0457e2b60fb63ee ""
   "/usr/local/share/miktex-texmf/fonts/tfm/jknappen/ec/tcss1095.tfm" 1726308370.55283 1476 a5029f05f7a73d73a725274ff87f9765 ""
   "/usr/local/share/miktex-texmf/fonts/tfm/public/amsfonts/cmextra/cmbsy5.tfm" 1726308367.20781 1120 1e8878807317373affa7f7bba4cf2f6a ""
@@ -341,12 +341,12 @@
   "/usr/local/share/miktex-texmf/tex/latex/url/url.sty" 1726308374.70184 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "/usr/local/share/miktex-texmf/tex/latex/xcolor/xcolor.sty" 1726308374.73784 55487 80a65caedd3722f4c20a14a69e785d8f ""
   "/usr/local/share/miktex-texmf/tex/latex/xkeyval/xkeyval.sty" 1726308374.80884 4937 4ce600ce9bd4ec84d0250eb6892fcf4f ""
-  "colloque.aux" 1736766143.08468 11818 beaba54613c7fca51503fe0f0ed2e47b "pdflatex"
+  "colloque.aux" 1736766525.82771 11818 beaba54613c7fca51503fe0f0ed2e47b "pdflatex"
   "colloque.bbl" 1736765574.29963 1470 bf0887fafe13570a188d3a163d309a8c "bibtex colloque"
-  "colloque.nav" 1736766143.08568 5893 8ce54721555c6579122b40ed0ac05e7c "pdflatex"
-  "colloque.out" 1736766143.08568 1699 f01fa34ec0478cb6059dbb7f356966ff "pdflatex"
-  "colloque.tex" 1736766141.07768 27286 0e46532ad0682ba03216718a1363c352 ""
-  "colloque.toc" 1736766143.08568 512 4955c14242c05763d1936eedea545f19 "pdflatex"
+  "colloque.nav" 1736766525.82871 5893 8ce54721555c6579122b40ed0ac05e7c "pdflatex"
+  "colloque.out" 1736766525.82871 1699 f01fa34ec0478cb6059dbb7f356966ff "pdflatex"
+  "colloque.tex" 1736766523.78571 27329 076dde5da2de188e5b479d5f5a06cc2c ""
+  "colloque.toc" 1736766525.82871 512 4955c14242c05763d1936eedea545f19 "pdflatex"
   "images/2D_better.png" 1732636176.63108 243224 a0cc4a3e197ba51d71aa117ab5c237a6 ""
   "images/3_picto.png" 1732033505.06967 2453 b9ae2356cb58cf0a01ae1bf793fd9422 ""
   "images/HCC.png" 1732270612.57299 317202 92ee9597d14eac782f68de9b18729793 ""

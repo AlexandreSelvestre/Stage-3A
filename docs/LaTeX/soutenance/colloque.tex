@@ -101,19 +101,19 @@
 
 \begin{frame}
     \frametitle{Tensor data}
-  Measuring the same variables across several modalities (position, time, etc...) $\rightarrow$ features with tensor structure
+  Measuring the same variables across several modalities (position, time, etc...) $\rightarrow$ features with tensor structure.
     \begin{figure}
         \centering
         \includegraphics[scale = 0.23]{images/tensor_mode.png}
         \caption{Type of data: tensorial}
     \end{figure}
 
-\textbf{Warning}: Often strong correlation between features of the same variable across different modalities $\rightarrow$ adapt the model to this structure
+\textbf{Warning}: Often strong correlation between features of the same variable across different modalities $\rightarrow$ adapt the model to this structure.
 \end{frame}
 
 \begin{frame}
     \frametitle{Multiblock data}
-Each block is a tensor with its own structure
+Each block is a tensor with its own structure.
     \begin{figure}
         \centering
         \includegraphics[scale = 0.25]{images/blocks.png}
@@ -131,7 +131,7 @@ Each block is a tensor with its own structure
     $\bullet$ MRI images in 3D of liver tumors. Information about grey levels, shape and correlations  $\rightarrow$ \textbf{multiblock structure}\\[5 pt]
     $\bullet$ Also include univariate features: gender and age\\[10 pt]
 
-    \textbf{Conclusion}: \textbf{Multiblock tensor data} $\rightarrow$ train a tensor multiblock logistic regression model
+    \textbf{Conclusion}: \textbf{Multiblock tensor data} $\rightarrow$ train a tensor multiblock logistic regression model.
     
 \end{frame}
 
@@ -164,17 +164,17 @@ Each block is a tensor with its own structure
 \end{align}
 $$P(Y = 1|x) = \frac{\exp(\beta_0 + \bm{x}^T\hspace{-2 pt}\bm{\beta})}{1 + \exp(\beta_0 + \bm{x}^T\hspace{-2 pt}\bm{\beta})}$$
 \phantom{a}\\[10 pt]
-    Defines a likelihood function $\mathcal{L}(\bm{\beta}) = \prod_{i = 1}^I P(Y_i = y_i|x_i)$ 
+    Defines a likelihood function $\mathcal{L}(\bm{\beta}) = \prod_{i = 1}^I P(Y_i = y_i|x_i)$ .
 
 \end{frame}
 
 \begin{frame}
     \frametitle{penalization}
     To many features (vs $I$) $\rightarrow$ need to limit variance of prediction.\\[10 pt]
-    Search for sparse easily interpretable model: choice of lasso $$\text{penalization} = \lambda \lVert \bm{\beta} \rVert_1 \hspace{0.7 cm} (\lambda >0)$$
+    Search for sparse easily interpretable model $\rightarrow$ choice of lasso: $$\text{penalization} = \lambda \lVert \bm{\beta} \rVert_1 \hspace{0.7 cm} (\lambda >0)$$
     Function to minimize : 
     $$- \log(\mathcal{L}(\bm{\beta})) + \lambda \lVert \bm{\beta} \rVert_1 $$
-    Convex optimization problem
+    Convex optimization problem.
 
     
 \end{frame}
@@ -182,7 +182,7 @@ $$P(Y = 1|x) = \frac{\exp(\beta_0 + \bm{x}^T\hspace{-2 pt}\bm{\beta})}{1 + \exp(
 \begin{frame}
     \frametitle{Naive approach: unfolding}
     \begin{center}
-    $\bm{\beta} = (\beta_{j,k})_{j \in \llbracket 1, J\rrbracket, k \in \llbracket 1, K\rrbracket}$ so $JK$ parameters to determine\\[15 pt]
+    $\bm{\beta} = (\beta_{j,k})_{j \in \llbracket 1, J\rrbracket, k \in \llbracket 1, K\rrbracket}$ so $JK$ parameters to determine.\\[15 pt]
     \end{center}
     $$x^T \bm{\beta} \leadsto \sum\limits_{k}\sum\limits_{j}  \beta_{j,k} x_{j,k} \hspace{0.5 cm} \text{and} \hspace{0.5 cm} \lVert \bm{\beta} \rVert_1 = \sum\limits_{k}\sum\limits_{j} \lvert \beta_{j,k} \rvert$$
     \begin{figure}
@@ -190,14 +190,14 @@ $$P(Y = 1|x) = \frac{\exp(\beta_0 + \bm{x}^T\hspace{-2 pt}\bm{\beta})}{1 + \exp(
         \includegraphics[scale = 0.15]{images/deplier.png}
         \caption{Unfolding a tensor}
     \end{figure}
-    \textbf{Limitation of lasso}: Elimination of features without specific consideration for the same feature at other times/ other features at the same time
+    \textbf{Limitation of lasso}: Elimination of features without specific consideration for the same feature at other times/ other features at the same time.
     
 \end{frame}
 
 \begin{frame}
     \frametitle{Group lasso}
 
- \textbf{Common solution}: grouping regression coefficients together in the penalization
+ \textbf{Common solution}: grouping regression coefficients together in the penalization.
  $$ \sum\limits_{j,k} |\beta_{j,k}|\leadsto \sum\limits_{g = 1}^G \lVert \bm{\beta}^g \rVert_2 $$
 
  Tendency to set regression coefficients to zero by entire blocks.\\[10 pt]
@@ -205,7 +205,7 @@ $$P(Y = 1|x) = \frac{\exp(\beta_0 + \bm{x}^T\hspace{-2 pt}\bm{\beta})}{1 + \exp(
 \textbf{Downsides}: 
 \begin{itemize}
     \item grouping either by mode or by variable, not both.
-    \item No tensor structure (or at least grouping of variables) in the likelihood term.\\[5 pt]
+    \item no tensor structure (or at least grouping of variables) in the likelihood term.\\[5 pt]
 \end{itemize}
     
 
@@ -228,7 +228,7 @@ $$P(Y = 1|x) = \frac{\exp(\beta_0 + \bm{x}^T\hspace{-2 pt}\bm{\beta})}{1 + \exp(
     $$\beta_{j,k} = \beta_j^J\beta_{k}^{K}$$
     $\beta_j$ : impact of variable $j$\\[5 pt]
     $\beta_k$ : impact of modality $k$\\[10 pt]
-    Only $J+K$ parameters to determine (instead of $JK$)
+    Only $J+K$ parameters to determine (instead of $JK$).
     
 \end{overprint}
 \end{frame}
@@ -253,7 +253,7 @@ $$P(Y = 1|x) = \frac{\exp(\beta_0 + \bm{x}^T\hspace{-2 pt}\bm{\beta})}{1 + \exp(
     \end{figure}
     \begin{center}
         \vspace{5 pt}
-        This can be too simplistic
+        This can be too simplistic.
     \end{center}
 
 
@@ -309,7 +309,7 @@ $$P(Y = 1|x) = \frac{\exp(\beta_0 + \bm{x}^T\hspace{-2 pt}\bm{\beta})}{1 + \exp(
 \begin{frame}
     \frametitle{Tensor multiblock logistic regression}
     \vspace{10 pt}
-    \textbf{Solution}: giving each block its own $\bm{\beta}^J$ and $\bm{\beta}^K$\\[15 pt]
+    \textbf{Solution}: giving each block its own $\bm{\beta}^J$ and $\bm{\beta}^K$.\\[15 pt]
     \begin{figure}
         \centering
         \includegraphics[scale = 0.28]{images/beta_blocks.png}
@@ -339,9 +339,9 @@ Likelihood term of the loss determined by
 &= \sum\limits_{\ell,r,k} \left(\sum\limits_{j}  x_{j,k}^\ell(\beta_{\ell,r}^{J})_j \, \right)(\beta_{\ell,r}^{K})_k
 \end{align}
 
-\textbf{Strategy}: alternating logistic regressions (to optimize respectively $\bm{\beta}^J$ and $\bm{\beta}^K$)\\[5 pt]
+\textbf{Strategy}: alternating logistic regressions (to optimize respectively $\bm{\beta}^J$ and $\bm{\beta}^K$).\\[5 pt]
 
-If a mode is inexistent in a block, renumber the modes of that block to perform the optimization on another (existing) mode of this block
+If a mode is inexistent in a block, renumber the modes of that block to perform the optimization on another (existing) mode of this block.
 
 \end{frame}
 
@@ -359,7 +359,7 @@ If a mode is inexistent in a block, renumber the modes of that block to perform 
      $$\lVert \bm{\beta}^J \rVert_1 \leadsto\sum\limits_{\ell,r} \left( \lVert \bm{\beta}_{\ell,r}^K \rVert_1 \lVert \bm{\beta}_{\ell,r}^J \rVert_1 \right) $$
     }
     \onslide<3->{
-    \noindent Then, do logistic lasso regression with $\mathbf{x} = (x_{ijk}^l\lVert \bm{\beta}_{\ell,r}^K\rVert_1^{-1})$ and $\lambda$ penalty coefficient to find $\left((\beta_{\ell,r}^J)_j\lVert \bm{\beta}_{\ell,r}^K \rVert_1 \right)$}
+    \noindent Then, do logistic lasso regression with $\mathbf{x} = (x_{ijk}^l\lVert \bm{\beta}_{\ell,r}^K\rVert_1^{-1})$ and $\lambda$ penalty coefficient to find $\left((\beta_{\ell,r}^J)_j\lVert \bm{\beta}_{\ell,r}^K \rVert_1 \right)$.}
 
 \end{frame}
 
@@ -367,7 +367,7 @@ If a mode is inexistent in a block, renumber the modes of that block to perform 
     \frametitle{Stopping criterion}
     Before each optimization cycle, calculate the loss:
     $$C= - \log(\mathcal{L}(\bm{\beta})) + \text{penalty}$$
-    Before the t-th optimization cycle, its value is $C^{t}$ and after this cycle it becomes $C^{t + 1}$\\[5 pt]
+    Before the t-th optimization cycle, its value is $C^{t}$ and after this cycle it becomes $C^{t + 1}$.\\[5 pt]
     End the optimization when:
     $$ |C^{t + 1} - C^t| < \epsilon |C^t|$$
     (typically $\epsilon = 10^{-4}$)
@@ -407,13 +407,13 @@ If a mode is inexistent in a block, renumber the modes of that block to perform 
 
 \begin{frame}
     \frametitle{Data generation}
-    Choose the $\bm{\beta}$ to be reconstructed (pictograms)\\[10 pt]
+    Choose the $\bm{\beta}$ to be reconstructed (pictograms).\\[10 pt]
     Generate the $(\mathbf{x}_i)_{i \in \llbracket 1, I\rrbracket}$ with 2 multivariate normal laws of means $\bm{\mu}_0$ and $\bm{\mu}_1$ and common covariance matrix $\bm{\Sigma}$ such that:
     \begin{itemize}
         \item $\bm{\mu}_1 - \bm{\mu}_0$ colinear to $\bm{\beta}$\\[10 pt]
         \item One of the principal axis of $\bm{\Sigma}$ colinear to $\bm{\beta}$
     \end{itemize}
-    Separation of classes linked with eigenvalues of $\bm{\Sigma}$ (to be compared with $\lVert\bm{\mu}_1 - \bm{\mu}_0 \rVert$)
+    Separation of classes linked with eigenvalues of $\bm{\Sigma}$ (to be compared with $\lVert\bm{\mu}_1 - \bm{\mu}_0 \rVert$).
 \end{frame}
 
 \begin{frame}
@@ -480,10 +480,10 @@ If a mode is inexistent in a block, renumber the modes of that block to perform 
 
 \begin{frame}
     \frametitle{Interpretation of the results}
-    Better reconstruction by tensor multiblock logistic model\\[10 pt]
-    Performance (AUC) in adequation with quality of reconstruction (because small changes in $\bm{\beta}$ $\leadsto$ big changes in the classification, when $\sigma_{\text{noise}}$ increases)\\[10 pt]
+    Better reconstruction by tensor multiblock logistic model.\\[10 pt]
+    Performance (AUC) in adequation with quality of reconstruction (because small changes in $\bm{\beta}$ $\leadsto$ big changes in the classification, when $\sigma_{\text{noise}}$ increases).\\[10 pt]
     Efficient sparse (low rank) approximation of pictograms by tensor multiblock logistic model in contrast with simple tensor model.\\[10 pt]
-    Tendency to choose rank $1$ for both tensor model when too few data (or too high noise)
+    Tendency to choose rank $1$ for both tensor model when too few data (or too high noise).
 
 \end{frame}
 
@@ -588,11 +588,11 @@ If a mode is inexistent in a block, renumber the modes of that block to perform 
 
 \begin{frame}
     \frametitle{Conclusion}
-    State of the art performances\\[15 pt]
-    Better than state of the art in simulated data when few overlapping between classes\\[15 pt]
-    Scales better than regular logistic regression for high order tensors\\[15 pt]
-    Lowers the complexity of the regression model an therefore reduces overfitting\\[15 pt]
-    Good interpretability (sparse + displays importance of each block, mode and variable in $\bm{\beta}$)
+    State of the art performances.\\[15 pt]
+    Better than state of the art in simulated data when few overlapping between classes.\\[15 pt]
+    Scales better than regular logistic regression for high order tensors.\\[15 pt]
+    Lowers the complexity of the regression model an therefore reduces overfitting.\\[15 pt]
+    Good interpretability (sparse + displays importance of each block, mode and variable in $\bm{\beta}$).
 
 \end{frame}
 
@@ -620,10 +620,10 @@ If a mode is inexistent in a block, renumber the modes of that block to perform 
 
 \begin{frame}
     \frametitle{Further work}
-    Testing on other real datasets wether the performances on the simulated dataset can be replicated\\[10 pt]
-    Testing other penalizations (group lasso, elastic net)\\[10 pt]
+    Testing on other real datasets wether the performances on the simulated dataset can be replicated.\\[10 pt]
+    Testing other penalizations (group lasso, elastic net).\\[10 pt]
     Extending the multiblock approach to other classical machine learning algorithms (other GLMs, SVM etc...). Comparing it to CNN.\\[10 pt]
-    Improving the optimization, by using coordinate descent (as done in glmnet \cite{glmnet} in R)
+    Improving the optimization, by using coordinate descent (as done in glmnet \cite{glmnet} in R).
 \end{frame}
 
 % \begin{frame}
