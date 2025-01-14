@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.10.15)  13 JAN 2025 18:51
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.10.15)  14 JAN 2025 12:29
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1056,11 +1056,11 @@ Package pdftex.def Info: images/deplier.png  used on input line 235.
 [12
 
 ]
-<images/beta_tens.png, id=459, 528.47438pt x 473.51906pt>
+<images/beta_tens.png, id=459, 602.25pt x 473.51906pt>
 File: images/beta_tens.png Graphic file (type png)
 <use images/beta_tens.png>
 Package pdftex.def Info: images/beta_tens.png  used on input line 285.
-(pdftex.def)             Requested size: 158.54353pt x 142.05681pt.
+(pdftex.def)             Requested size: 180.67639pt x 142.05681pt.
 LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <10> not available
 (Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 285.
 LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <7> not available
@@ -1075,17 +1075,17 @@ LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <5> not available
 File: images/beta_tens.png Graphic file (type png)
 <use images/beta_tens.png>
 Package pdftex.def Info: images/beta_tens.png  used on input line 285.
-(pdftex.def)             Requested size: 158.54353pt x 142.05681pt.
+(pdftex.def)             Requested size: 180.67639pt x 142.05681pt.
 
 
 [14
 
 ]
-<images/picto_500/heatmap_logistic_multibloc_simu_500_multiway.png, id=538, 602.25pt x 451.6875pt>
+<images/picto_500/heatmap_logistic_multibloc_simu_500_multiway.png, id=538, 602.25pt x 496.85625pt>
 File: images/picto_500/heatmap_logistic_multibloc_simu_500_multiway.png Graphic file (type png)
 <use images/picto_500/heatmap_logistic_multibloc_simu_500_multiway.png>
 Package pdftex.def Info: images/picto_500/heatmap_logistic_multibloc_simu_500_multiway.png  used on input line 301.
-(pdftex.def)             Requested size: 153.64493pt x 115.23047pt.
+(pdftex.def)             Requested size: 153.64493pt x 126.75352pt.
 LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <14.4> not available
 (Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 301.
 
@@ -1093,31 +1093,31 @@ LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <14.4> not available
 [15
 
  <./images/picto_500/heatmap_logistic_multibloc_simu_500_multiway.png>]
-<images/beta_tens_R.png, id=579, 734.745pt x 534.49687pt>
+<images/beta_tens_R.png, id=579, 790.45313pt x 534.49687pt>
 File: images/beta_tens_R.png Graphic file (type png)
 <use images/beta_tens_R.png>
 Package pdftex.def Info: images/beta_tens_R.png  used on input line 318.
-(pdftex.def)             Requested size: 139.603pt x 101.55545pt.
+(pdftex.def)             Requested size: 150.18765pt x 101.55545pt.
 
 
 [16
 
  <./images/beta_tens_R.png>]
-<images/blocks_faux.png, id=611, 1233.60875pt x 578.16pt>
+<images/blocks_faux.png, id=611, 925.20656pt x 353.82187pt>
 File: images/blocks_faux.png Graphic file (type png)
 <use images/blocks_faux.png>
-Package pdftex.def Info: images/blocks_faux.png  used on input line 330.
-(pdftex.def)             Requested size: 283.72404pt x 132.974pt.
+Package pdftex.def Info: images/blocks_faux.png  used on input line 332.
+(pdftex.def)             Requested size: 277.5641pt x 106.14737pt.
 
 
 [17
 
  <./images/blocks_faux.png>]
-<images/beta_blocks.png, id=640, 726.46407pt x 489.32813pt>
+<images/beta_blocks.png, id=640, 775.39688pt x 489.32813pt>
 File: images/beta_blocks.png Graphic file (type png)
 <use images/beta_blocks.png>
-Package pdftex.def Info: images/beta_blocks.png  used on input line 351.
-(pdftex.def)             Requested size: 203.40855pt x 137.01093pt.
+Package pdftex.def Info: images/beta_blocks.png  used on input line 353.
+(pdftex.def)             Requested size: 217.10965pt x 137.01093pt.
 
 
 [18
@@ -1142,68 +1142,77 @@ Package pdftex.def Info: images/beta_blocks.png  used on input line 351.
 <images/2D_better.png, id=853, 1001.99344pt x 816.80156pt>
 File: images/2D_better.png Graphic file (type png)
 <use images/2D_better.png>
-Package pdftex.def Info: images/2D_better.png  used on input line 411.
+Package pdftex.def Info: images/2D_better.png  used on input line 413.
 (pdftex.def)             Requested size: 200.39514pt x 163.3574pt.
 
 
 [23
 
  <./images/2D_better.png>]
-Overfull \hbox (2.06686pt too wide) in paragraph at lines 441--441
+Overfull \hbox (2.06686pt too wide) in paragraph at lines 451--451
  []|$\OT1/cmss/m/n/10.95 (\OML/cmm/m/it/10.95 ^^[[]; ^^[[]\OT1/cmss/m/n/10.95 )$| 
  []
 
 
-Overfull \hbox (5.68852pt too wide) in paragraph at lines 441--441
+Overfull \hbox (5.68852pt too wide) in paragraph at lines 451--451
  \OT1/cmss/m/n/10.95 (blocks)| 
  []
 
 
-Overfull \hbox (2.22104pt too wide) in paragraph at lines 441--441
+Overfull \hbox (2.22104pt too wide) in paragraph at lines 451--451
  \OT1/cmss/m/n/10.95 (mode)| 
  []
 
-<images/3_picto.png, id=882, 517.935pt x 506.89375pt>
+<images/3_picto.png, id=882, 466.74374pt x 451.6875pt>
 File: images/3_picto.png Graphic file (type png)
 <use images/3_picto.png>
-Package pdftex.def Info: images/3_picto.png  used on input line 441.
-(pdftex.def)             Requested size: 62.1495pt x 60.82462pt.
+Package pdftex.def Info: images/3_picto.png  used on input line 451.
+(pdftex.def)             Requested size: 79.34538pt x 76.78586pt.
+<images/3_picto_sepa.png, id=883, 711.4078pt x 511.9125pt>
+File: images/3_picto_sepa.png Graphic file (type png)
+<use images/3_picto_sepa.png>
+Package pdftex.def Info: images/3_picto_sepa.png  used on input line 451.
+(pdftex.def)             Requested size: 120.93771pt x 87.02397pt.
+
+Overfull \vbox (3.44136pt too high) detected at line 451
+ []
+
 
 
 [24
 
- <./images/3_picto.png>]
-<images/heatmap_logistique_simple_simu_4000.png, id=913, 602.25pt x 451.6875pt>
+ <./images/3_picto.png> <./images/3_picto_sepa.png>]
+<images/heatmap_logistique_simple_simu_4000.png, id=915, 602.25pt x 451.6875pt>
 File: images/heatmap_logistique_simple_simu_4000.png Graphic file (type png)
 <use images/heatmap_logistique_simple_simu_4000.png>
-Package pdftex.def Info: images/heatmap_logistique_simple_simu_4000.png  used on input line 473.
+Package pdftex.def Info: images/heatmap_logistique_simple_simu_4000.png  used on input line 483.
 (pdftex.def)             Requested size: 92.1879pt x 69.13553pt.
 LaTeX Font Info:    Font shape `OT1/cmss/b/n' in size <9> not available
-(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 473.
-<images/heatmap_logistic_multibloc_simu_4000_multiway.png, id=914, 602.25pt x 451.6875pt>
+(Font)              Font shape `OT1/cmss/bx/n' tried instead on input line 483.
+<images/heatmap_logistic_multibloc_simu_4000_multiway.png, id=916, 602.25pt x 451.6875pt>
 File: images/heatmap_logistic_multibloc_simu_4000_multiway.png Graphic file (type png)
 <use images/heatmap_logistic_multibloc_simu_4000_multiway.png>
-Package pdftex.def Info: images/heatmap_logistic_multibloc_simu_4000_multiway.png  used on input line 473.
+Package pdftex.def Info: images/heatmap_logistic_multibloc_simu_4000_multiway.png  used on input line 483.
 (pdftex.def)             Requested size: 92.1879pt x 69.13553pt.
-<images/heatmap_logistic_multibloc_simu_4000.png, id=915, 602.25pt x 451.6875pt>
+<images/heatmap_logistic_multibloc_simu_4000.png, id=917, 602.25pt x 451.6875pt>
 File: images/heatmap_logistic_multibloc_simu_4000.png Graphic file (type png)
 <use images/heatmap_logistic_multibloc_simu_4000.png>
-Package pdftex.def Info: images/heatmap_logistic_multibloc_simu_4000.png  used on input line 473.
+Package pdftex.def Info: images/heatmap_logistic_multibloc_simu_4000.png  used on input line 483.
 (pdftex.def)             Requested size: 92.1879pt x 69.13553pt.
-<images/heatmap_logistique_simple_simu_medium_easy.png, id=916, 803.0pt x 602.25pt>
+<images/heatmap_logistique_simple_simu_medium_easy.png, id=918, 803.0pt x 602.25pt>
 File: images/heatmap_logistique_simple_simu_medium_easy.png Graphic file (type png)
 <use images/heatmap_logistique_simple_simu_medium_easy.png>
-Package pdftex.def Info: images/heatmap_logistique_simple_simu_medium_easy.png  used on input line 473.
+Package pdftex.def Info: images/heatmap_logistique_simple_simu_medium_easy.png  used on input line 483.
 (pdftex.def)             Requested size: 92.1879pt x 69.13322pt.
-<images/heatmap_logistic_multibloc_simu_4000_medium_easy_multiway.png, id=917, 803.0pt x 602.25pt>
+<images/heatmap_logistic_multibloc_simu_4000_medium_easy_multiway.png, id=919, 803.0pt x 602.25pt>
 File: images/heatmap_logistic_multibloc_simu_4000_medium_easy_multiway.png Graphic file (type png)
 <use images/heatmap_logistic_multibloc_simu_4000_medium_easy_multiway.png>
-Package pdftex.def Info: images/heatmap_logistic_multibloc_simu_4000_medium_easy_multiway.png  used on input line 473.
+Package pdftex.def Info: images/heatmap_logistic_multibloc_simu_4000_medium_easy_multiway.png  used on input line 483.
 (pdftex.def)             Requested size: 92.1879pt x 69.13322pt.
-<images/heatmap_logistic_multibloc_simu_4000_medium_easy.png, id=918, 803.0pt x 602.25pt>
+<images/heatmap_logistic_multibloc_simu_4000_medium_easy.png, id=920, 803.0pt x 602.25pt>
 File: images/heatmap_logistic_multibloc_simu_4000_medium_easy.png Graphic file (type png)
 <use images/heatmap_logistic_multibloc_simu_4000_medium_easy.png>
-Package pdftex.def Info: images/heatmap_logistic_multibloc_simu_4000_medium_easy.png  used on input line 473.
+Package pdftex.def Info: images/heatmap_logistic_multibloc_simu_4000_medium_easy.png  used on input line 483.
 (pdftex.def)             Requested size: 92.1879pt x 69.13322pt.
 
 
@@ -1213,22 +1222,22 @@ Package pdftex.def Info: images/heatmap_logistic_multibloc_simu_4000_medium_easy
 pdfTeX warning (ext4): destination with the same identifier (name{fig:3000simple}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.473 \end{frame}
+l.483 \end{frame}
                  
 pdfTeX warning (ext4): destination with the same identifier (name{sub@fig:3000simple}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.473 \end{frame}
+l.483 \end{frame}
                  
 pdfTeX warning (ext4): destination with the same identifier (name{fig:easy_multiblock}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.473 \end{frame}
+l.483 \end{frame}
                  
 pdfTeX warning (ext4): destination with the same identifier (name{sub@fig:easy_multiblock}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.473 \end{frame}
+l.483 \end{frame}
                   <./images/heatmap_logistique_simple_simu_4000.png> <./images/heatmap_logistic_multibloc_simu_4000_multiway.png> <./images/heatmap_logistic_multibloc_simu_4000.png> <./images/heatmap_logistique_simple_simu_medium_easy.png (PNG copy)> <./images/heatmap_logistic_multibloc_simu_4000_medium_easy_multiway.png> <./images/heatmap_logistic_multibloc_simu_4000_medium_easy.png>]
 
 [26
@@ -1299,17 +1308,17 @@ Package rerunfilecheck Info: File `colloque.out' has not changed.
 (rerunfilecheck)             Checksum: E781EB15D782AC5E3D258B2044AD915E;1053.
  ) 
 Here is how much of TeX's memory you used:
- 39136 strings out of 473900
- 918211 string characters out of 5733583
- 1387343 words of memory out of 5000000
- 61165 multiletter control sequences out of 15000+600000
+ 39170 strings out of 473900
+ 919563 string characters out of 5733583
+ 1388343 words of memory out of 5000000
+ 61199 multiletter control sequences out of 15000+600000
  586901 words of font info for 132 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  128i,16n,123p,860b,884s stack positions out of 10000i,1000n,20000p,200000b,200000s
  </home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi657/ecso1000.pk></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmmib10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cmextra/cmmib6.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cmextra/cmmib8.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmss12.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmss8.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmss9.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmssi10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmssi12.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmssi8.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmssi9.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/symbols/msam10.pfb></home/alexandre/.miktex/texmfs/install/fonts/type1/public/hoekwater/stmary8.pfb>
-Output written on colloque.pdf (36 pages, 1790032 bytes).
+Output written on colloque.pdf (36 pages, 1869875 bytes).
 PDF statistics:
- 1411 PDF objects out of 1440 (max. 8388607)
+ 1482 PDF objects out of 1728 (max. 8388607)
  91 named destinations out of 1000 (max. 500000)
- 749 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 964 words of extra memory for PDF output out of 10000 (max. 10000000)
 

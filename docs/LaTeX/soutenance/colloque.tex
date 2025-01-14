@@ -323,9 +323,11 @@ Defines a likelihood function $\mathcal{L}(\bm{\beta}) = \prod_{i = 1}^I P(Y_i =
 
  \begin{figure}
     \centering
-    \includegraphics[scale = 0.23]{images/blocks_faux.png}
-    \caption{Problem if blocks have different orders or dimensions}
+    \includegraphics[scale = 0.3]{images/blocks_faux.png}
+    \caption{One tensor per type of variable in multiblock data}
 \end{figure}
+
+$\bm{\beta}^J$ and $\bm{\beta}^K$ hae different meanings and sizes for each block of data.
 
 \end{frame}
 
@@ -434,8 +436,16 @@ Analgue result for mode $K$. Possibility to optimize the likelihood by alternati
     
     \begin{figure}
         \centering
-        \includegraphics[scale = 0.12]{images/3_picto.png}
-        \caption{Pictogram of shape $66 \times 117$ representing the $\bm{\beta}$ to be reconstructed (pixel red is $1$, white is $0$)}
+        \begin{minipage}{0.45\textwidth}
+            \centering
+            \includegraphics[scale = 0.17]{images/3_picto.png}
+            \caption{Pictogram for non multiblocks models}
+        \end{minipage}
+        \begin{minipage}{0.45\textwidth}
+            \centering
+        \includegraphics[scale = 0.17]{images/3_picto_sepa.png}
+        \caption{Pictogram for tensor multiblock model}
+    \end{minipage}
     \end{figure}
 
 \end{frame}
@@ -562,7 +572,7 @@ Analgue result for mode $K$. Possibility to optimize the likelihood by alternati
     \vspace{0.3 cm}
     \end{table}
 
-    Good results of tensor models on real data, but better explainability (less parameters).
+    Good results of tensor models on real data, but better explainability  and less parameters.
 \end{frame}
 
 \begin{frame}
@@ -646,20 +656,41 @@ Analgue result for mode $K$. Possibility to optimize the likelihood by alternati
 
 \begin{frame}
     \frametitle{Lasso penalty in fitting algorithm}
-
+    \begin{block}{Rewriting the penalty}
     \begin{align}
         \text{penalty} &\propto \sum\limits_{\ell,r} \left( \lVert \bm{\beta}_{\ell,r}^K \rVert_1 \lVert \bm{\beta}_{\ell,r}^J \rVert_1 \right)\\
         &= \sum\limits_{\ell,r} \left( \left\lVert  \lVert\bm{\beta}_{\ell,r}^K \rVert_1  \bm{\beta}_{\ell,r}^J \right\rVert_1 \right)  = \sum\limits_{\ell,r} \left( \left\lVert  \lVert\bm{\beta}_{\ell,r}^J \rVert_1  \bm{\beta}_{\ell,r}^K \right\rVert_1  \right)
     \end{align}
+\end{block}
     \onslide<2->{
-    \textbf{Strategy}: dilate $\bm{\beta}_{\ell,r}^J$ by $\lVert \bm{\beta}_{\ell,r}^K\rVert_1$ and $x_{j,k}^\ell$ by $\lVert \bm{\beta}_{\ell,r}^K\rVert_1^{-1}$, so
-    $$\mathbf{x}^T\bm{\beta} =  \sum\limits_{j,\ell,r} \left(\sum\limits_{k}  x_{j,k}^\ell(\beta_{\ell,r}^{K})_k \, \right)(\beta_{\ell,r}^{J})_j$$
+        \begin{block}{Strategy}
+     dilate $\bm{\beta}_{\ell,r}^J$ by $\lVert \bm{\beta}_{\ell,r}^K\rVert_1$ and $x_{j,k}^\ell$ by $\lVert \bm{\beta}_{\ell,r}^K\rVert_1^{-1}$, so
+     \vspace{-7 pt}
+    $$\mathbf{x}^T\bm{\beta} =  \sum\limits_{j,\ell,r} \left(\sum\limits_{k}  x_{j,k}^\ell(\beta_{\ell,r}^{K})_k \, \right)(\beta_{\ell,r}^{J})_j$$\\[-10 pt]
      does not change but 
+     \vspace{-7 pt}
      $$\lVert \bm{\beta}^J \rVert_1 \leadsto\sum\limits_{\ell,r} \left( \lVert \bm{\beta}_{\ell,r}^K \rVert_1 \lVert \bm{\beta}_{\ell,r}^J \rVert_1 \right) $$
+\end{block}
     }
-    \onslide<3->{
-    \noindent Then, do logistic lasso regression with $\mathbf{x} = (x_{ijk}^l\lVert \bm{\beta}_{\ell,r}^K\rVert_1^{-1})$ and $\lambda$ penalty coefficient to find $\left((\beta_{\ell,r}^J)_j\lVert \bm{\beta}_{\ell,r}^K \rVert_1 \right)$.}
+\end{frame}
 
+\begin{frame}
+    \begin{block}{New optimization problem}
+        After the dilations presented in the previous slide, we get:
+        \begin{align}
+        \tilde{x}_{\ell,r,j} &= \sum\limits_{k}x_{j,k}^\ell\lVert \bm{\beta}_{\ell,r}^K\rVert_1^{-1}\\
+        \tilde{\beta}_{l,r,j}^J &= 
+        (\beta_{\ell,r}^J)_j\lVert \bm{\beta}_{\ell,r}^K \rVert_1 
+        \end{align}
+        \phantom{a}\hspace{40 pt}So that\\[-20 pt]
+        \begin{align}
+        \mathbf{x}^T\bm{\beta} &=  \langle \tilde{\,\mathbf{x}}\,|\, \tilde{\bm{\beta}}^J \,\rangle \\
+        \text{penalty} &= \lambda \lVert \tilde{\bm{\beta}}^J\rVert_1
+        \end{align}
+    \end{block}
+    \frametitle{Lasso penalty in fitting algorithm}
+    \noindent Thus, it is possible to do logistic lasso regression with $\tilde{\mathbf{x}}$ as features, $\lambda$ as penalty and $\tilde{\bm{\beta}}^J$ as coefficients in order to optimize along mode $J$.\\[5 pt]
+    Everything works symetrically for mode $K$.
 \end{frame}
 
 \begin{frame}
@@ -676,13 +707,17 @@ Analgue result for mode $K$. Possibility to optimize the likelihood by alternati
 
 \begin{frame}
     \frametitle{Data generation}
-    Choose the $\bm{\beta}$ to be reconstructed (pictograms).\\[10 pt]
-    Generate the $(\mathbf{x}_i)_{i \in \llbracket 1, I\rrbracket}$ with 2 multivariate normal laws of means $\bm{\mu}_0$ and $\bm{\mu}_1$ and common covariance matrix $\bm{\Sigma}$ such that:
+    \begin{block}{Theorem for data generation}
+    For a given $\bm{\beta}$ to be reconstructed (pictograms).\\[5 pt]
+    If the $(\mathbf{x}_i)_{i \in \llbracket 1, I\rrbracket}$ are generated with 2 multivariate normal laws of means $\bm{\mu}_0$ and $\bm{\mu}_1$ and common covariance matrix $\bm{\Sigma}$ such that:
     \begin{itemize}
         \item $\bm{\mu}_1 - \bm{\mu}_0$ colinear to $\bm{\beta}$\\[10 pt]
         \item One of the principal axis of $\bm{\Sigma}$ colinear to $\bm{\beta}$
     \end{itemize}
-    Separation of classes linked with eigenvalues of $\bm{\Sigma}$ (to be compared with $\lVert\bm{\mu}_1 - \bm{\mu}_0 \rVert$).
+    \vspace{5 pt}
+    Then $\bm{\beta}$ is the normal vector to the best separating hyperplane between the two classes (which is in this case the Bayes classifier.)
+\end{block}
+Separation of classes is linked with eigenvalues of $\bm{\Sigma}$ (to be compared with $\lVert\bm{\mu}_1 - \bm{\mu}_0 \rVert$).
 \end{frame}
 
 \end{document}
