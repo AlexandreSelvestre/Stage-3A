@@ -549,11 +549,6 @@ INPUT ./images/blocks.png
 INPUT ./colloque.toc
 INPUT ./colloque.toc
 INPUT colloque.toc
-INPUT /home/alexandre/.miktex/texmfs/install/fonts/tfm/public/sansmathaccent/mathkerncmssxi10.tfm
-INPUT /home/alexandre/.miktex/texmfs/install/fonts/tfm/public/sansmathaccent/mathkerncmssxi8.tfm
-INPUT /home/alexandre/.miktex/texmfs/install/fonts/tfm/public/sansmathaccent/mathkerncmssxi8.tfm
-INPUT /home/alexandre/.miktex/texmfs/install/fonts/vf/public/sansmathaccent/mathkerncmssxi10.vf
-INPUT /usr/local/share/miktex-texmf/fonts/tfm/jknappen/ec/ecso1000.tfm
 INPUT ./images/deplier.png
 INPUT ./images/deplier.png
 INPUT ./images/deplier.png
@@ -724,8 +719,6 @@ OUTPUT colloque.snm
 INPUT colloque.aux
 INPUT ./colloque.out
 INPUT ./colloque.out
-INPUT /home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi657/ecso1000.pk
-INPUT /home/alexandre/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi657/ecso1000.pk
 INPUT /usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 INPUT /usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 INPUT /usr/local/share/miktex-texmf/fonts/type1/public/amsfonts/cm/cmex10.pfb

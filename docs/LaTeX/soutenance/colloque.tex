@@ -117,9 +117,11 @@
     Classification:
     \begin{itemize}
         \item Hepatocellular Carcinoma (HCC): $75\%$ of cases, resection often possible\\[10 pt]
-        \item CCK = Cholangiocarcinoma (CCK): $6\%$ of cases, resection difficult (possible in $30\%$ of cases)\\[10 pt]
+        \item Cholangiocarcinoma (CCK): $6\%$ of cases, resection difficult (possible in $30\%$ of cases)\\[10 pt]
         \item Others: benign ($18 \%$ of cases) or Hepatoblastoma ($1 \%$ of cases)
     \end{itemize}
+
+    Non invasive method: MRI images with injection of contrast agent
 \end{frame}
 
 \begin{frame}
@@ -140,6 +142,7 @@
     \end{figure}
 \end{frame}
 
+
 \begin{frame}
     \frametitle{Available data}
 
@@ -149,14 +152,17 @@
 
     Same variables extracted from each MRI image at 3 times  $\rightarrow$ \textbf{tensor data}\\[10 pt]
 
-    Features grouped by blocks: grey levels intensity, shape and texture $\rightarrow$ \textbf{multiblock data}\\[10 pt]
+    Features grouped by blocks: grey levels intensity, shape, texture, univariate (age and gender)$\rightarrow$ \textbf{multiblock data}\\[10 pt]
 
     
 \end{frame}
 
+
+
+
 \begin{frame}
     \frametitle{Tensor data}
-A given subject $i$ is represented by a transverse slice in the features tensor
+A given subject $i$ is represented by a horizontal slice in the features tensor
     \begin{figure}
         \centering
         \includegraphics[scale = 0.23]{images/tensor_mode.png}
@@ -206,13 +212,13 @@ Each block is a tensor with its own structure.
     \frametitle{Logistic regression (recall)}
     Generalized linear model (GLM) for classification:\\[15 pt]
     \begin{tabular}{ll}
-        $x$ & \hspace{-8 pt}: features vector \hspace{5 cm} \\[5 pt]
+        $\mathbf{x}$ & \hspace{-8 pt}: feature vector (explanatory variable)\hspace{5 cm} \\[5 pt]
         $Y$ & \hspace{-8 pt}: binary response (explained variable) \hspace{10 cm}
     \end{tabular}
 \vspace{5 pt}
 \begin{block}{Likelihood for logistic regression}
-$$P(Y = 1|x) = \frac{\exp(\beta_0 + \bm{x}^T\hspace{-2 pt}\bm{\beta})}{1 + \exp(\beta_0 + \bm{x}^T\hspace{-2 pt}\bm{\beta})}$$
-Defines a likelihood function $\mathcal{L}(\bm{\beta}) = \prod_{i = 1}^I P(Y_i = y_i|x_i)$ .
+$$P(Y = 1|\mathbf{x}) = \frac{\exp(\beta_0 + \mathbf{x}^T\hspace{-2 pt}\bm{\beta})}{1 + \exp(\beta_0 + \mathbf{x}^T\hspace{-2 pt}\bm{\beta})}$$
+Defines a likelihood function $\mathcal{L}(\bm{\beta}) = \prod_{i = 1}^I P(Y_i = y_i|\mathbf{x_i})$ .
 \end{block}
 
 \end{frame}
@@ -225,8 +231,8 @@ Defines a likelihood function $\mathcal{L}(\bm{\beta}) = \prod_{i = 1}^I P(Y_i =
         \caption{Unfolding a tensor}
     \end{figure}
     \begin{block}{Naive unfolding}
-    $$\bm{\beta} = (\beta_{j,k})_{j \in \llbracket 1, J\rrbracket, k \in \llbracket 1, K\rrbracket} \rightarrow JK\text{ parameters to determine}$$ 
-    $$\mathbf{x}^T \bm{\beta} \leadsto \sum\limits_{j,k}  \beta_{j,k} x_{j,k}$$
+    $$\mathbf{B} = (\beta_{j,k})_{j \in \llbracket 1, J\rrbracket, k \in \llbracket 1, K\rrbracket} \rightarrow JK\text{ parameters to determine}$$ 
+    $$\mathbf{x}^T \bm{\beta} \leadsto \sum\limits_{j,k} x_{j,k} \beta_{j,k} = \langle \, \mathbf{X} \, | \, \mathbf{B}\, \rangle$$
     \end{block}
     \textbf{Limitation}: No consideration of the tensor structure in the likelihood
     
@@ -235,7 +241,7 @@ Defines a likelihood function $\mathcal{L}(\bm{\beta}) = \prod_{i = 1}^I P(Y_i =
 \end{frame}
 
 \begin{frame}
-    \frametitle{Lasso penalization}
+    \frametitle{Lasso penalization (recall)}
     To many features (vs $I$) $\rightarrow$ penalization to control variance of prediction (overfitting).\\[10 pt]
     Search for easily interpretable model $\rightarrow$ choice of lasso: 
     \begin{block}{Lasso}
@@ -264,18 +270,18 @@ Defines a likelihood function $\mathcal{L}(\bm{\beta}) = \prod_{i = 1}^I P(Y_i =
 
 \begin{frame}
     \frametitle{Tensor regression model}
-    \textbf{Idea}: each variable and mode has its own influence on the prediction (i.e. on $\bm{\beta}$) \cite{multi_rank_1}.\\[10 pt]
+    \textbf{Idea}: each variable and mode has its own influence on the prediction (i.e. on $\mathbf{B}$) \cite{multi_rank_1}.\\[10 pt]
     \begin{overprint}
     \onslide<1>
     \begin{figure}
         \centering
         \includegraphics[scale = 0.3]{images/beta_tens.png}
-        \caption{Tensor structure of $\bm{\beta}$}
+        \caption{Tensor structure of $\mathbf{B}$}
     \end{figure}
     \onslide<2>
     \begin{block}{Proposed rank 1 model}
     For $J$ variables observed on $K$ modalities (e.g. times)
-    $$ \bm{\beta} = \bm{\beta}^K \circ \bm{\beta}^J \hspace{0.7 cm}  (\beta_{j,k} = \beta_j^J\beta_{k}^{K})$$
+    $$ \mathbf{B} = \bm{\beta}^K \circ \bm{\beta}^J \hspace{0.7 cm}  (\beta_{j,k} = \beta_j^J\beta_{k}^{K})$$
     \end{block}
     $\beta_j$ : impact of variable $j$\\[5 pt]
     $\beta_k$ : impact of modality $k$\\[10 pt]
@@ -287,11 +293,11 @@ Defines a likelihood function $\mathcal{L}(\bm{\beta}) = \prod_{i = 1}^I P(Y_i =
 \begin{frame}
     \frametitle{Limits of rank $1$}
     \vspace{10 pt}
-    $\bm{\beta} = \bm{\beta}^K \circ \bm{\beta}^J$ \hspace{0.5 pt} implies a complete separation between columns and rows:
+    $\mathbf{B} = \bm{\beta}^K \circ \bm{\beta}^J$ \hspace{0.5 pt} implies a complete separation between columns and rows:
     \begin{figure}
             \centering
             \includegraphics[width=0.5\textwidth]{images/picto_500/heatmap_logistic_multibloc_simu_500_multiway.png}
-            \caption{\centering Example of rank 1 matrix}
+            \caption{\centering Heatmap of a rank 1 matrix: each pixel represents a number (from 0 in white to 1 in red)}
     \end{figure}
     \begin{center}
         This can be too simplistic.
@@ -303,7 +309,7 @@ Defines a likelihood function $\mathcal{L}(\bm{\beta}) = \prod_{i = 1}^I P(Y_i =
 \begin{frame}
     \frametitle{Extension to rank $R$ \cite{multi_rank_r}}
     \begin{block}{Rank R lasso penalized tensor model}
-    \hspace{50 pt}Summing rank 1 together : $\bm{\beta} = \sum\limits_{r = 1}^R \bm{\beta}_{r}^J \circ \bm{\beta}_{r}^K$\\[-10 pt]
+    \hspace{50 pt}Summing rank 1 together : $\mathbf{B} = \sum\limits_{r = 1}^R \bm{\beta}_{r}^J \circ \bm{\beta}_{r}^K$\\[-10 pt]
     $$ \text{lasso like penalization} =\lambda \sum\limits_{r = 1}^R  \lVert \bm{\beta}_r^J \circ \bm{\beta}_r^K \rVert_1  =  \lambda \sum\limits_{r = 1}^R\lVert \bm{\beta}_r^J \rVert_1 \lVert \bm{\beta}_r^K \rVert_1 $$
     \end{block}
     % $$\beta_{j,k}x_{j,k} = \left( \sum\limits_{r = 1}^R \beta_{j,r}^J\beta_{k,r}^K \right) x_{j,k} = \sum\limits_{r = 1}^R \beta_{j,r}^J\beta_{k,r}^K \hspace{1 pt} x_{j,k}$$
@@ -327,7 +333,7 @@ Defines a likelihood function $\mathcal{L}(\bm{\beta}) = \prod_{i = 1}^I P(Y_i =
     \caption{One tensor per type of variable in multiblock data}
 \end{figure}
 
-$\bm{\beta}^J$ and $\bm{\beta}^K$ hae different meanings and sizes for each block of data.
+$\bm{\beta}^J$ and $\bm{\beta}^K$ have different meanings and sizes for each block of data.
 
 \end{frame}
 
@@ -348,20 +354,20 @@ $\bm{\beta}^J$ and $\bm{\beta}^K$ hae different meanings and sizes for each bloc
     \begin{figure}
         \centering
         \includegraphics[scale = 0.28]{images/beta_blocks.png}
-        \caption{Tensor multiblock model for rank 1}
+        \caption{Tensor multiblock model for rank 2}
     \end{figure}
 \end{frame}
 
 \begin{frame}
     \frametitle{Tensor multiblock logistic regression}
     \begin{block}{Scalar product for $L$ blocks}
-        $$\mathbf{x}^T\bm{\beta} \leadsto   \sum\limits_{\ell = 1}^L \sum\limits_{j,k} x_{j,k}^\ell(\beta_\ell)_{j,k}$$
+        $$\mathbf{x}^T\bm{\beta} \leadsto \sum\limits_{\ell}\langle \,\mathbf{X}^\ell \, |\, \mathbf{B}_\ell \,\rangle  = \sum\limits_{\ell = 1}^L \sum\limits_{j,k} x_{j,k}^\ell(\beta_\ell)_{j,k}$$
        \end{block}
 
     \begin{block}{Regression coefficient for block $\ell$}
     
-    $\bm{\beta}_\ell$ can have any rank $R_\ell$
-    $$\bm{\beta}_\ell = \sum\limits_{r = 1}^{R_\ell} \bm{\beta}_{\ell,r}^J \circ \bm{\beta}_{\ell,r}^K $$
+    $\mathbf{B}_\ell$ can have any rank $R_\ell$
+    $$\mathbf{B}_\ell = \sum\limits_{r = 1}^{R_\ell} \bm{\beta}_{\ell,r}^J \circ \bm{\beta}_{\ell,r}^K $$
     \end{block}
     \begin{block}{Penalization}
         $$\text{Lasso like penalty} = \lambda \sum\limits_{\ell,r}\lVert \bm{\beta}_{\ell,r}^K \circ \bm{\beta}_{\ell,r}^J \rVert_1 = \lambda \sum\limits_{\ell,r}  \lVert \bm{\beta}_{\ell,r}^K \rVert_1 \lVert \bm{\beta}_{\ell,r}^J \rVert_1 $$
@@ -377,16 +383,16 @@ $\bm{\beta}^J$ and $\bm{\beta}^K$ hae different meanings and sizes for each bloc
 \frametitle{likelihood term}
 \begin{block}{Scalar product of $x$ and $\bm{\beta}$}
 \begin{align}
-\mathbf{x}^T\bm{\beta} &= \sum\limits_{\ell,r,j,k} x_{j,k}^\ell(\beta_{\ell,r}^J)_j(\beta_{\ell,r}^K)_k\\[-5 pt]
+\mathbf{x}^T\bm{\beta} &\leadsto \sum\limits_{\ell,r,j,k} x_{j,k}^\ell(\beta_{\ell,r}^J)_j(\beta_{\ell,r}^K)_k\\[-5 pt]
 &= \sum\limits_{\ell,r,j} \left(\sum\limits_{k}  x_{j,k}^\ell(\beta_{\ell,r}^{K})_k \, \right)(\beta_{\ell,r}^{J})_j
 \end{align}
 \end{block}
 
 \begin{block}{Partial optimization problem}
- Optimizing along mode $J$ $\Leftrightarrow$ solving a logistic regression on weighted aggregated data $\sum\limits_{k}  x_{j,k}^\ell(\beta_{\ell,r}^{K})_k $
+ Optimizing the likelihood along mode $J$ $\Leftrightarrow$ solving a logistic regression on weighted aggregated data $\sum\limits_{k}  x_{j,k}^\ell(\beta_{\ell,r}^{K})_k $
 \end{block}
 \begin{block}{Algorihm}
-Analgue result for mode $K$. Possibility to optimize the likelihood by alternating between modes (can be easily adapted for lasso penalization)
+Similar result for mode $K$. Possibility to optimize the likelihood by alternating between modes (can be easily adapted for lasso penalization)
 \end{block}
 % If a mode is inexistent in a block, renumber the modes of that block to perform the optimization on another (existing) mode of this block.
 
@@ -439,7 +445,7 @@ Analgue result for mode $K$. Possibility to optimize the likelihood by alternati
         \begin{minipage}{0.45\textwidth}
             \centering
             \includegraphics[scale = 0.17]{images/3_picto.png}
-            \caption{Pictogram for non multiblocks models}
+            \caption{Pictogram for non multiblock models}
         \end{minipage}
         \begin{minipage}{0.45\textwidth}
             \centering
@@ -572,7 +578,7 @@ Analgue result for mode $K$. Possibility to optimize the likelihood by alternati
     \vspace{0.3 cm}
     \end{table}
 
-    Good results of tensor models on real data, but better explainability  and less parameters.
+    Performances of tensor models similar to those of the best model (here group lasso, with grouping of features by block), but better explainability (less parameters to determine).
 \end{frame}
 
 \begin{frame}
@@ -666,7 +672,7 @@ Analgue result for mode $K$. Possibility to optimize the likelihood by alternati
         \begin{block}{Strategy}
      dilate $\bm{\beta}_{\ell,r}^J$ by $\lVert \bm{\beta}_{\ell,r}^K\rVert_1$ and $x_{j,k}^\ell$ by $\lVert \bm{\beta}_{\ell,r}^K\rVert_1^{-1}$, so
      \vspace{-7 pt}
-    $$\mathbf{x}^T\bm{\beta} =  \sum\limits_{j,\ell,r} \left(\sum\limits_{k}  x_{j,k}^\ell(\beta_{\ell,r}^{K})_k \, \right)(\beta_{\ell,r}^{J})_j$$\\[-10 pt]
+    $$\mathbf{x}^T\bm{\beta} \leadsto  \sum\limits_{j,\ell,r} \left(\sum\limits_{k}  x_{j,k}^\ell(\beta_{\ell,r}^{K})_k \, \right)(\beta_{\ell,r}^{J})_j$$\\[-10 pt]
      does not change but 
      \vspace{-7 pt}
      $$\lVert \bm{\beta}^J \rVert_1 \leadsto\sum\limits_{\ell,r} \left( \lVert \bm{\beta}_{\ell,r}^K \rVert_1 \lVert \bm{\beta}_{\ell,r}^J \rVert_1 \right) $$
@@ -684,12 +690,12 @@ Analgue result for mode $K$. Possibility to optimize the likelihood by alternati
         \end{align}
         \phantom{a}\hspace{40 pt}So that\\[-20 pt]
         \begin{align}
-        \mathbf{x}^T\bm{\beta} &=  \langle \tilde{\,\mathbf{x}}\,|\, \tilde{\bm{\beta}}^J \,\rangle \\
-        \text{penalty} &= \lambda \lVert \tilde{\bm{\beta}}^J\rVert_1
+        \mathbf{x}^T\bm{\beta} & \leadsto  \langle \, \tilde{\underline{\mathbf{X}}}\,|\, \tilde{\underline{\mathbf{B}}}^J \,\rangle \\
+        \text{penalty} &= \lambda \lVert \tilde{\underline{\mathbf{B}}}\rVert_1
         \end{align}
     \end{block}
     \frametitle{Lasso penalty in fitting algorithm}
-    \noindent Thus, it is possible to do logistic lasso regression with $\tilde{\mathbf{x}}$ as features, $\lambda$ as penalty and $\tilde{\bm{\beta}}^J$ as coefficients in order to optimize along mode $J$.\\[5 pt]
+    \noindent Thus, it is possible to do standard logistic lasso regression with $\tilde{\underline{\mathbf{X}}}$ (unfolded) as features and $\lambda$ as penalty to find the coefficients $\tilde{\underline{\mathbf{B}}}^J$, which can be easily related to those of the vectors ($\bm{\beta}_{\ell,r}^J$).\\[5 pt]
     Everything works symetrically for mode $K$.
 \end{frame}
 
