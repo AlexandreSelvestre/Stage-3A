@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex colloque"] 1736957051.33794 "colloque.aux" "colloque.bbl" "colloque" 1736958849.55862 0
+["bibtex colloque"] 1737052583.51554 "colloque.aux" "colloque.bbl" "colloque" 1737052645.35938 0
   "./bibliography.bib" 1732033505.04967 7534 2ec5c87ac8035dde392c85ed31085289 ""
   "/usr/local/share/miktex-texmf/bibtex/bst/bibtex/plain.bst" 1726308370.06082 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
-  "colloque.aux" 1736958849.26692 9621 5e4703dc800a82f91d18f83986dc30e4 "pdflatex"
+  "colloque.aux" 1737052644.55108 9621 9b8f290e5cba090e689c2baf47898ce2 "pdflatex"
   (generated)
   "colloque.bbl"
   "colloque.blg"
   (rewritten before read)
-["pdflatex"] 1736958847.04682 "/home/alexandre/Documents/Stage-3A/docs/LaTeX/soutenance/colloque.tex" "colloque.pdf" "colloque" 1736958849.55872 0
+["pdflatex"] 1737052639.06519 "/home/alexandre/Documents/Stage-3A/docs/LaTeX/soutenance/colloque.tex" "colloque.pdf" "colloque" 1737052645.35981 0
   "/home/alexandre/.miktex/texmfs/data/fonts/map/pdftex/pdftex.map" 1732283299.19307 90367 3f0a9c9c6d2ed0a26b36cc110c4d8fdc ""
   "/home/alexandre/.miktex/texmfs/data/fonts/tfm/public/stmaryrd/stmary10.tfm" 1726308699.44559 848 f478e0761563bbc369eca609a1741348 ""
   "/home/alexandre/.miktex/texmfs/data/fonts/tfm/public/stmaryrd/stmary5.tfm" 1726308700.71657 848 e1bc58a31b9ed9c3729ffea165acfaac ""
@@ -114,7 +114,7 @@
   "/home/alexandre/.miktex/texmfs/install/tex/latex/translator/translator-theorem-dictionary-English.dict" 1732266352.01323 3523 1f9d9b91f7d78b73e74c7e97bca30fb0 ""
   "/home/alexandre/.miktex/texmfs/install/tex/latex/translator/translator.sty" 1732266352.01323 8765 56d370785f0143111ff9898b5adfe08e ""
   "/home/alexandre/.miktex/texmfs/install/tex/latex/varwidth/varwidth.sty" 1731076540.80071 10894 d359a13923460b2a73d4312d613554c8 ""
-  "/home/alexandre/Documents/Stage-3A/docs/LaTeX/soutenance/colloque.tex" 1736958846.74691 29893 166a94c6137f66705b012405ac2da4f8 ""
+  "/home/alexandre/Documents/Stage-3A/docs/LaTeX/soutenance/colloque.tex" 1737052638.37808 29900 8b091d92a7f29acf1f80c75958b7ade8 ""
   "/usr/local/share/miktex-texmf/fonts/tfm/public/amsfonts/cmextra/cmbsy5.tfm" 1726308367.20781 1120 1e8878807317373affa7f7bba4cf2f6a ""
   "/usr/local/share/miktex-texmf/fonts/tfm/public/amsfonts/cmextra/cmbsy6.tfm" 1726308367.20781 1124 14ccf5552bc7f77ca02a8a402bea8bfb ""
   "/usr/local/share/miktex-texmf/fonts/tfm/public/amsfonts/cmextra/cmbsy7.tfm" 1726308367.20781 1120 7f9f170e8aa57527ad6c49feafd45d54 ""
@@ -331,18 +331,18 @@
   "/usr/local/share/miktex-texmf/tex/latex/url/url.sty" 1726308374.70184 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "/usr/local/share/miktex-texmf/tex/latex/xcolor/xcolor.sty" 1726308374.73784 55487 80a65caedd3722f4c20a14a69e785d8f ""
   "/usr/local/share/miktex-texmf/tex/latex/xkeyval/xkeyval.sty" 1726308374.80884 4937 4ce600ce9bd4ec84d0250eb6892fcf4f ""
-  "colloque.aux" 1736958849.26692 9621 5e4703dc800a82f91d18f83986dc30e4 "pdflatex"
-  "colloque.bbl" 1736957051.41255 889 17dad50d2024155251bfbc14e6826bb4 "bibtex colloque"
-  "colloque.nav" 1736958849.26792 4313 f75ebe8628e7b004c182175813ec91a7 "pdflatex"
-  "colloque.out" 1736958849.26792 1053 e781eb15d782ac5e3d258b2044ad915e "pdflatex"
-  "colloque.tex" 1736958846.74691 29893 166a94c6137f66705b012405ac2da4f8 ""
-  "colloque.toc" 1736958849.26792 251 ed70d5a522f7fd7cb8c7683b2617d168 "pdflatex"
+  "colloque.aux" 1737052644.55108 9621 9b8f290e5cba090e689c2baf47898ce2 "pdflatex"
+  "colloque.bbl" 1737052583.68107 889 17dad50d2024155251bfbc14e6826bb4 "bibtex colloque"
+  "colloque.nav" 1737052644.55308 4313 924cbf304b5dd2bc92bbe86148151814 "pdflatex"
+  "colloque.out" 1737052644.55308 1053 e781eb15d782ac5e3d258b2044ad915e "pdflatex"
+  "colloque.tex" 1737052638.37808 29900 8b091d92a7f29acf1f80c75958b7ade8 ""
+  "colloque.toc" 1737052644.55308 251 ed70d5a522f7fd7cb8c7683b2617d168 "pdflatex"
   "images/2D_better.png" 1732636176.63108 243224 a0cc4a3e197ba51d71aa117ab5c237a6 ""
   "images/3_picto.png" 1736851219.66459 13218 9e4b13add9e9c0c391c6c7a903490831 ""
   "images/3_picto_sepa.png" 1736852021.98666 30209 4a6b87fec2770ee1ab665fbb6475b498 ""
   "images/CCK.png" 1732270626.07102 315504 c8b75dea71f63bf3b82f369ddfbb43fe ""
   "images/HCC.png" 1732270612.57299 317202 92ee9597d14eac782f68de9b18729793 ""
-  "images/beta_blocks.png" 1736958744.30928 96990 6615ac1c21e48a4615cf6352400924fd ""
+  "images/beta_blocks.png" 1737052166.53804 79144 55b1a2b112b26a4d40f15822096dda9e ""
   "images/beta_tens.png" 1736847406.37127 31505 b4d3049c2c3153a43249485b04550e83 ""
   "images/beta_tens_R.png" 1736848206.09133 50950 78fbad7a679e0cefa70b419f6e62470e ""
   "images/blocks.png" 1732627223.14732 30353 6bcc03a849cf643a4ff6ed6d1e181b9a ""
@@ -355,7 +355,7 @@
   "images/heatmap_logistique_simple_simu_4000.png" 1732033505.07467 23767 7adb2687f75b88f68e6ea17dbb1a20ee ""
   "images/heatmap_logistique_simple_simu_medium_easy.png" 1732723969.73234 33022 3dca5055285d8ab3b334ca47b03e0327 ""
   "images/picto_500/heatmap_logistic_multibloc_simu_500_multiway.png" 1736847573.48128 30850 ac3e68dfc4c9ace8a10168fa1269989f ""
-  "images/tensor_mode.png" 1736330350.99303 46216 1f1e472f08b83804ae11e592fce6b792 ""
+  "images/tensor_mode.png" 1737048100.0662 47288 bcda990b4365e8b7e7e3e8a25981ce6a ""
   (generated)
   "colloque.aux"
   "colloque.log"

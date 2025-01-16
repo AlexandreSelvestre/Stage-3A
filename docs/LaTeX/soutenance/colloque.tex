@@ -146,13 +146,18 @@
 \begin{frame}
     \frametitle{Available data}
 
-    $\bullet$ MRI images in 3D of liver tumors (arterial, portal, late)\\[5 pt]
-    $\bullet$ gender (63 men, 27 women)\\[5 pt]
-    $\bullet$ age at disease (average: $63$ years old)\\[15 pt]
+    $\bullet$ 3D MRI images of liver tumors taken at 3 times (arterial, portal, late) for each patient.\\[5 pt]
+    \hspace{10 pt} - Same variables extracted from each of the 3 MRI images $\rightarrow$\\
+    \hspace{10 pt} \textbf{tensor} \textbf{data}. \\
+    \hspace{10 pt} - 3 blocks of MRI features: grey levels intensity, shape and\\
+    \hspace{12 pt} texture $\rightarrow$ \textbf{multiblock data}\\[15 pt]
 
-    Same variables extracted from each MRI image at 3 times  $\rightarrow$ \textbf{tensor data}\\[10 pt]
+    $\bullet$ Clinical data:\\[5 pt]
+    \hspace{10 pt} - Gender (63 men, 27 women) and age at disease (average $63$\\
+    \hspace{12 pt} years old).\\
+    \hspace{10 pt} - Form a separate block in the data
 
-    Features grouped by blocks: grey levels intensity, shape, texture, univariate (age and gender)$\rightarrow$ \textbf{multiblock data}\\[10 pt]
+
 
     
 \end{frame}
@@ -161,15 +166,14 @@
 
 
 \begin{frame}
-    \frametitle{Tensor data}
-A given subject $i$ is represented by a horizontal slice in the features tensor
+    \frametitle{MRI features structured in a tensor data}
+A given subject $i$ is represented by a horizontal slice $\mathbf{X}_i$ in the features tensor. 
     \begin{figure}
         \centering
         \includegraphics[scale = 0.23]{images/tensor_mode.png}
         \caption{Type of data: tensorial}
     \end{figure}
 
-\textbf{Warning}: Often strong correlation between features from the same variable across different modalities $\rightarrow$ adapt the model to this structure.
 \end{frame}
 
 \begin{frame}
@@ -270,7 +274,7 @@ Defines a likelihood function $\mathcal{L}(\bm{\beta}) = \prod_{i = 1}^I P(Y_i =
 
 \begin{frame}
     \frametitle{Tensor regression model}
-    \textbf{Idea}: each variable and mode has its own influence on the prediction (i.e. on $\mathbf{B}$) \cite{multi_rank_1}.\\[10 pt]
+    \textbf{Idea}: each variable and mode has its own influence on the prediction \cite{multi_rank_1}.\\[10 pt]
     \begin{overprint}
     \onslide<1>
     \begin{figure}
@@ -279,12 +283,12 @@ Defines a likelihood function $\mathcal{L}(\bm{\beta}) = \prod_{i = 1}^I P(Y_i =
         \caption{Tensor structure of $\mathbf{B}$}
     \end{figure}
     \onslide<2>
-    \begin{block}{Proposed rank 1 model}
+    \begin{block}{Proposed rank 1 model: outer product of vectors}
     For $J$ variables observed on $K$ modalities (e.g. times)
     $$ \mathbf{B} = \bm{\beta}^K \circ \bm{\beta}^J \hspace{0.7 cm}  (\beta_{j,k} = \beta_j^J\beta_{k}^{K})$$
     \end{block}
-    $\beta_j$ : impact of variable $j$\\[5 pt]
-    $\beta_k$ : impact of modality $k$\\[10 pt]
+    $\beta_j^J$ : impact of variable $j$ \\[5 pt]
+    $\beta_k^K$ : impact of modality $k$\\[10 pt]
     Only $J+K$ parameters to determine (instead of $JK$).
     
 \end{overprint}
@@ -297,7 +301,7 @@ Defines a likelihood function $\mathcal{L}(\bm{\beta}) = \prod_{i = 1}^I P(Y_i =
     \begin{figure}
             \centering
             \includegraphics[width=0.5\textwidth]{images/picto_500/heatmap_logistic_multibloc_simu_500_multiway.png}
-            \caption{\centering Heatmap of a rank 1 matrix: each pixel represents a number (from 0 in white to 1 in red)}
+            \caption{\centering Heatmap of a rank 1 matrix: each pixel represents a number of the matrix $\mathbf{B}$ (from 0 in white to 1 in red)}
     \end{figure}
     \begin{center}
         This can be too simplistic.
@@ -310,7 +314,7 @@ Defines a likelihood function $\mathcal{L}(\bm{\beta}) = \prod_{i = 1}^I P(Y_i =
     \frametitle{Extension to rank $R$ \cite{multi_rank_r}}
     \begin{block}{Rank R lasso penalized tensor model}
     \hspace{50 pt}Summing rank 1 together : $\mathbf{B} = \sum\limits_{r = 1}^R \bm{\beta}_{r}^J \circ \bm{\beta}_{r}^K$\\[-10 pt]
-    $$ \text{lasso like penalization} =\lambda \sum\limits_{r = 1}^R  \lVert \bm{\beta}_r^J \circ \bm{\beta}_r^K \rVert_1  =  \lambda \sum\limits_{r = 1}^R\lVert \bm{\beta}_r^J \rVert_1 \lVert \bm{\beta}_r^K \rVert_1 $$
+    $$ \text{lasso like penalization} \leadsto \lambda \sum\limits_{r = 1}^R  \lVert \bm{\beta}_r^J \circ \bm{\beta}_r^K \rVert_1  =  \lambda \sum\limits_{r = 1}^R\lVert \bm{\beta}_r^J \rVert_1 \lVert \bm{\beta}_r^K \rVert_1 $$
     \end{block}
     % $$\beta_{j,k}x_{j,k} = \left( \sum\limits_{r = 1}^R \beta_{j,r}^J\beta_{k,r}^K \right) x_{j,k} = \sum\limits_{r = 1}^R \beta_{j,r}^J\beta_{k,r}^K \hspace{1 pt} x_{j,k}$$
     \vspace{-10 pt}
@@ -324,16 +328,14 @@ Defines a likelihood function $\mathcal{L}(\bm{\beta}) = \prod_{i = 1}^I P(Y_i =
 \end{frame}
 
 \begin{frame}
- \frametitle{Blocks of variables}
+ \frametitle{Blocks of variables (reminder)}
  \textbf{Aim}: GLM framework for multiblock tensor data.\\[10 pt]
 
  \begin{figure}
     \centering
-    \includegraphics[scale = 0.3]{images/blocks_faux.png}
+    \includegraphics[scale = 0.33]{images/blocks_faux.png}
     \caption{One tensor per type of variable in multiblock data}
 \end{figure}
-
-$\bm{\beta}^J$ and $\bm{\beta}^K$ have different meanings and sizes for each block of data.
 
 \end{frame}
 
@@ -350,10 +352,10 @@ $\bm{\beta}^J$ and $\bm{\beta}^K$ have different meanings and sizes for each blo
 \begin{frame}
     \frametitle{Logistic model for tensor multiblock data}
     \vspace{10 pt}
-    \textbf{Solution}: giving each block its own $\bm{\beta}^J$ and $\bm{\beta}^K$.\\[15 pt]
+    \textbf{Solution}: giving each block its own $\bm{\beta}^J$ and $\bm{\beta}^K$\\[15 pt]
     \begin{figure}
         \centering
-        \includegraphics[scale = 0.28]{images/beta_blocks.png}
+        \includegraphics[scale = 0.26]{images/beta_blocks.png}
         \caption{Tensor multiblock model for rank 2}
     \end{figure}
 \end{frame}
@@ -382,10 +384,10 @@ $\bm{\beta}^J$ and $\bm{\beta}^K$ have different meanings and sizes for each blo
 \begin{frame}
 \frametitle{likelihood term}
 \begin{block}{Scalar product of $x$ and $\bm{\beta}$}
-\begin{align}
+\begin{align*}
 \mathbf{x}^T\bm{\beta} &\leadsto \sum\limits_{\ell,r,j,k} x_{j,k}^\ell(\beta_{\ell,r}^J)_j(\beta_{\ell,r}^K)_k\\[-5 pt]
 &= \sum\limits_{\ell,r,j} \left(\sum\limits_{k}  x_{j,k}^\ell(\beta_{\ell,r}^{K})_k \, \right)(\beta_{\ell,r}^{J})_j
-\end{align}
+\end{align*}
 \end{block}
 
 \begin{block}{Partial optimization problem}
@@ -583,11 +585,11 @@ Similar result for mode $K$. Possibility to optimize the likelihood by alternati
 
 \begin{frame}
     \frametitle{Conclusion}
-    State of the art performances.\\[15 pt]
-    Better than state of the art in simulated data when few overlapping between classes.\\[15 pt]
-    Scales better than regular logistic regression for high order tensors.\\[15 pt]
-    Lowers the complexity of the regression model an therefore reduces overfitting.\\[15 pt]
-    Good interpretability (sparse + displays importance of each block, mode and variable in $\bm{\beta}$).
+    $\bullet$ State of the art performances.\\[15 pt]
+    $\bullet$ Better than state of the art in simulated data.\\[15 pt]
+    $\bullet$ Scales better than regular logistic regression for high order tensors.\\[15 pt]
+    $\bullet$ Lowers the complexity of the regression model \\[15 pt]
+    $\bullet$ Good interpretability (sparse + displays importance of each block, mode and variable in $\bm{\beta}$).
 
 \end{frame}
 
@@ -613,13 +615,6 @@ Similar result for mode $K$. Possibility to optimize the likelihood by alternati
 %     \end{figure}
 % \end{frame}
 
-\begin{frame}
-    \frametitle{Further work}
-    Testing on other real datasets wether the performances on the simulated dataset can be replicated.\\[10 pt]
-    Testing other penalizations (group lasso, elastic net).\\[10 pt]
-    Extending the multiblock approach to other classical machine learning algorithms (other GLMs, SVM etc...). Comparing it to CNN.\\[10 pt]
-    Improving the optimization, by using coordinate descent (as done in glmnet \cite{glmnet} in R).
-\end{frame}
 
 % \begin{frame}
 %     \section{Retrospective Analysis}
@@ -726,4 +721,11 @@ Similar result for mode $K$. Possibility to optimize the likelihood by alternati
 Separation of classes is linked with eigenvalues of $\bm{\Sigma}$ (to be compared with $\lVert\bm{\mu}_1 - \bm{\mu}_0 \rVert$).
 \end{frame}
 
+\begin{frame}
+    \frametitle{Future work}
+    Testing on other real datasets wether the performances on the simulated dataset can be replicated.\\[10 pt]
+    Testing other penalizations (group lasso, elastic net).\\[10 pt]
+    Extending the multiblock approach to other classical machine learning algorithms (other GLMs, SVM etc...). Comparing it to CNN.\\[10 pt]
+    Improving the optimization, by using coordinate descent (as done in glmnet \cite{glmnet} in R).
+\end{frame}
 \end{document}
